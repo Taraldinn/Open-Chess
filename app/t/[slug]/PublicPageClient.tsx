@@ -60,7 +60,7 @@ export function PublicPageClient({
               <Title order={1} size="2.2rem" fw={900}>
                 {tournament.name}
               </Title>
-              <Badge color="yellow" variant="light" size="lg" tt="uppercase">
+              <Badge color="yellow" c="dark.9" variant="filled" size="md" tt="uppercase">
                 {tournament.format.replace(/_/g, ' ')}
               </Badge>
               <Badge
@@ -69,11 +69,12 @@ export function PublicPageClient({
                     ? 'green'
                     : tournament.status === 'finished'
                     ? 'gray'
-                    : 'blue'
+                    : 'arcadeViolet'
                 }
-                size="lg"
+                variant="light"
+                size="md"
               >
-                {tournament.status.toUpperCase()}
+                {tournament.status === 'draft' ? '✏️ DRAFT' : tournament.status === 'running' ? '⚡ LIVE' : tournament.status.toUpperCase()}
               </Badge>
             </Group>
 
@@ -123,7 +124,7 @@ export function PublicPageClient({
       </Stack>
 
       {/* Tabs */}
-      <Tabs value={activeTab} onChange={(v) => v && setActiveTab(v)} color="yellow">
+      <Tabs value={activeTab} onChange={(v) => v && setActiveTab(v)} color="yellow" variant="pills">
         <Tabs.List mb="lg">
           <Tabs.Tab value="pairings" leftSection={<IconFlame size={16} />}>
             Pairings & Results

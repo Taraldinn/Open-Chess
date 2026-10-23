@@ -35,26 +35,31 @@ export function PublicPairings({ rounds, currentRound }: PublicPairingsProps) {
   const activeRound = rounds.find((r) => r.number === Number(selectedRound));
 
   const formatResultBadge = (result: GameResult, isBye: boolean) => {
-    if (isBye) return <Badge color="blue">1 - 0 (BYE)</Badge>;
+    if (isBye) return <Badge color="arcadeViolet" variant="light">1 - 0 (BYE)</Badge>;
     switch (result) {
       case 'white_win':
       case 'black_forfeit_win':
-        return <Badge color="yellow" variant="filled">1 - 0</Badge>;
+        return <Badge color="yellow" c="dark.9" variant="filled">1 - 0</Badge>;
       case 'black_win':
       case 'white_forfeit_win':
-        return <Badge color="yellow" variant="filled">0 - 1</Badge>;
+        return <Badge color="yellow" c="dark.9" variant="filled">0 - 1</Badge>;
       case 'draw':
-        return <Badge color="blue" variant="filled">½ - ½</Badge>;
+        return <Badge color="arcadeViolet" variant="filled">½ - ½</Badge>;
       case 'double_forfeit':
-        return <Badge color="red">0F - 0F</Badge>;
+        return <Badge color="red" variant="filled">0F - 0F</Badge>;
       default:
-        return <Badge color="gray" variant="outline">vs</Badge>;
+        return <Badge color="coral" variant="light">VS</Badge>;
     }
   };
 
   return (
     <Stack gap="md">
-      <Tabs value={selectedRound} onChange={(v) => v && setSelectedRound(v)} color="yellow">
+      <Tabs
+        value={selectedRound}
+        onChange={(v) => v && setSelectedRound(v)}
+        color="yellow"
+        variant="pills"
+      >
         <Tabs.List>
           {rounds.map((r) => (
             <Tabs.Tab key={r.number} value={String(r.number)}>
@@ -65,7 +70,7 @@ export function PublicPairings({ rounds, currentRound }: PublicPairingsProps) {
       </Tabs>
 
       {!activeRound || activeRound.games.length === 0 ? (
-        <Paper p="xl" ta="center" withBorder radius="md">
+        <Paper p="xl" ta="center" withBorder radius="lg">
           <Text c="dimmed">No pairings published for this round yet.</Text>
         </Paper>
       ) : (
@@ -73,7 +78,7 @@ export function PublicPairings({ rounds, currentRound }: PublicPairingsProps) {
           {activeRound.games.map((game) => {
             const isBye = game.result === 'bye' || !game.blackId;
             return (
-              <Card key={game.id} withBorder shadow="xs" padding="md" radius="md">
+              <Card key={game.id} withBorder shadow="xs" padding="md" radius="lg">
                 <Group justify="space-between" align="center" wrap="wrap">
                   <Badge size="md" variant="light" color="gray">
                     Board {game.board}

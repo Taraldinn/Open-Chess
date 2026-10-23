@@ -44,6 +44,7 @@ export function TournamentManageHeader({
           <Button
             variant="subtle"
             size="xs"
+            className="subtle-nav-btn"
             leftSection={<IconArrowLeft size={14} />}
           >
             All Tournaments
@@ -53,6 +54,7 @@ export function TournamentManageHeader({
           <Button
             variant="default"
             size="xs"
+            radius="xl"
             rightSection={<IconExternalLink size={14} />}
           >
             Public Live Link
@@ -62,18 +64,19 @@ export function TournamentManageHeader({
 
       <Group justify="space-between" align="flex-start" mb="md">
         <div>
-          <Group gap="xs">
-            <Title order={2} size="1.8rem" fw={800}>
+          <Group gap="xs" align="center" mb={4}>
+            <Title order={2} size="1.8rem" fw={900}>
               {name}
             </Title>
-            <Badge color="yellow" variant="light" size="lg" tt="uppercase">
+            <Badge color="yellow" c="dark.9" variant="filled" size="md" tt="uppercase">
               {format.replace(/_/g, ' ')}
             </Badge>
             <Badge
-              color={status === 'running' ? 'green' : status === 'finished' ? 'gray' : 'blue'}
-              size="lg"
+              color={status === 'running' ? 'green' : status === 'finished' ? 'gray' : 'arcadeViolet'}
+              variant="light"
+              size="md"
             >
-              {status.toUpperCase()}
+              {status === 'draft' ? '✏️ DRAFT' : status === 'running' ? '⚡ LIVE' : status.toUpperCase()}
             </Badge>
           </Group>
           <Text size="sm" c="dimmed">
@@ -86,6 +89,7 @@ export function TournamentManageHeader({
         value={getActiveTab()}
         onChange={(val) => router.push(`/t/${slug}/manage/${val}`)}
         color="yellow"
+        variant="pills"
       >
         <Tabs.List>
           <Tabs.Tab value="players" leftSection={<IconUsers size={16} />}>

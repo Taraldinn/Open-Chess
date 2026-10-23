@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import {
   Table,
   Button,
@@ -15,6 +15,7 @@ import {
   Menu,
   SimpleGrid,
   Tooltip,
+  Box,
 } from '@mantine/core';
 import {
   IconPlus,
@@ -27,6 +28,8 @@ import {
   IconSortDescendingNumbers,
   IconUpload,
   IconPlayerPlay,
+  IconSparkles,
+  IconUsers,
 } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
 import {
@@ -69,6 +72,7 @@ export function PlayerList({
   const router = useRouter();
   const [players, setPlayers] = useState<PlayerItem[]>(initialPlayers);
   const [bulkModalOpened, setBulkModalOpened] = useState(false);
+  const nameInputRef = useRef<HTMLInputElement>(null);
 
   // New Player Form
   const [newName, setNewName] = useState('');
@@ -98,6 +102,7 @@ export function PlayerList({
           message: `${(res.player as any).name} added to tournament.`,
           color: 'green',
         });
+        setTimeout(() => nameInputRef.current?.focus(), 50);
       }
     } catch (err: any) {
       notifications.show({
@@ -175,14 +180,14 @@ export function PlayerList({
   const activeCount = players.filter((p) => p.status === 'active').length;
 
   return (
-    <Card shadow="sm" padding="lg" radius="md" withBorder>
-      <Group justify="space-between" mb="lg">
+    <Card shadow="sm" padding="xl" radius="lg" withBorder className="playful-card-glow">
+      <Group justify="space-between" mb="lg" wrap="wrap" gap="md">
         <div>
-          <Group gap="xs">
-            <Text fw={700} size="xl">
+          <Group gap="xs" align="center">
+            <Text fw={800} size="xl">
               Tournament Players
             </Text>
-            <Badge color="yellow" variant="light">
+            <Badge color="yellow" c="dark.9" variant="filled" size="md">
               {players.length} Registered ({activeCount} Active)
             </Badge>
           </Group>
@@ -191,9 +196,10 @@ export function PlayerList({
           </Text>
         </div>
 
-        <Group>
+        <Group gap="xs">
           <Button
             variant="default"
+            radius="xl"
             leftSection={<IconSortDescendingNumbers size={16} />}
             onClick={sortByRating}
             disabled={players.length < 2}
@@ -203,7 +209,9 @@ export function PlayerList({
 
           <Button
             variant="light"
-            color="yellow"
+            color="arcadeViolet"
+            radius="xl"
+            fw={700}
             leftSection={<IconUpload size={16} />}
             onClick={() => setBulkModalOpened(true)}
           >
@@ -213,25 +221,39 @@ export function PlayerList({
           <Button
             color="yellow"
             c="dark.9"
-            fw={700}
-            leftSection={<IconPlayerPlay size={18} />}
+            fw={800}
+            radius="xl"
+            leftSection={<IconPlayerPlay size={18} stroke={2.5} />}
             onClick={onStartTournament}
             loading={isStarting}
             disabled={activeCount < 2}
+            className="playful-card-glow"
           >
             {tournamentStatus === 'draft' ? 'Start Tournament (Gen Round 1)' : 'Go to Rounds'}
           </Button>
         </Group>
       </Group>
 
-      {/* Add Player Inline Form */}
-      <Paper p="md" withBorder radius="md" mb="lg" bg="var(--mantine-color-dark-8)">
+      {/* Quick Add Player Inline Form */}
+      <Paper p="md" radius="lg" mb="lg" className="playful-accent-box">
+        <Group justify="space-between" mb="xs">
+          <Group gap="xs">
+            <IconSparkles size={16} color="#fab005" />
+            <Text size="xs" fw={700} tt="uppercase" style={{ letterSpacing: '0.04em' }}>
+              Quick Add Player
+            </Text>
+          </Group>
+          <Text size="xs" c="dimmed">
+            💡 Press Enter in any field to add immediately
+          </Text>
+        </Group>
         <SimpleGrid cols={{ base: 1, sm: 4 }} spacing="sm">
           <TextInput
             placeholder="Player Name (e.g. Magnus Carlsen)"
             value={newName}
             onChange={(e) => setNewName(e.currentTarget.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleAddPlayer()}
+            ref={nameInputRef}
           />
           <NumberInput
             placeholder="Rating (Optional)"
@@ -239,30 +261,51 @@ export function PlayerList({
             max={3500}
             value={newRating}
             onChange={(v) => setNewRating(typeof v === 'number' ? v : '')}
+            onKeyDown={(e) => e.key === 'Enter' && handleAddPlayer()}
           />
           <TextInput
             placeholder="Club or Country (Optional)"
             value={newClub}
             onChange={(e) => setNewClub(e.currentTarget.value)}
+            onKeyDown={(e) => e.key === 'Enter' && handleAddPlayer()}
           />
           <Button
             color="yellow"
             c="dark.9"
-            fw={600}
+            fw={800}
+            radius="xl"
             onClick={handleAddPlayer}
             loading={loadingAdd}
             disabled={!newName.trim()}
-            leftSection={<IconPlus size={16} />}
+            leftSection={<IconPlus size={16} stroke={2.5} />}
           >
             Add Player
           </Button>
         </SimpleGrid>
       </Paper>
 
-      {/* Table */}
+      {/* Table / Empty State */}
       {players.length === 0 ? (
-        <Paper p="xl" ta="center" withBorder radius="md">
-          <Text c="dimmed">No players added yet. Add players above or import a list.</Text>
+        <Paper p="2.5rem" ta="center" withBorder radius="lg" my="md">
+          <Box className="playful-float" mb="sm">
+            <IconUsers size={48} color="#fab005" />
+          </Box>
+          <Text fw={800} size="lg" mb={4}>
+            No players added yet
+          </Text>
+          <Text c="dimmed" size="sm" maw={440} mx="auto" mb="lg">
+            Add players one by one using the quick form above, or paste multiple players with our CSV importer.
+          </Text>
+          <Button
+            variant="light"
+            color="yellow"
+            radius="xl"
+            fw={700}
+            leftSection={<IconUpload size={16} />}
+            onClick={() => setBulkModalOpened(true)}
+          >
+            Open Bulk / CSV Import
+          </Button>
         </Paper>
       ) : (
         <Table striped highlightOnHover withTableBorder>

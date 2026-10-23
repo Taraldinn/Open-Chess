@@ -163,10 +163,20 @@ export function CreateTournamentWizard() {
   };
 
   return (
-    <Card shadow="md" padding="xl" radius="lg" withBorder maw={840} mx="auto" my="xl">
-      <Title order={2} mb="md">
-        Create Tournament
-      </Title>
+    <Card shadow="md" padding="xl" radius="lg" withBorder maw={840} mx="auto" my="xl" className="playful-card-glow">
+      <Group justify="space-between" align="flex-start" mb="lg">
+        <div>
+          <Title order={2} size="1.8rem" fw={900}>
+            Create Tournament
+          </Title>
+          <Text c="dimmed" size="sm">
+            Set up your format, rules, and rounds in 3 easy steps
+          </Text>
+        </div>
+        <Badge color="yellow" variant="light" size="lg">
+          Step {active < 3 ? active + 1 : 3} of 3
+        </Badge>
+      </Group>
 
       <Stepper active={active} onStepClick={setActive} color="yellow" mb="xl">
         <Stepper.Step label="Basics" description="Name & Venue" icon={<IconTrophy size={18} />}>
@@ -250,21 +260,23 @@ export function CreateTournamentWizard() {
               />
             </SimpleGrid>
 
-            <Paper p="sm" withBorder radius="md" bg="var(--mantine-color-dark-8)">
-              <Group justify="space-between">
+            <Paper p="md" radius="lg" className="playful-accent-box">
+              <Group justify="space-between" align="center" wrap="wrap" gap="xs">
                 <Group gap="xs">
-                  <IconSparkles size={18} color="gold" />
-                  <Text size="sm" fw={600}>
+                  <IconSparkles size={20} color="#fab005" />
+                  <Text size="sm" fw={700}>
                     Suggested Rounds:
                   </Text>
-                  <Badge color="yellow" variant="light">
-                    {suggested} rounds
+                  <Badge color="yellow" c="dark.9" variant="filled" size="md">
+                    {suggested} Rounds
                   </Badge>
                 </Group>
                 <Button
                   size="xs"
-                  variant="subtle"
+                  variant="light"
                   color="yellow"
+                  radius="xl"
+                  fw={700}
                   onClick={() => setTotalRounds(suggested)}
                 >
                   Use Suggested ({suggested})

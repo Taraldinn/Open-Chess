@@ -83,3 +83,43 @@ html, body {
   border-color: #fab005 !important;
   box-shadow: 0 0 0 3px rgba(250, 176, 5, 0.2) !important;
 }
+
+/* Adaptive warm accent box (honey-cream in light mode, dark indigo in dark mode) */
+[data-mantine-color-scheme="light"] .playful-accent-box {
+  background-color: rgba(251, 176, 5, 0.08) !important;
+  border: 1px solid rgba(250, 176, 5, 0.28) !important;
+  color: #1a1f32 !important;
+}
+
+[data-mantine-color-scheme="dark"] .playful-accent-box {
+  background-color: #191f32 !important;
+  border: 1px solid rgba(250, 176, 5, 0.2) !important;
+  color: #f1f5f9 !important;
+}
+
+/* Finished game subtle cheerful tint */
+[data-mantine-color-scheme="light"] .playful-finished-game {
+  background-color: rgba(64, 192, 87, 0.06) !important;
+  border-color: rgba(64, 192, 87, 0.25) !important;
+}
+
+[data-mantine-color-scheme="dark"] .playful-finished-game {
+  background-color: rgba(64, 192, 87, 0.08) !important;
+  border-color: rgba(64, 192, 87, 0.22) !important;
+}
+
+/* Subtle nav buttons with crisp, high-contrast readable text */
+.subtle-nav-btn {
+  color: var(--mantine-color-text) !important;
+  font-weight: 700 !important;
+}
+
+.subtle-nav-btn:hover {
+  background-color: var(--mantine-color-default-hover) !important;
+}
+
+/* Stepper active step icon contrast */
+.mantine-Stepper-stepIcon[data-progress],
+.mantine-Stepper-stepIcon[data-completed] {
+  color: #101423 !important;
+}

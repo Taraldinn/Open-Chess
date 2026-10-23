@@ -78,6 +78,7 @@ export default async function PlayerProfilePage({ params }: Props) {
         <Button
           variant="subtle"
           size="sm"
+          className="subtle-nav-btn"
           leftSection={<IconArrowLeft size={16} />}
           mb="md"
         >
@@ -117,7 +118,7 @@ export default async function PlayerProfilePage({ params }: Props) {
         </Group>
 
         {playerStanding && playerStanding.colorHistory.length > 0 && (
-          <Paper p="sm" withBorder radius="md" bg="var(--mantine-color-dark-8)">
+          <Paper p="sm" radius="md" className="playful-accent-box">
             <Group gap="xs">
               <Text size="xs" fw={700} c="dimmed">
                 COLOR SEQUENCE:

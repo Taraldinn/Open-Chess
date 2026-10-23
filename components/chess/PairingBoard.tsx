@@ -38,7 +38,7 @@ export function PairingBoard({ game, disabled, onSetResult }: PairingBoardProps)
       shadow="xs"
       padding="md"
       radius="lg"
-      bg={isFinished ? 'var(--mantine-color-dark-7)' : undefined}
+      className={isFinished ? 'playful-finished-game' : undefined}
     >
       <Group justify="space-between" align="center" wrap="wrap" gap="md">
         {/* Board Number Badge */}

@@ -10,7 +10,11 @@ export default function NewTournamentPage() {
     <Container size="lg" py="xl">
       <Group mb="md">
         <Link href="/dashboard" style={{ textDecoration: 'none' }}>
-          <Button variant="subtle" leftSection={<IconArrowLeft size={16} />}>
+          <Button
+            variant="subtle"
+            className="subtle-nav-btn"
+            leftSection={<IconArrowLeft size={16} />}
+          >
             Back to Dashboard
           </Button>
         </Link>

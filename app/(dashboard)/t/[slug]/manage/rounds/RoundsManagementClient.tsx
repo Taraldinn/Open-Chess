@@ -179,7 +179,12 @@ export function RoundsManagementClient({ tournament, initialRounds }: Props) {
       </Group>
 
       {/* Round Tabs */}
-      <Tabs value={activeRoundNumber} onChange={(v) => v && setActiveRoundNumber(v)} color="yellow">
+      <Tabs
+        value={activeRoundNumber}
+        onChange={(v) => v && setActiveRoundNumber(v)}
+        color="yellow"
+        variant="pills"
+      >
         <Tabs.List>
           {rounds.map((r) => (
             <Tabs.Tab
@@ -207,22 +212,17 @@ export function RoundsManagementClient({ tournament, initialRounds }: Props) {
 
       {/* Round Status Banner & Progress */}
       {activeRound && (
-        <Card withBorder padding="md" radius="md">
+        <Card withBorder padding="md" radius="lg" className="playful-card-glow">
           <Group justify="space-between" mb="xs">
             <Group gap="xs">
-              <Text fw={600}>Round {activeRound.number} Progress:</Text>
+              <Text fw={700}>Round {activeRound.number} Progress:</Text>
               <Text size="sm" c="dimmed">
                 {completedGamesInActiveRound} / {totalGamesInActiveRound} Boards Finished
               </Text>
             </Group>
             <Badge
-              color={
-                activeRound.status === 'completed'
-                  ? 'green'
-                  : activeRound.status === 'published'
-                  ? 'blue'
-                  : 'yellow'
-              }
+              color={activeRound.status === 'completed' ? 'green' : 'blue'}
+              variant="filled"
             >
               {activeRound.status.toUpperCase()}
             </Badge>

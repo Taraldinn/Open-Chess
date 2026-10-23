@@ -53,7 +53,7 @@ export function Navbar() {
 
           <Group gap="sm">
             <Link href="/dashboard" style={{ textDecoration: 'none' }}>
-              <Button variant="subtle" size="sm" radius="xl">
+              <Button variant="subtle" size="sm" radius="xl" className="subtle-nav-btn">
                 Dashboard
               </Button>
             </Link>
