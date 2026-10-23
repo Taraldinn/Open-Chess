@@ -40,6 +40,14 @@ export async function updateSession(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   const pathname = request.nextUrl.pathname;
+  const code = request.nextUrl.searchParams.get('code');
+
+  // Seamlessly forward OAuth code if it lands on / or another page instead of /auth/callback
+  if (code && pathname !== '/auth/callback') {
+    const callbackUrl = request.nextUrl.clone();
+    callbackUrl.pathname = '/auth/callback';
+    return NextResponse.redirect(callbackUrl);
+  }
 
   // Protected organizer routes: require authentication
   const isProtectedPath =
