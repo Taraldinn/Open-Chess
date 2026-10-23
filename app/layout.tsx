@@ -16,7 +16,7 @@ const plusJakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata = {
-  title: 'ChessFlow — Chess Tournament Manager',
+  title: 'OpenVChess — Chess Tournament Manager',
   description: 'Create and run Swiss, Round Robin, and Knockout chess tournaments with live pairings and standings.',
 };
 

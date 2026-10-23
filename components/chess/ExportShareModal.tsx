@@ -39,7 +39,7 @@ export function ExportShareModal({
   const shareUrl =
     typeof window !== 'undefined'
       ? `${window.location.origin}/t/${tournamentSlug}`
-      : `https://chessflow.app/t/${tournamentSlug}`;
+      : `https://openvchess.app/t/${tournamentSlug}`;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(shareUrl);

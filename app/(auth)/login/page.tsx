@@ -80,7 +80,7 @@ function LoginForm() {
         <IconTrophy size={42} color="#fab005" />
       </Box>
       <Title order={2} ta="center" fw={900} mb="xs">
-        Welcome to ChessFlow
+        Welcome to OpenVChess
       </Title>
       <Text c="dimmed" size="sm" ta="center" mb={24}>
         Sign in to create tournaments, manage pairings, and enter results.

@@ -46,7 +46,7 @@ export function Navbar() {
                 <IconTrophy size={28} color="#fab005" />
               </Box>
               <Text fw={900} size="xl" c="var(--mantine-color-text)" style={{ letterSpacing: '-0.02em' }}>
-                Chess<Text component="span" className="playful-gradient-text" inherit>Flow</Text>
+                Open<Text component="span" className="playful-gradient-text" inherit>VChess</Text>
               </Text>
             </Group>
           </Link>
