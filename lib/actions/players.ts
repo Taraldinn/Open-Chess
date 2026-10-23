@@ -84,16 +84,19 @@ export async function bulkAddPlayersAction(
 export async function togglePlayerWithdrawalAction(playerId: string, currentRound: number) {
   const supabase = (await createClient()) as any;
 
-  // Get current status
+  // Get current status and tournament_id
   const { data: player, error: fetchErr } = await supabase
     .from('players')
-    .select('status')
+    .select('tournament_id, status')
     .eq('id', playerId)
     .single();
 
   if (fetchErr || !player) {
     throw new Error('Player not found');
   }
+
+  // Strict ownership check
+  await assertTournamentAdmin(player.tournament_id);
 
   const newStatus = player.status === 'active' ? 'withdrawn' : 'active';
   const withdrawnAfter = newStatus === 'withdrawn' ? currentRound : null;
@@ -113,6 +116,21 @@ export async function togglePlayerWithdrawalAction(playerId: string, currentRoun
 
 export async function deletePlayerAction(playerId: string) {
   const supabase = (await createClient()) as any;
+
+  // Get tournament_id first to verify permission
+  const { data: player, error: fetchErr } = await supabase
+    .from('players')
+    .select('tournament_id')
+    .eq('id', playerId)
+    .single();
+
+  if (fetchErr || !player) {
+    throw new Error('Player not found');
+  }
+
+  // Strict ownership check
+  await assertTournamentAdmin(player.tournament_id);
+
   const { error } = await supabase.from('players').delete().eq('id', playerId);
   if (error) throw new Error(error.message);
   return { success: true };

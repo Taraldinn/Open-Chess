@@ -94,6 +94,20 @@ export async function startTournamentAction(tournamentId: string) {
 
 export async function publishRoundAction(roundId: string) {
   const supabase = (await createClient()) as any;
+
+  // Retrieve tournament_id for authorization
+  const { data: round, error: fetchErr } = await supabase
+    .from('rounds')
+    .select('tournament_id')
+    .eq('id', roundId)
+    .single();
+
+  if (fetchErr || !round) {
+    throw new Error('Round not found');
+  }
+
+  await assertTournamentAdmin(round.tournament_id);
+
   const { error } = await supabase
     .from('rounds')
     .update({ status: 'published' as RoundStatus })
