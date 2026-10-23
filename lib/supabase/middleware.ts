@@ -35,7 +35,25 @@ export async function updateSession(request: NextRequest) {
   );
 
   // Refresh auth session
-  await supabase.auth.getUser();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const pathname = request.nextUrl.pathname;
+
+  // Protected organizer routes: require authentication
+  const isProtectedPath =
+    pathname.startsWith('/dashboard') ||
+    pathname.startsWith('/t/new') ||
+    pathname.includes('/manage/');
+
+  if (isProtectedPath && !user) {
+    const redirectUrl = request.nextUrl.clone();
+    redirectUrl.pathname = '/login';
+    redirectUrl.searchParams.set('next', pathname);
+    redirectUrl.searchParams.set('error', 'unauthorized');
+    return NextResponse.redirect(redirectUrl);
+  }
 
   return supabaseResponse;
 }

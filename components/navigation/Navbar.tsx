@@ -16,6 +16,7 @@ import {
   IconPlus,
 } from '@tabler/icons-react';
 import Link from 'next/link';
+import { UserMenu } from './UserMenu';
 
 export function Navbar() {
   const { setColorScheme } = useMantineColorScheme();
@@ -47,20 +48,23 @@ export function Navbar() {
           </Link>
 
           <Group gap="sm">
-            <Button component={Link} href="/dashboard" variant="subtle" size="sm">
-              Dashboard
-            </Button>
-            <Button
-              component={Link}
-              href="/t/new"
-              color="yellow"
-              c="dark.9"
-              size="sm"
-              fw={700}
-              leftSection={<IconPlus size={16} />}
-            >
-              New Tournament
-            </Button>
+            <Link href="/dashboard" style={{ textDecoration: 'none' }}>
+              <Button variant="subtle" size="sm">
+                Dashboard
+              </Button>
+            </Link>
+            <Link href="/t/new" style={{ textDecoration: 'none' }}>
+              <Button
+                color="yellow"
+                c="dark.9"
+                size="sm"
+                fw={700}
+                leftSection={<IconPlus size={16} />}
+              >
+                New Tournament
+              </Button>
+            </Link>
+            <UserMenu />
             <ActionIcon
               onClick={toggleColorScheme}
               variant="default"

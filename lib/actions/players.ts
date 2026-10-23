@@ -2,7 +2,7 @@
 
 import { z } from 'zod';
 import { createClient } from '@/lib/supabase/server';
-import { revalidatePath } from 'next/cache';
+import { assertTournamentAdmin } from './authGuards';
 
 const addPlayerSchema = z.object({
   tournamentId: z.string().uuid(),
@@ -14,6 +14,7 @@ const addPlayerSchema = z.object({
 
 export async function addPlayerAction(input: z.infer<typeof addPlayerSchema>) {
   const validated = addPlayerSchema.parse(input);
+  await assertTournamentAdmin(validated.tournamentId);
   const supabase = (await createClient()) as any;
 
   // If seed is not provided, set to current player count + 1
@@ -51,6 +52,7 @@ export async function bulkAddPlayersAction(
   tournamentId: string,
   playersList: { name: string; rating?: number | null; club?: string | null }[]
 ) {
+  await assertTournamentAdmin(tournamentId);
   const supabase = (await createClient()) as any;
 
   const { count } = await supabase
@@ -120,6 +122,7 @@ export async function reorderPlayersAction(
   tournamentId: string,
   orderedPlayerIds: string[]
 ) {
+  await assertTournamentAdmin(tournamentId);
   const supabase = (await createClient()) as any;
 
   // Update seeds in parallel or sequence

@@ -3,8 +3,10 @@
 import { createClient } from '@/lib/supabase/server';
 import { getFormatEngine, PairingContext, PastGame, PlayerInfo } from '@/lib/formats';
 import type { GameResult, RoundStatus, TournamentStatus } from '@/types/database';
+import { assertTournamentAdmin } from './authGuards';
 
 export async function startTournamentAction(tournamentId: string) {
+  await assertTournamentAdmin(tournamentId);
   const supabase = (await createClient()) as any;
 
   // Fetch tournament
@@ -102,6 +104,7 @@ export async function publishRoundAction(roundId: string) {
 }
 
 export async function generateNextRoundAction(tournamentId: string) {
+  await assertTournamentAdmin(tournamentId);
   const supabase = (await createClient()) as any;
 
   // Fetch tournament

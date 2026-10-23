@@ -60,10 +60,19 @@ export async function createTournamentAction(input: CreateTournamentInput) {
 
 export async function getTournamentsAction() {
   const supabase = (await createClient()) as any;
-  const { data, error } = await supabase
-    .from('tournaments')
-    .select('*')
-    .order('created_at', { ascending: false });
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  let query = supabase.from('tournaments').select('*').order('created_at', { ascending: false });
+
+  if (user?.id) {
+    query = query.or(`owner_id.eq.${user.id},owner_id.is.null,visibility.eq.public`);
+  } else {
+    query = query.or(`owner_id.is.null,visibility.eq.public`);
+  }
+
+  const { data, error } = await query;
 
   if (error) {
     console.warn('Error fetching tournaments:', error.message);
