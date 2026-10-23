@@ -7,9 +7,13 @@ export async function assertTournamentAdmin(tournamentId: string) {
     data: { user },
   } = await supabase.auth.getUser();
 
+  if (!user) {
+    throw new Error('Unauthorized: Authentication required.');
+  }
+
   const { data: tournament, error } = await supabase
     .from('tournaments')
-    .select('owner_id')
+    .select('id, owner_id, slug, name')
     .eq('id', tournamentId)
     .single();
 
@@ -17,26 +21,51 @@ export async function assertTournamentAdmin(tournamentId: string) {
     throw new Error('Tournament not found');
   }
 
-  // If tournament has an assigned owner, enforce auth
-  if (tournament.owner_id) {
-    if (!user) {
-      throw new Error('Unauthorized: Please sign in to manage this tournament.');
-    }
+  // Strict User Isolation Check
+  const isOwner = tournament.owner_id === user.id;
 
-    if (user.id !== tournament.owner_id) {
-      // Check co-arbiter table
-      const { data: member } = await supabase
-        .from('tournament_members')
-        .select('role')
-        .eq('tournament_id', tournamentId)
-        .eq('user_id', user.id)
-        .single();
+  if (!isOwner) {
+    // Check if user is an invited co-organizer / arbiter
+    const { data: member } = await supabase
+      .from('tournament_members')
+      .select('role')
+      .eq('tournament_id', tournamentId)
+      .eq('user_id', user.id)
+      .single();
 
-      if (!member) {
-        throw new Error('Unauthorized: You do not have arbiter permissions for this tournament.');
-      }
+    if (!member) {
+      throw new Error('Forbidden: You do not have permission to manage this tournament.');
     }
   }
 
   return { authorized: true, user, tournament };
+}
+
+export async function verifyUserIsTournamentAdmin(slug: string): Promise<boolean> {
+  const supabase = (await createClient()) as any;
+
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) return false;
+
+  const { data: tournament } = await supabase
+    .from('tournaments')
+    .select('id, owner_id')
+    .eq('slug', slug)
+    .single();
+
+  if (!tournament) return false;
+
+  if (tournament.owner_id === user.id) return true;
+
+  const { data: member } = await supabase
+    .from('tournament_members')
+    .select('role')
+    .eq('tournament_id', tournament.id)
+    .eq('user_id', user.id)
+    .single();
+
+  return Boolean(member);
 }

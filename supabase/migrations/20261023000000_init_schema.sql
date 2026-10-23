@@ -1,4 +1,4 @@
--- ChessFlow Core Database Schema & RLS (Recursion-Free)
+-- ChessFlow Database Schema & Strict User Isolation RLS
 create extension if not exists "pgcrypto";
 
 -- Enums
@@ -81,10 +81,10 @@ create table if not exists profiles (
   created_at timestamptz default now()
 );
 
--- Tournaments
+-- Tournaments (Strict Owner Isolation)
 create table if not exists tournaments (
   id uuid primary key default gen_random_uuid(),
-  owner_id uuid references auth.users(id) on delete set null,
+  owner_id uuid not null references auth.users(id) on delete cascade,
   slug text unique not null,
   name text not null,
   description text,
@@ -173,7 +173,7 @@ create index if not exists idx_games_tournament_round on games (tournament_id, r
 create index if not exists idx_games_white on games (white_id);
 create index if not exists idx_games_black on games (black_id);
 
--- Helper function: is_tournament_admin (Security Definer with isolated search_path)
+-- Helper function: is_tournament_admin (Strict check: owner or member)
 create or replace function public.is_tournament_admin(t_id uuid)
 returns boolean
 language sql
@@ -183,7 +183,7 @@ stable
 as $$
   select exists (
     select 1 from public.tournaments
-    where id = t_id and (owner_id = auth.uid() or owner_id is null)
+    where id = t_id and owner_id = auth.uid()
   ) or exists (
     select 1 from public.tournament_members
     where tournament_id = t_id and user_id = auth.uid()
@@ -209,34 +209,32 @@ create policy "Users can update their own profile" on profiles for update using 
 drop policy if exists "Users can insert their own profile" on profiles;
 create policy "Users can insert their own profile" on profiles for insert with check (auth.uid() = id);
 
--- Tournaments Policies (ZERO cross-table subqueries in SELECT to prevent infinite recursion)
+-- Tournaments Policies (Strict Isolation)
 drop policy if exists "Tournaments are viewable by visibility or admin" on tournaments;
 drop policy if exists "Tournaments are viewable by visibility or owner" on tournaments;
 create policy "Tournaments are viewable by visibility or owner" on tournaments for select
   using (
     visibility in ('public', 'unlisted')
     or owner_id = auth.uid()
-    or owner_id is null
   );
 
 drop policy if exists "Anyone can create tournaments" on tournaments;
-create policy "Anyone can create tournaments" on tournaments for insert
-  with check (true);
+drop policy if exists "Authenticated users can create tournaments" on tournaments;
+create policy "Authenticated users can create tournaments" on tournaments for insert
+  with check (auth.uid() = owner_id and auth.uid() is not null);
 
 drop policy if exists "Owners and members can update tournaments" on tournaments;
 create policy "Owners and members can update tournaments" on tournaments for update
   using (
     owner_id = auth.uid()
-    or owner_id is null
     or is_tournament_admin(id)
   );
 
 drop policy if exists "Only owners can delete tournaments" on tournaments;
 create policy "Only owners can delete tournaments" on tournaments for delete
-  using (owner_id = auth.uid() or owner_id is null);
+  using (owner_id = auth.uid());
 
--- Tournament Members Policies (SELECT is public to avoid recursion)
-drop policy if exists "Members are viewable by tournament admins" on tournament_members;
+-- Tournament Members Policies
 drop policy if exists "Members are viewable by everyone" on tournament_members;
 create policy "Members are viewable by everyone" on tournament_members for select
   using (true);
@@ -246,7 +244,7 @@ create policy "Tournament owners can manage members" on tournament_members for a
   using (
     exists (
       select 1 from tournaments
-      where id = tournament_members.tournament_id and (owner_id = auth.uid() or owner_id is null)
+      where id = tournament_members.tournament_id and owner_id = auth.uid()
     )
   );
 

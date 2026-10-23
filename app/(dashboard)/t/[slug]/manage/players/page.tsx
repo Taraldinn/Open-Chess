@@ -1,6 +1,7 @@
 import { Container } from '@mantine/core';
-import { notFound } from 'next/navigation';
+import { notFound, redirect } from 'next/navigation';
 import { getTournamentBySlugAction } from '@/lib/actions/tournaments';
+import { verifyUserIsTournamentAdmin } from '@/lib/actions/authGuards';
 import { TournamentManageHeader } from '@/components/tournament/TournamentManageHeader';
 import { PlayerManagementClient } from './PlayerManagementClient';
 
@@ -10,6 +11,11 @@ interface Props {
 
 export default async function ManagePlayersPage({ params }: Props) {
   const { slug } = await params;
+  const isAuthorized = await verifyUserIsTournamentAdmin(slug);
+  if (!isAuthorized) {
+    redirect(`/t/${slug}?error=unauthorized`);
+  }
+
   const tournament = await getTournamentBySlugAction(slug);
 
   if (!tournament) {

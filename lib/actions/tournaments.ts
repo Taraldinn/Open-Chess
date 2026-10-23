@@ -22,7 +22,11 @@ export async function createTournamentAction(input: CreateTournamentInput) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const ownerId = user?.id || null;
+  if (!user) {
+    throw new Error('Authentication required. Please sign in to create a tournament.');
+  }
+
+  const ownerId = user.id;
   const slug = generateSlug(validated.name);
 
   const { data, error } = await supabase
@@ -64,15 +68,16 @@ export async function getTournamentsAction() {
     data: { user },
   } = await supabase.auth.getUser();
 
-  let query = supabase.from('tournaments').select('*').order('created_at', { ascending: false });
-
-  if (user?.id) {
-    query = query.or(`owner_id.eq.${user.id},owner_id.is.null,visibility.eq.public`);
-  } else {
-    query = query.or(`owner_id.is.null,visibility.eq.public`);
+  if (!user) {
+    return [];
   }
 
-  const { data, error } = await query;
+  // Strictly user-isolated: only tournaments owned by this user
+  const { data, error } = await supabase
+    .from('tournaments')
+    .select('*')
+    .eq('owner_id', user.id)
+    .order('created_at', { ascending: false });
 
   if (error) {
     console.warn('Error fetching tournaments:', error.message);
