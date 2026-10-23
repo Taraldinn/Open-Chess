@@ -251,6 +251,20 @@ export async function generateNextRoundAction(tournamentId: string) {
 
 export async function setGameResultAction(gameId: string, result: GameResult) {
   const supabase = (await createClient()) as any;
+
+  // Retrieve tournament_id for authorization
+  const { data: game, error: fetchErr } = await supabase
+    .from('games')
+    .select('tournament_id')
+    .eq('id', gameId)
+    .single();
+
+  if (fetchErr || !game) {
+    throw new Error('Game not found');
+  }
+
+  await assertTournamentAdmin(game.tournament_id);
+
   const { error } = await supabase
     .from('games')
     .update({
