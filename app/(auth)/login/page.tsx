@@ -22,6 +22,7 @@ import {
 } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
 import { createClient } from '@/lib/supabase/client';
+import { getCanonicalSiteUrl } from '@/lib/utils/url';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 
@@ -40,10 +41,11 @@ function LoginForm() {
 
     setLoading(true);
     const supabase = createClient();
+    const siteUrl = getCanonicalSiteUrl();
     const { error } = await supabase.auth.signInWithOtp({
       email,
       options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`,
+        emailRedirectTo: `${siteUrl}/auth/callback?next=${encodeURIComponent(next)}`,
       },
     });
 
@@ -66,10 +68,11 @@ function LoginForm() {
 
   const handleGoogleSignIn = async () => {
     const supabase = createClient();
+    const siteUrl = getCanonicalSiteUrl();
     await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
-        redirectTo: `${window.location.origin}/auth/callback?next=${encodeURIComponent(next)}`,
+        redirectTo: `${siteUrl}/auth/callback?next=${encodeURIComponent(next)}`,
       },
     });
   };

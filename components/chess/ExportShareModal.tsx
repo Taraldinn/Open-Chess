@@ -21,6 +21,7 @@ import {
 } from '@tabler/icons-react';
 import { QRCodeSVG } from 'qrcode.react';
 import { notifications } from '@mantine/notifications';
+import { getCanonicalSiteUrl } from '@/lib/utils/url';
 
 interface ExportShareModalProps {
   opened: boolean;
@@ -36,10 +37,8 @@ export function ExportShareModal({
   tournamentName,
 }: ExportShareModalProps) {
   const [copied, setCopied] = useState(false);
-  const shareUrl =
-    typeof window !== 'undefined'
-      ? `${window.location.origin}/t/${tournamentSlug}`
-      : `https://openvchess.app/t/${tournamentSlug}`;
+  const siteUrl = getCanonicalSiteUrl();
+  const shareUrl = `${siteUrl}/t/${tournamentSlug}`;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(shareUrl);
