@@ -1,5 +1,7 @@
 import type { GameResult, PlayerStatus, TournamentFormat, TournamentSettings } from '@/types/database';
 
+export type { GameResult, PlayerStatus, TournamentFormat, TournamentSettings };
+
 export interface PlayerInfo {
   id: string;
   name: string;
@@ -70,7 +72,7 @@ export interface ValidationResult {
 export interface FormatEngine {
   id: TournamentFormat;
   validateSettings(settings: TournamentSettings, playerCount: number, totalRounds: number): ValidationResult;
-  suggestedRounds(playerCount: number, settings: TournamentSettings): number;
+  suggestedRounds(playerCount: number, settings?: TournamentSettings): number;
   generateRound(ctx: PairingContext): PairingResult;
   computeStandings(ctx: StandingsContext): StandingRow[];
 }

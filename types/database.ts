@@ -267,5 +267,21 @@ export interface Database {
         };
       };
     };
+    Views: Record<string, never>;
+    Functions: {
+      is_tournament_admin: {
+        Args: { t_id: string };
+        Returns: boolean;
+      };
+    };
+    Enums: {
+      tournament_format: TournamentFormat;
+      tournament_status: TournamentStatus;
+      visibility: TournamentVisibility;
+      game_result: GameResult;
+      player_status: PlayerStatus;
+      round_status: RoundStatus;
+    };
+    CompositeTypes: Record<string, never>;
   };
 }

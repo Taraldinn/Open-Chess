@@ -3,6 +3,7 @@ import '@mantine/notifications/styles.css';
 
 import { ColorSchemeScript, MantineProvider } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
+import { Navbar } from '@/components/navigation/Navbar';
 import { theme } from '../theme';
 
 export const metadata = {
@@ -27,7 +28,8 @@ export default function RootLayout({
       <body>
         <MantineProvider theme={theme} defaultColorScheme="dark">
           <Notifications position="top-right" zIndex={1000} />
-          {children}
+          <Navbar />
+          <main>{children}</main>
         </MantineProvider>
       </body>
     </html>

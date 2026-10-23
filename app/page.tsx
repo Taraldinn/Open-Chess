@@ -40,26 +40,26 @@ export default function HomePage() {
           elimination brackets, mobile-ready result entry, and live public standings.
         </Text>
         <Group mt="md">
-          <Button
-            component={Link}
-            href="/dashboard"
-            size="lg"
-            color="yellow"
-            c="dark.9"
-            fw={700}
-            rightSection={<IconArrowRight size={20} />}
-          >
-            Go to Dashboard
-          </Button>
-          <Button
-            component={Link}
-            href="/t/new"
-            size="lg"
-            variant="default"
-            leftSection={<IconPlayerPlay size={20} />}
-          >
-            Create Tournament
-          </Button>
+          <Link href="/dashboard" style={{ textDecoration: 'none' }}>
+            <Button
+              size="lg"
+              color="yellow"
+              c="dark.9"
+              fw={700}
+              rightSection={<IconArrowRight size={20} />}
+            >
+              Go to Dashboard
+            </Button>
+          </Link>
+          <Link href="/t/new" style={{ textDecoration: 'none' }}>
+            <Button
+              size="lg"
+              variant="default"
+              leftSection={<IconPlayerPlay size={20} />}
+            >
+              Create Tournament
+            </Button>
+          </Link>
         </Group>
       </Stack>
 
