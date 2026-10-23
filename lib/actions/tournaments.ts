@@ -22,8 +22,7 @@ export async function createTournamentAction(input: CreateTournamentInput) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  // For testing/mocking when no authenticated session exists, fallback to an anonymous organizer ID
-  const ownerId = user?.id || '00000000-0000-0000-0000-000000000001';
+  const ownerId = user?.id || null;
   const slug = generateSlug(validated.name);
 
   const { data, error } = await supabase
@@ -47,9 +46,13 @@ export async function createTournamentAction(input: CreateTournamentInput) {
     .single();
 
   if (error) {
-    // If Supabase table isn't created yet in remote, we return the slug for seamless client flow
     console.error('Supabase create tournament error:', error.message);
-    return { success: true, slug };
+    if (error.message.includes('schema cache') || error.message.includes('does not exist')) {
+      throw new Error(
+        'Database tables not initialized yet! Please execute the SQL migration script in your Supabase SQL Editor.'
+      );
+    }
+    throw new Error(error.message);
   }
 
   return { success: true, slug: data?.slug || slug };

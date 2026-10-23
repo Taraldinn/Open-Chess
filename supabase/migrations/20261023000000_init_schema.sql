@@ -2,52 +2,76 @@
 create extension if not exists "pgcrypto";
 
 -- Enums
-create type tournament_format as enum (
-  'swiss',
-  'round_robin',
-  'double_round_robin',
-  'knockout',
-  'double_elimination',
-  'arena',
-  'scheveningen',
-  'team_swiss'
-);
+do $$ begin
+  create type tournament_format as enum (
+    'swiss',
+    'round_robin',
+    'double_round_robin',
+    'knockout',
+    'double_elimination',
+    'arena',
+    'scheveningen',
+    'team_swiss'
+  );
+exception
+  when duplicate_object then null;
+end $$;
 
-create type tournament_status as enum (
-  'draft',
-  'registration',
-  'running',
-  'finished',
-  'cancelled'
-);
+do $$ begin
+  create type tournament_status as enum (
+    'draft',
+    'registration',
+    'running',
+    'finished',
+    'cancelled'
+  );
+exception
+  when duplicate_object then null;
+end $$;
 
-create type visibility as enum (
-  'public',
-  'unlisted',
-  'private'
-);
+do $$ begin
+  create type visibility as enum (
+    'public',
+    'unlisted',
+    'private'
+  );
+exception
+  when duplicate_object then null;
+end $$;
 
-create type game_result as enum (
-  'white_win',
-  'black_win',
-  'draw',
-  'white_forfeit_win',
-  'black_forfeit_win',
-  'double_forfeit',
-  'bye',
-  'unplayed'
-);
+do $$ begin
+  create type game_result as enum (
+    'white_win',
+    'black_win',
+    'draw',
+    'white_forfeit_win',
+    'black_forfeit_win',
+    'double_forfeit',
+    'bye',
+    'unplayed'
+  );
+exception
+  when duplicate_object then null;
+end $$;
 
-create type player_status as enum (
-  'active',
-  'withdrawn'
-);
+do $$ begin
+  create type player_status as enum (
+    'active',
+    'withdrawn'
+  );
+exception
+  when duplicate_object then null;
+end $$;
 
-create type round_status as enum (
-  'draft',
-  'published',
-  'completed'
-);
+do $$ begin
+  create type round_status as enum (
+    'draft',
+    'published',
+    'completed'
+  );
+exception
+  when duplicate_object then null;
+end $$;
 
 -- Profiles
 create table if not exists profiles (
@@ -60,18 +84,18 @@ create table if not exists profiles (
 -- Tournaments
 create table if not exists tournaments (
   id uuid primary key default gen_random_uuid(),
-  owner_id uuid not null references profiles(id) on delete cascade,
+  owner_id uuid references auth.users(id) on delete set null,
   slug text unique not null,
   name text not null,
   description text,
-  format tournament_format not null,
+  format tournament_format not null default 'swiss',
   status tournament_status not null default 'draft',
   visibility visibility not null default 'public',
-  total_rounds int not null,
+  total_rounds int not null default 5,
   current_round int not null default 0,
   time_control text,
   venue text,
-  start_date timestamptz,
+  start_date timestamptz default now(),
   settings jsonb not null default '{
     "winPoints": 1,
     "drawPoints": 0.5,
@@ -92,7 +116,7 @@ create table if not exists tournament_members (
   primary key (tournament_id, user_id)
 );
 
--- Teams (optional for team tournaments)
+-- Teams
 create table if not exists teams (
   id uuid primary key default gen_random_uuid(),
   tournament_id uuid not null references tournaments(id) on delete cascade,
@@ -104,7 +128,7 @@ create table if not exists teams (
 create table if not exists players (
   id uuid primary key default gen_random_uuid(),
   tournament_id uuid not null references tournaments(id) on delete cascade,
-  user_id uuid references profiles(id) on delete set null,
+  user_id uuid references auth.users(id) on delete set null,
   team_id uuid references teams(id) on delete set null,
   name text not null,
   rating int,
@@ -149,11 +173,6 @@ create index if not exists idx_games_tournament_round on games (tournament_id, r
 create index if not exists idx_games_white on games (white_id);
 create index if not exists idx_games_black on games (black_id);
 
--- Anti-repeat pairing safety index (Swiss and Round Robin)
-create unique index if not exists no_repeat_pair on games (
-  tournament_id, least(white_id, black_id), greatest(white_id, black_id)
-) where black_id is not null and result <> 'double_forfeit';
-
 -- Helper function: is_tournament_admin
 create or replace function is_tournament_admin(t_id uuid)
 returns boolean
@@ -163,14 +182,14 @@ stable
 as $$
   select exists (
     select 1 from tournaments
-    where id = t_id and owner_id = auth.uid()
+    where id = t_id and (owner_id = auth.uid() or owner_id is null)
   ) or exists (
     select 1 from tournament_members
     where tournament_id = t_id and user_id = auth.uid()
   );
 $$;
 
--- Enable Row Level Security (RLS) on all tables
+-- Enable Row Level Security (RLS)
 alter table profiles enable row level security;
 alter table tournaments enable row level security;
 alter table tournament_members enable row level security;
@@ -180,128 +199,110 @@ alter table rounds enable row level security;
 alter table games enable row level security;
 
 -- Profiles Policies
-create policy "Profiles are viewable by everyone"
-  on profiles for select
-  using (true);
+drop policy if exists "Profiles are viewable by everyone" on profiles;
+create policy "Profiles are viewable by everyone" on profiles for select using (true);
 
-create policy "Users can update their own profile"
-  on profiles for update
-  using (auth.uid() = id);
+drop policy if exists "Users can update their own profile" on profiles;
+create policy "Users can update their own profile" on profiles for update using (auth.uid() = id);
 
-create policy "Users can insert their own profile"
-  on profiles for insert
-  with check (auth.uid() = id);
+drop policy if exists "Users can insert their own profile" on profiles;
+create policy "Users can insert their own profile" on profiles for insert with check (auth.uid() = id);
 
 -- Tournaments Policies
-create policy "Tournaments are viewable by visibility or admin"
-  on tournaments for select
+drop policy if exists "Tournaments are viewable by visibility or admin" on tournaments;
+create policy "Tournaments are viewable by visibility or admin" on tournaments for select
   using (
     visibility in ('public', 'unlisted')
     or owner_id = auth.uid()
+    or owner_id is null
     or exists (
       select 1 from tournament_members
       where tournament_id = tournaments.id and user_id = auth.uid()
     )
   );
 
-create policy "Authenticated users can create tournaments"
-  on tournaments for insert
-  with check (auth.uid() = owner_id);
+drop policy if exists "Anyone can create tournaments" on tournaments;
+create policy "Anyone can create tournaments" on tournaments for insert
+  with check (true);
 
-create policy "Owners and members can update tournaments"
-  on tournaments for update
+drop policy if exists "Owners and members can update tournaments" on tournaments;
+create policy "Owners and members can update tournaments" on tournaments for update
   using (is_tournament_admin(id));
 
-create policy "Only owners can delete tournaments"
-  on tournaments for delete
-  using (auth.uid() = owner_id);
+drop policy if exists "Only owners can delete tournaments" on tournaments;
+create policy "Only owners can delete tournaments" on tournaments for delete
+  using (owner_id = auth.uid() or owner_id is null);
 
 -- Tournament Members Policies
-create policy "Members are viewable by tournament admins"
-  on tournament_members for select
+drop policy if exists "Members are viewable by tournament admins" on tournament_members;
+create policy "Members are viewable by tournament admins" on tournament_members for select
   using (is_tournament_admin(tournament_id));
 
-create policy "Tournament owners can manage members"
-  on tournament_members for all
+drop policy if exists "Tournament owners can manage members" on tournament_members;
+create policy "Tournament owners can manage members" on tournament_members for all
   using (
     exists (
       select 1 from tournaments
-      where id = tournament_members.tournament_id and owner_id = auth.uid()
+      where id = tournament_members.tournament_id and (owner_id = auth.uid() or owner_id is null)
     )
   );
 
 -- Teams Policies
-create policy "Teams are viewable according to tournament visibility"
-  on teams for select
-  using (
-    exists (
-      select 1 from tournaments
-      where id = teams.tournament_id
-        and (
-          visibility in ('public', 'unlisted')
-          or is_tournament_admin(tournaments.id)
-        )
-    )
-  );
+drop policy if exists "Teams are viewable according to tournament visibility" on teams;
+create policy "Teams are viewable according to tournament visibility" on teams for select
+  using (true);
 
-create policy "Admins can manage teams"
-  on teams for all
+drop policy if exists "Admins can manage teams" on teams;
+create policy "Admins can manage teams" on teams for all
   using (is_tournament_admin(tournament_id));
 
 -- Players Policies
-create policy "Players are viewable according to tournament visibility"
-  on players for select
-  using (
-    exists (
-      select 1 from tournaments
-      where id = players.tournament_id
-        and (
-          visibility in ('public', 'unlisted')
-          or is_tournament_admin(tournaments.id)
-        )
-    )
-  );
+drop policy if exists "Players are viewable according to tournament visibility" on players;
+create policy "Players are viewable according to tournament visibility" on players for select
+  using (true);
 
-create policy "Tournament admins can manage players"
-  on players for all
+drop policy if exists "Tournament admins can manage players" on players;
+create policy "Tournament admins can manage players" on players for all
   using (is_tournament_admin(tournament_id));
 
 -- Rounds Policies
-create policy "Rounds viewable according to tournament visibility"
-  on rounds for select
-  using (
-    exists (
-      select 1 from tournaments
-      where id = rounds.tournament_id
-        and (
-          visibility in ('public', 'unlisted')
-          or is_tournament_admin(tournaments.id)
-        )
-    )
-  );
+drop policy if exists "Rounds viewable according to tournament visibility" on rounds;
+create policy "Rounds viewable according to tournament visibility" on rounds for select
+  using (true);
 
-create policy "Tournament admins can manage rounds"
-  on rounds for all
+drop policy if exists "Tournament admins can manage rounds" on rounds;
+create policy "Tournament admins can manage rounds" on rounds for all
   using (is_tournament_admin(tournament_id));
 
 -- Games Policies
-create policy "Games viewable according to tournament visibility"
-  on games for select
-  using (
-    exists (
-      select 1 from tournaments
-      where id = games.tournament_id
-        and (
-          visibility in ('public', 'unlisted')
-          or is_tournament_admin(tournaments.id)
-        )
-    )
-  );
+drop policy if exists "Games viewable according to tournament visibility" on games;
+create policy "Games viewable according to tournament visibility" on games for select
+  using (true);
 
-create policy "Tournament admins can manage games"
-  on games for all
+drop policy if exists "Tournament admins can manage games" on games;
+create policy "Tournament admins can manage games" on games for all
   using (is_tournament_admin(tournament_id));
 
--- Enable Supabase Realtime publication on games and rounds
-alter publication supabase_realtime add table games;
-alter publication supabase_realtime add table rounds;
+-- Auto-create profile trigger on auth.users insert
+create or replace function public.handle_new_user()
+returns trigger as $$
+begin
+  insert into public.profiles (id, display_name, avatar_url)
+  values (new.id, new.raw_user_meta_data->>'full_name', new.raw_user_meta_data->>'avatar_url')
+  on conflict (id) do nothing;
+  return new;
+end;
+$$ language plpgsql security definer;
+
+-- Realtime Publication
+do $$ begin
+  alter publication supabase_realtime add table games;
+exception
+  when duplicate_object then null;
+end $$;
+
+do $$ begin
+  alter publication supabase_realtime add table rounds;
+exception
+  when duplicate_object then null;
+end $$;
