@@ -11,12 +11,14 @@ import {
   Stack,
   Divider,
   Alert,
+  Box,
 } from '@mantine/core';
 import {
   IconMail,
   IconBrandGoogle,
   IconArrowLeft,
   IconAlertCircle,
+  IconTrophy,
 } from '@tabler/icons-react';
 import { notifications } from '@mantine/notifications';
 import { createClient } from '@/lib/supabase/client';
@@ -73,7 +75,10 @@ function LoginForm() {
   };
 
   return (
-    <Paper withBorder shadow="md" p={30} radius="md">
+    <Paper withBorder shadow="md" p={32} radius="xl" className="playful-card-glow">
+      <Box className="playful-float" ta="center" mb="xs">
+        <IconTrophy size={42} color="#fab005" />
+      </Box>
       <Title order={2} ta="center" fw={900} mb="xs">
         Welcome to ChessFlow
       </Title>

@@ -1,0 +1,85 @@
+/* Playful & Jolly Arcade Theme Enhancements */
+
+:root {
+  --font-playful-gradient: linear-gradient(135deg, #ffd43b 0%, #ff6b6b 50%, #cc5de8 100%);
+  --playful-glow: 0 8px 24px -4px rgba(251, 176, 5, 0.25);
+  --playful-glow-coral: 0 8px 24px -4px rgba(255, 107, 107, 0.25);
+}
+
+/* Smooth color-scheme transitions */
+html, body {
+  transition: background-color 0.25s ease, color 0.25s ease;
+}
+
+/* Playful bouncy button micro-interactions */
+.mantine-Button-root {
+  transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.15s ease, filter 0.15s ease !important;
+}
+
+.mantine-Button-root:not([data-disabled]):hover {
+  transform: translateY(-2px) scale(1.02);
+  filter: brightness(1.05);
+}
+
+.mantine-Button-root:not([data-disabled]):active {
+  transform: translateY(1px) scale(0.98);
+}
+
+/* Playful ActionIcon bouncy micro-interactions */
+.mantine-ActionIcon-root {
+  transition: transform 0.15s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.15s ease !important;
+}
+
+.mantine-ActionIcon-root:not([data-disabled]):hover {
+  transform: translateY(-2px) scale(1.08);
+}
+
+.mantine-ActionIcon-root:not([data-disabled]):active {
+  transform: translateY(1px) scale(0.95);
+}
+
+/* Cheerful interactive card hover lift */
+.mantine-Card-root {
+  transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease, border-color 0.2s ease;
+}
+
+/* Bubbly badge styling */
+.mantine-Badge-root {
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  font-weight: 800;
+  transition: transform 0.15s ease;
+}
+
+/* Joyful gradient text helper */
+.playful-gradient-text {
+  background: var(--font-playful-gradient);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  display: inline-block;
+}
+
+/* Arcade floating celebration animation */
+@keyframes playful-float {
+  0% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-6px) rotate(2deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
+}
+
+.playful-float {
+  display: inline-block;
+  animation: playful-float 3s ease-in-out infinite;
+}
+
+/* Subtle arcade glow card */
+.playful-card-glow {
+  box-shadow: var(--playful-glow);
+}
+
+/* Warm input focus ring */
+.mantine-TextInput-input:focus,
+.mantine-Select-input:focus,
+.mantine-NumberInput-input:focus {
+  border-color: #fab005 !important;
+  box-shadow: 0 0 0 3px rgba(250, 176, 5, 0.2) !important;
+}

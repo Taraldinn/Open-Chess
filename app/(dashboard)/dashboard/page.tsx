@@ -10,6 +10,7 @@ import {
   Stack,
   ActionIcon,
   Paper,
+  Box,
 } from '@mantine/core';
 import {
   IconPlus,
@@ -18,6 +19,7 @@ import {
   IconPlayerPlay,
   IconExternalLink,
   IconCalendar,
+  IconSparkles,
 } from '@tabler/icons-react';
 import Link from 'next/link';
 import { getTournamentsAction } from '@/lib/actions/tournaments';
@@ -30,13 +32,29 @@ export default async function DashboardPage() {
   const getStatusBadge = (status: string) => {
     switch (status) {
       case 'running':
-        return <Badge color="green" variant="light">Running (Live)</Badge>;
+        return (
+          <Badge color="green" variant="filled" size="md">
+            ⚡ Live
+          </Badge>
+        );
       case 'registration':
-        return <Badge color="blue" variant="light">Registration</Badge>;
+        return (
+          <Badge color="arcadeViolet" variant="light" size="md">
+            🎟️ Registration
+          </Badge>
+        );
       case 'finished':
-        return <Badge color="gray" variant="light">Finished</Badge>;
+        return (
+          <Badge color="gray" variant="light" size="md">
+            🏁 Finished
+          </Badge>
+        );
       default:
-        return <Badge color="yellow" variant="light">Draft</Badge>;
+        return (
+          <Badge color="yellow" variant="light" size="md">
+            ✏️ Draft
+          </Badge>
+        );
     }
   };
 
@@ -44,17 +62,22 @@ export default async function DashboardPage() {
     <Container size="lg" py="xl">
       <Group justify="space-between" mb="xl">
         <div>
-          <Title order={1} size="2.2rem" fw={900}>
+          <Title order={1} size="2.4rem" fw={900} style={{ letterSpacing: '-0.02em' }}>
             Tournament Dashboard
           </Title>
-          <Text c="dimmed">Manage your chess tournaments, pairings, and results</Text>
+          <Text c="dimmed" size="md">
+            Manage your chess tournaments, pairings, and live battle results
+          </Text>
         </div>
         <Link href="/t/new" style={{ textDecoration: 'none' }}>
           <Button
             color="yellow"
             c="dark.9"
-            fw={700}
-            leftSection={<IconPlus size={18} />}
+            fw={800}
+            size="md"
+            radius="xl"
+            leftSection={<IconPlus size={18} stroke={2.5} />}
+            className="playful-card-glow"
           >
             New Tournament
           </Button>
@@ -62,20 +85,25 @@ export default async function DashboardPage() {
       </Group>
 
       {tournaments.length === 0 ? (
-        <Paper p="xl" withBorder radius="md" ta="center" my={50}>
-          <IconTrophy size={48} color="gold" style={{ margin: '0 auto 16px' }} />
-          <Title order={3} mb="xs">
-            No Tournaments Yet
+        <Paper p="2.5rem" withBorder radius="xl" ta="center" my={50} className="playful-card-glow">
+          <Box className="playful-float" mb="md">
+            <IconTrophy size={56} color="#fab005" />
+          </Box>
+          <Title order={3} mb="xs" fw={800}>
+            No Tournaments Yet!
           </Title>
-          <Text c="dimmed" maw={500} mx="auto" mb="lg">
-            Create your first Swiss, Round Robin, or Knockout tournament in less than 3 minutes.
+          <Text c="dimmed" maw={500} mx="auto" mb="xl" size="md">
+            Ready to host your next chess showdown? Create your first Swiss, Round Robin, or Knockout event in under 3 minutes.
           </Text>
           <Link href="/t/new" style={{ textDecoration: 'none' }}>
             <Button
               color="yellow"
               c="dark.9"
-              fw={700}
-              leftSection={<IconPlus size={18} />}
+              fw={800}
+              size="lg"
+              radius="xl"
+              leftSection={<IconPlus size={20} stroke={2.5} />}
+              className="playful-card-glow"
             >
               Create Tournament
             </Button>
@@ -84,32 +112,32 @@ export default async function DashboardPage() {
       ) : (
         <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="lg">
           {tournaments.map((t) => (
-            <Card key={t.id} shadow="sm" padding="lg" radius="md" withBorder>
+            <Card key={t.id} shadow="sm" padding="lg" radius="lg" withBorder>
               <Group justify="space-between" mb="xs">
                 {getStatusBadge(t.status)}
-                <Badge variant="outline" tt="uppercase" size="sm">
+                <Badge variant="outline" color="yellow" size="sm">
                   {t.format.replace(/_/g, ' ')}
                 </Badge>
               </Group>
 
-              <Title order={3} size="1.25rem" mb="xs">
+              <Title order={3} size="1.3rem" mb="xs" fw={800}>
                 {t.name}
               </Title>
 
               <Text size="sm" c="dimmed" lineClamp={2} mb="md">
-                {t.description || 'No description'}
+                {t.description || 'No description provided'}
               </Text>
 
               <Stack gap="xs" mb="lg">
                 <Group gap="xs">
-                  <IconCalendar size={16} />
-                  <Text size="xs" c="dimmed">
+                  <IconCalendar size={16} color="#fab005" />
+                  <Text size="xs" c="dimmed" fw={500}>
                     Rounds: {t.current_round} / {t.total_rounds}
                   </Text>
                 </Group>
                 <Group gap="xs">
-                  <IconTrophy size={16} />
-                  <Text size="xs" c="dimmed">
+                  <IconTrophy size={16} color="#ff4d6d" />
+                  <Text size="xs" c="dimmed" fw={500}>
                     {t.time_control || 'Standard Time Control'}
                   </Text>
                 </Group>
@@ -120,8 +148,10 @@ export default async function DashboardPage() {
                   <Button
                     variant="light"
                     color="yellow"
-                    size="xs"
+                    size="sm"
+                    radius="xl"
                     fullWidth
+                    fw={700}
                   >
                     Manage
                   </Button>
@@ -129,7 +159,9 @@ export default async function DashboardPage() {
                 <Link href={`/t/${t.slug}`} style={{ textDecoration: 'none' }}>
                   <Button
                     variant="default"
-                    size="xs"
+                    size="sm"
+                    radius="xl"
+                    fw={600}
                     rightSection={<IconExternalLink size={14} />}
                   >
                     Live Page

@@ -8,6 +8,7 @@ import {
   useMantineColorScheme,
   useComputedColorScheme,
   Container,
+  Box,
 } from '@mantine/core';
 import {
   IconSun,
@@ -34,22 +35,25 @@ export function Navbar() {
         position: 'sticky',
         top: 0,
         zIndex: 100,
+        backdropFilter: 'blur(8px)',
       }}
     >
-      <Container size="lg" h={60}>
+      <Container size="lg" h={64}>
         <Group justify="space-between" h="100%">
           <Link href="/" style={{ textDecoration: 'none' }}>
-            <Group gap="xs">
-              <IconTrophy size={26} color="#ffd54f" />
-              <Text fw={900} size="xl" c="var(--mantine-color-text)">
-                Chess<Text component="span" c="yellow.5" inherit>Flow</Text>
+            <Group gap="xs" align="center">
+              <Box className="playful-float">
+                <IconTrophy size={28} color="#fab005" />
+              </Box>
+              <Text fw={900} size="xl" c="var(--mantine-color-text)" style={{ letterSpacing: '-0.02em' }}>
+                Chess<Text component="span" className="playful-gradient-text" inherit>Flow</Text>
               </Text>
             </Group>
           </Link>
 
           <Group gap="sm">
             <Link href="/dashboard" style={{ textDecoration: 'none' }}>
-              <Button variant="subtle" size="sm">
+              <Button variant="subtle" size="sm" radius="xl">
                 Dashboard
               </Button>
             </Link>
@@ -58,8 +62,9 @@ export function Navbar() {
                 color="yellow"
                 c="dark.9"
                 size="sm"
-                fw={700}
-                leftSection={<IconPlus size={16} />}
+                radius="xl"
+                fw={800}
+                leftSection={<IconPlus size={16} stroke={2.5} />}
               >
                 New Tournament
               </Button>
@@ -69,12 +74,13 @@ export function Navbar() {
               onClick={toggleColorScheme}
               variant="default"
               size="lg"
+              radius="xl"
               aria-label="Toggle color scheme"
             >
               {computedColorScheme === 'dark' ? (
-                <IconSun size={18} color="gold" />
+                <IconSun size={20} color="#ffd43b" />
               ) : (
-                <IconMoon size={18} />
+                <IconMoon size={20} color="#7950f2" />
               )}
             </ActionIcon>
           </Group>

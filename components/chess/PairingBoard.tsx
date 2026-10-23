@@ -37,16 +37,16 @@ export function PairingBoard({ game, disabled, onSetResult }: PairingBoardProps)
       withBorder
       shadow="xs"
       padding="md"
-      radius="md"
+      radius="lg"
       bg={isFinished ? 'var(--mantine-color-dark-7)' : undefined}
     >
       <Group justify="space-between" align="center" wrap="wrap" gap="md">
         {/* Board Number Badge */}
         <Badge
           size="lg"
-          variant="filled"
-          color={isFinished ? 'green' : 'gray'}
-          style={{ minWidth: 70 }}
+          variant={isFinished ? 'light' : 'filled'}
+          color={isFinished ? 'mintJoy' : 'yellow'}
+          style={{ minWidth: 84 }}
         >
           Board {game.board}
         </Badge>
@@ -57,7 +57,7 @@ export function PairingBoard({ game, disabled, onSetResult }: PairingBoardProps)
           <Box style={{ flex: 1, textAlign: 'right' }}>
             <Group gap="xs" justify="flex-end">
               <div>
-                <Text fw={600} size="sm">
+                <Text fw={700} size="sm">
                   {game.whitePlayer?.name || 'Unknown'}
                 </Text>
                 {game.whitePlayer?.rating && (
@@ -72,14 +72,14 @@ export function PairingBoard({ game, disabled, onSetResult }: PairingBoardProps)
             </Group>
           </Box>
 
-          <Text size="xs" fw={700} c="dimmed">
+          <Badge size="xs" variant="light" color="coral">
             VS
-          </Text>
+          </Badge>
 
           {/* Black Player */}
           <Box style={{ flex: 1 }}>
             {isBye ? (
-              <Badge color="blue" variant="outline">
+              <Badge color="arcadeViolet" variant="light">
                 BYE
               </Badge>
             ) : (
@@ -88,7 +88,7 @@ export function PairingBoard({ game, disabled, onSetResult }: PairingBoardProps)
                   ⚫
                 </Text>
                 <div>
-                  <Text fw={600} size="sm">
+                  <Text fw={700} size="sm">
                     {game.blackPlayer?.name || 'Unknown'}
                   </Text>
                   {game.blackPlayer?.rating && (
