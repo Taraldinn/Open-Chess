@@ -38,6 +38,7 @@ interface Props {
   allGames: PastGame[];
   publicRounds: PublicRoundItem[];
   standings: StandingRow[];
+  isTournamentAdmin: boolean;
 }
 
 export function PublicPageClient({
@@ -46,6 +47,7 @@ export function PublicPageClient({
   allGames,
   publicRounds,
   standings,
+  isTournamentAdmin,
 }: Props) {
   const [activeTab, setActiveTab] = useState<string>('pairings');
   const [shareModalOpened, setShareModalOpened] = useState(false);
@@ -111,14 +113,16 @@ export function PublicPageClient({
             >
               Share & QR
             </Button>
-            <Link
-              href={`/t/${tournament.slug}/manage/rounds`}
-              style={{ textDecoration: 'none' }}
-            >
-              <Button variant="default" size="sm">
-                Arbiter View
-              </Button>
-            </Link>
+            {isTournamentAdmin && (
+              <Link
+                href={`/t/${tournament.slug}/manage/rounds`}
+                style={{ textDecoration: 'none' }}
+              >
+                <Button variant="default" size="sm">
+                  Arbiter View
+                </Button>
+              </Link>
+            )}
           </Group>
         </Group>
       </Stack>

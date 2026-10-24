@@ -23,6 +23,7 @@ import {
 } from '@tabler/icons-react';
 import { notFound } from 'next/navigation';
 import { getTournamentBySlugAction } from '@/lib/actions/tournaments';
+import { verifyUserIsTournamentAdmin } from '@/lib/actions/authGuards';
 import { computeStandingsEngine } from '@/lib/tiebreaks/engine';
 import { PublicPairings, PublicRoundItem } from '@/components/chess/PublicPairings';
 import { StandingsTable } from '@/components/chess/StandingsTable';
@@ -37,6 +38,7 @@ interface Props {
 
 export default async function PublicTournamentPage({ params }: Props) {
   const { slug } = await params;
+  const isTournamentAdmin = await verifyUserIsTournamentAdmin(slug);
   const tournament = await getTournamentBySlugAction(slug);
 
   if (!tournament) {
@@ -102,6 +104,7 @@ export default async function PublicTournamentPage({ params }: Props) {
       allGames={allGames}
       publicRounds={publicRounds}
       standings={standings}
+      isTournamentAdmin={isTournamentAdmin}
     />
   );
 }
