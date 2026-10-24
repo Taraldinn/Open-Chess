@@ -53,12 +53,19 @@ export function Navbar() {
 
           <Group gap="sm">
             <Link href="/dashboard" style={{ textDecoration: 'none' }}>
-              <Button variant="subtle" size="sm" radius="xl" className="subtle-nav-btn">
+              <Button
+                visibleFrom="sm"
+                variant="subtle"
+                size="sm"
+                radius="xl"
+                className="subtle-nav-btn"
+              >
                 Dashboard
               </Button>
             </Link>
             <Link href="/t/new" style={{ textDecoration: 'none' }}>
               <Button
+                visibleFrom="sm"
                 color="yellow"
                 c="dark.9"
                 size="sm"
@@ -68,6 +75,30 @@ export function Navbar() {
               >
                 New Tournament
               </Button>
+            </Link>
+            <Link href="/dashboard" style={{ textDecoration: 'none' }}>
+              <ActionIcon
+                hiddenFrom="sm"
+                variant="default"
+                size="lg"
+                radius="xl"
+                aria-label="Dashboard"
+              >
+                <IconTrophy size={18} />
+              </ActionIcon>
+            </Link>
+            <Link href="/t/new" style={{ textDecoration: 'none' }}>
+              <ActionIcon
+                hiddenFrom="sm"
+                variant="filled"
+                color="yellow"
+                c="dark.9"
+                size="lg"
+                radius="xl"
+                aria-label="New tournament"
+              >
+                <IconPlus size={18} />
+              </ActionIcon>
             </Link>
             <UserMenu />
             <ActionIcon

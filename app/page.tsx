@@ -40,47 +40,54 @@ export default function HomePage() {
           ✨ Playful, Fast & Fair Chess Manager
         </Badge>
 
-        <Title order={1} size="3.5rem" fw={900} style={{ letterSpacing: '-0.03em', lineHeight: 1.15 }}>
+        <Title
+          order={1}
+          size={{ base: '2.1rem', sm: '3.5rem' }}
+          fw={900}
+          style={{ letterSpacing: '-0.03em', lineHeight: 1.15 }}
+        >
           Run Joyful Chess Tournaments in{' '}
           <Text component="span" className="playful-gradient-text" inherit>
             Minutes
           </Text>
         </Title>
 
-        <Text c="dimmed" size="xl" maw={660} style={{ lineHeight: 1.6 }}>
+        <Text c="dimmed" size={{ base: 'md', sm: 'xl' }} maw={660} style={{ lineHeight: 1.6 }}>
           Swiss pairings with perfect Edmonds-Blossom matching, Round Robin tables,
           instant brackets, mobile-ready live score entry, and cheerful public standings.
         </Text>
 
         {/* Playful Floating Chess Badges */}
-        <Group gap="xs" my="xs">
+        <Group gap="xs" my="xs" justify="center">
           <Badge size="lg" variant="dot" color="yellow">♟️ Swiss</Badge>
           <Badge size="lg" variant="dot" color="coral">♞ Round Robin</Badge>
           <Badge size="lg" variant="dot" color="arcadeViolet">♛ Knockout</Badge>
           <Badge size="lg" variant="dot" color="mintJoy">⚡ Live Sync</Badge>
         </Group>
 
-        <Group mt="md" gap="md">
+        <Group mt="md" gap="md" justify="center" w="100%" maw={560}>
           <Link href="/dashboard" style={{ textDecoration: 'none' }}>
             <Button
-              size="xl"
+              size={{ base: 'md', sm: 'xl' }}
               color="yellow"
               c="dark.9"
               fw={800}
               radius="xl"
               rightSection={<IconArrowRight size={22} />}
               className="playful-card-glow"
+              fullWidth
             >
               Go to Dashboard
             </Button>
           </Link>
           <Link href="/t/new" style={{ textDecoration: 'none' }}>
             <Button
-              size="xl"
+              size={{ base: 'md', sm: 'xl' }}
               variant="default"
               radius="xl"
               fw={700}
               leftSection={<IconPlayerPlay size={22} color="#fab005" />}
+              fullWidth
             >
               Create Tournament
             </Button>
