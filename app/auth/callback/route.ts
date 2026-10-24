@@ -4,7 +4,11 @@ import { createClient } from '@/lib/supabase/server';
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get('code');
-  const next = searchParams.get('next') ?? '/dashboard';
+  const requestedNext = searchParams.get('next');
+  const next =
+    requestedNext && requestedNext.startsWith('/') && !requestedNext.startsWith('//')
+      ? requestedNext
+      : '/dashboard';
 
   if (code) {
     const supabase = await createClient();
@@ -22,6 +26,13 @@ export async function GET(request: Request) {
       }
     }
     console.error('Auth code exchange error:', error.message);
+
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (user) {
+      return NextResponse.redirect(`${origin}${next}`);
+    }
   }
 
   // Redirect to login with error code if code is missing or exchange failed
