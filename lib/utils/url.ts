@@ -6,13 +6,19 @@ export function getCanonicalSiteUrl(): string {
   // If running in browser:
   if (typeof window !== 'undefined') {
     const origin = window.location.origin;
+    const hostname = window.location.hostname;
 
     // During local development, always stick to localhost
-    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
       return origin;
     }
 
-    // If configured with custom production domain in env, prefer it over vercel.app
+    // If user is already on a custom domain, keep it to avoid cross-domain auth redirects.
+    if (!hostname.endsWith('.vercel.app')) {
+      return origin;
+    }
+
+    // On vercel.app hosts (preview/internal), optionally prefer configured production domain.
     if (
       process.env.NEXT_PUBLIC_SITE_URL &&
       !process.env.NEXT_PUBLIC_SITE_URL.includes('localhost')
