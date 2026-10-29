@@ -1,8 +1,18 @@
 'use client';
 
-import { Group, Button, Menu, ActionIcon, Badge } from '@mantine/core';
-import { IconDotsVertical, IconCheck } from '@tabler/icons-react';
+import { MoreVerticalIcon } from 'lucide-react';
 import type { GameResult } from '@/types/database';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 interface ResultButtonsProps {
   currentResult: GameResult;
@@ -11,18 +21,9 @@ interface ResultButtonsProps {
   onSetResult: (result: GameResult) => void;
 }
 
-export function ResultButtons({
-  currentResult,
-  isBye,
-  disabled,
-  onSetResult,
-}: ResultButtonsProps) {
+export function ResultButtons({ currentResult, isBye, disabled, onSetResult }: ResultButtonsProps) {
   if (isBye) {
-    return (
-      <Badge color="arcadeViolet" size="sm" variant="light">
-        1 - 0 (BYE)
-      </Badge>
-    );
+    return <Badge variant="secondary">1 - 0 (BYE)</Badge>;
   }
 
   const isWhiteWin = currentResult === 'white_win' || currentResult === 'black_forfeit_win';
@@ -30,69 +31,55 @@ export function ResultButtons({
   const isBlackWin = currentResult === 'black_win' || currentResult === 'white_forfeit_win';
 
   return (
-    <Group gap={6} wrap="nowrap">
+    <div className="flex items-center gap-1.5">
       <Button
-        size="sm"
-        variant={isWhiteWin ? 'filled' : 'default'}
-        color={isWhiteWin ? 'yellow' : undefined}
-        c={isWhiteWin ? 'dark.9' : undefined}
-        fw={800}
-        radius="sm"
+        variant={isWhiteWin ? 'default' : 'outline'}
         disabled={disabled}
         onClick={() => onSetResult('white_win')}
+        className="font-semibold"
       >
         1 - 0
       </Button>
-
       <Button
-        size="sm"
-        variant={isDraw ? 'filled' : 'default'}
-        color={isDraw ? 'arcadeViolet' : undefined}
-        fw={800}
-        radius="sm"
+        variant={isDraw ? 'default' : 'outline'}
         disabled={disabled}
         onClick={() => onSetResult('draw')}
+        className="font-semibold"
       >
         ½ - ½
       </Button>
-
       <Button
-        size="sm"
-        variant={isBlackWin ? 'filled' : 'default'}
-        color={isBlackWin ? 'yellow' : undefined}
-        c={isBlackWin ? 'dark.9' : undefined}
-        fw={800}
-        radius="sm"
+        variant={isBlackWin ? 'default' : 'outline'}
         disabled={disabled}
         onClick={() => onSetResult('black_win')}
+        className="font-semibold"
       >
         0 - 1
       </Button>
 
-      <Menu shadow="md" width={180} position="bottom-end">
-        <Menu.Target>
-          <ActionIcon variant="subtle" size="md" disabled={disabled}>
-            <IconDotsVertical size={16} />
-          </ActionIcon>
-        </Menu.Target>
-
-        <Menu.Dropdown>
-          <Menu.Label>Forfeits & Special</Menu.Label>
-          <Menu.Item onClick={() => onSetResult('black_forfeit_win')}>
-            White Forfeit Win (1F - 0)
-          </Menu.Item>
-          <Menu.Item onClick={() => onSetResult('white_forfeit_win')}>
-            Black Forfeit Win (0 - 1F)
-          </Menu.Item>
-          <Menu.Item onClick={() => onSetResult('double_forfeit')}>
-            Double Forfeit (0F - 0F)
-          </Menu.Item>
-          <Menu.Divider />
-          <Menu.Item color="gray" onClick={() => onSetResult('unplayed')}>
-            Reset to Unplayed
-          </Menu.Item>
-        </Menu.Dropdown>
-      </Menu>
-    </Group>
+      <DropdownMenu>
+        <DropdownMenuTrigger
+          render={<Button variant="ghost" size="icon" disabled={disabled} aria-label="More results" />}
+        >
+          <MoreVerticalIcon />
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-52">
+          <DropdownMenuGroup>
+            <DropdownMenuLabel>Forfeits &amp; special</DropdownMenuLabel>
+            <DropdownMenuItem onClick={() => onSetResult('black_forfeit_win')}>
+              White forfeit win (1F - 0)
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onSetResult('white_forfeit_win')}>
+              Black forfeit win (0 - 1F)
+            </DropdownMenuItem>
+            <DropdownMenuItem onClick={() => onSetResult('double_forfeit')}>
+              Double forfeit (0F - 0F)
+            </DropdownMenuItem>
+          </DropdownMenuGroup>
+          <DropdownMenuSeparator />
+          <DropdownMenuItem onClick={() => onSetResult('unplayed')}>Reset to unplayed</DropdownMenuItem>
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
   );
 }

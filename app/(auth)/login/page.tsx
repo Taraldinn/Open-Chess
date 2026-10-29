@@ -1,26 +1,15 @@
 'use client';
 
 import { Suspense, useState } from 'react';
-import {
-  Container,
-  Paper,
-  Title,
-  Text,
-  TextInput,
-  Button,
-  Stack,
-  Divider,
-  Alert,
-  Box,
-} from '@mantine/core';
-import {
-  IconMail,
-  IconBrandGoogle,
-  IconArrowLeft,
-  IconAlertCircle,
-  IconTrophy,
-} from '@tabler/icons-react';
-import { notifications } from '@mantine/notifications';
+import { AlertCircleIcon, ArrowLeftIcon, Loader2Icon, MailIcon, TrophyIcon } from 'lucide-react';
+import { GoogleIcon } from '@/components/icons/google-icon';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { Button, buttonVariants } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Separator } from '@/components/ui/separator';
+import { notify } from '@/lib/notify';
 import { createClient } from '@/lib/supabase/client';
 import { getCanonicalSiteUrl } from '@/lib/utils/url';
 import Link from 'next/link';
@@ -51,14 +40,14 @@ function LoginForm() {
 
     setLoading(false);
     if (error) {
-      notifications.show({
+      notify({
         title: 'Sign In Failed',
         message: error.message,
         color: 'red',
       });
     } else {
       setMagicLinkSent(true);
-      notifications.show({
+      notify({
         title: 'Check Your Email',
         message: `Magic sign-in link sent to ${email}`,
         color: 'green',
@@ -76,7 +65,7 @@ function LoginForm() {
       },
     });
     if (error) {
-      notifications.show({
+      notify({
         title: 'Google Sign In Failed',
         message: error.message,
         color: 'red',
@@ -85,103 +74,90 @@ function LoginForm() {
   };
 
   return (
-    <Paper withBorder shadow="md" p={32} radius="sm" className="playful-card-glow">
-      <Box className="playful-float" ta="center" mb="xs">
-        <IconTrophy size={42} color="var(--accent)" />
-      </Box>
-      <Title order={2} ta="center" fw={900} mb="xs">
-        Welcome to OpenVChess
-      </Title>
-      <Text c="dimmed" size="sm" ta="center" mb={24}>
-        Sign in to create tournaments, manage pairings, and enter results.
-      </Text>
+    <Card>
+      <CardHeader className="items-center text-center">
+        <TrophyIcon className="size-9 text-primary" />
+        <CardTitle className="text-xl">Welcome to OpenVChess</CardTitle>
+        <CardDescription>
+          Sign in to create tournaments, manage pairings, and enter results.
+        </CardDescription>
+      </CardHeader>
+      <CardContent className="flex flex-col gap-4">
+        {errorParam && (
+          <Alert variant="destructive">
+            <AlertCircleIcon />
+            <AlertTitle>Sign in error</AlertTitle>
+            <AlertDescription>
+              {errorParam === 'oauth_failed'
+                ? 'Google sign-in could not be completed. Please check your provider settings in Supabase.'
+                : errorParam === 'unauthorized'
+                ? 'Please sign in to access organizer and tournament management.'
+                : 'Authentication failed. Please try again.'}
+            </AlertDescription>
+          </Alert>
+        )}
 
-      {errorParam && (
-        <Alert
-          icon={<IconAlertCircle size={16} />}
-          title="Sign In Error"
-          color="red"
-          mb="md"
-          radius="md"
-        >
-          {errorParam === 'oauth_failed'
-            ? 'Google sign-in could not be completed. Please check your provider settings in Supabase.'
-            : errorParam === 'unauthorized'
-            ? 'Please sign in to access organizer and tournament management.'
-            : 'Authentication failed. Please try again.'}
-        </Alert>
-      )}
-
-      {magicLinkSent ? (
-        <Stack gap="md" ta="center">
-          <Text fw={600} c="green">
-            Magic Link Sent!
-          </Text>
-          <Text size="sm" c="dimmed">
-            Check your inbox at <strong>{email}</strong> to sign in instantly.
-          </Text>
-          <Button variant="default" onClick={() => setMagicLinkSent(false)}>
-            Back to Sign In
-          </Button>
-        </Stack>
-      ) : (
-        <form onSubmit={handleMagicLink}>
-          <Stack gap="md">
-            <Button
-              variant="default"
-              size="md"
-              leftSection={<IconBrandGoogle size={20} />}
-              onClick={handleGoogleSignIn}
-              fullWidth
-            >
+        {magicLinkSent ? (
+          <div className="flex flex-col items-center gap-3 text-center">
+            <p className="font-semibold">Magic link sent</p>
+            <p className="text-sm text-muted-foreground">
+              Check your inbox at <strong className="text-foreground">{email}</strong> to sign in
+              instantly.
+            </p>
+            <Button variant="outline" onClick={() => setMagicLinkSent(false)}>
+              Back to sign in
+            </Button>
+          </div>
+        ) : (
+          <form onSubmit={handleMagicLink} className="flex flex-col gap-4">
+            <Button type="button" variant="outline" size="lg" onClick={handleGoogleSignIn}>
+              <GoogleIcon className="size-4" />
               Continue with Google
             </Button>
 
-            <Divider label="Or with email magic link" labelPosition="center" my="xs" />
+            <div className="flex items-center gap-3 text-xs text-muted-foreground">
+              <Separator className="flex-1" />
+              Or with email magic link
+              <Separator className="flex-1" />
+            </div>
 
-            <TextInput
-              label="Email Address"
-              placeholder="arbiter@chessclub.org"
-              required
-              leftSection={<IconMail size={16} />}
-              value={email}
-              onChange={(e) => setEmail(e.currentTarget.value)}
-            />
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="email">Email address</Label>
+              <div className="relative">
+                <MailIcon className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  id="email"
+                  type="email"
+                  required
+                  placeholder="arbiter@chessclub.org"
+                  className="pl-8"
+                  value={email}
+                  onChange={(e) => setEmail(e.currentTarget.value)}
+                />
+              </div>
+            </div>
 
-            <Button
-              type="submit"
-              color="yellow"
-             
-              fw={700}
-              size="md"
-              loading={loading}
-              fullWidth
-            >
-              Send Magic Link
+            <Button type="submit" size="lg" disabled={loading}>
+              {loading && <Loader2Icon className="animate-spin" />}
+              Send magic link
             </Button>
-          </Stack>
-        </form>
-      )}
-    </Paper>
+          </form>
+        )}
+      </CardContent>
+    </Card>
   );
 }
 
 export default function LoginPage() {
   return (
-    <Container size="xs" py={{ base: 32, sm: 80 }}>
-      <Link href="/" style={{ textDecoration: 'none' }}>
-        <Button
-          variant="subtle"
-          size="xs"
-          leftSection={<IconArrowLeft size={14} />}
-          mb="md"
-        >
-          Home
-        </Button>
+    <div className="mx-auto w-full max-w-md px-4 py-8 sm:py-20">
+      <Link href="/" className={buttonVariants({ variant: 'ghost', size: 'sm' }) + ' mb-4'}>
+        <ArrowLeftIcon />
+        Home
       </Link>
-      <Suspense fallback={<Paper p={30} withBorder radius="md">Loading...</Paper>}>
+      <Suspense fallback={<Card className="p-8 text-sm text-muted-foreground">Loading...</Card>}>
         <LoginForm />
       </Suspense>
-    </Container>
+    </div>
   );
 }

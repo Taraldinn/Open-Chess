@@ -1,17 +1,16 @@
+import { ArrowLeftIcon } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { buttonVariants } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import {
-  Container,
-  Title,
-  Text,
-  Badge,
-  Group,
-  Card,
-  SimpleGrid,
-  Button,
-  Stack,
   Table,
-  Paper,
-} from '@mantine/core';
-import { IconArrowLeft, IconTrophy, IconUser } from '@tabler/icons-react';
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { ColorChip } from '@/components/chess/ColorChip';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { getTournamentBySlugAction } from '@/lib/actions/tournaments';
@@ -73,93 +72,65 @@ export default async function PlayerProfilePage({ params }: Props) {
     .sort((a, b) => a.roundNumber - b.roundNumber);
 
   return (
-    <Container size="md" py="xl">
-      <Link href={`/t/${tournament.slug}`} style={{ textDecoration: 'none' }}>
-        <Button
-          variant="subtle"
-          size="sm"
-          className="subtle-nav-btn"
-          leftSection={<IconArrowLeft size={16} />}
-          mb="md"
-        >
-          Back to {tournament.name}
-        </Button>
+    <div className="mx-auto w-full max-w-4xl px-4 py-6 sm:py-8">
+      <Link
+        href={`/t/${tournament.slug}`}
+        className={buttonVariants({ variant: 'ghost', size: 'sm' }) + ' mb-4'}
+      >
+        <ArrowLeftIcon />
+        Back to {tournament.name}
       </Link>
 
-      <Card withBorder padding="md" radius="md" mb="xl">
-        <Group justify="space-between" align="flex-start" mb="md">
+      <Card className="mb-6 gap-4 p-5">
+        <div className="flex flex-wrap items-start justify-between gap-4">
           <div>
-            <Group gap="xs" mb="xs">
-              <Title order={1} size="2rem" fw={800}>
-                {player.name}
-              </Title>
-              <Badge color="yellow" variant="light" size="sm">
-                Seed #{player.seed}
-              </Badge>
-              {playerStanding && (
-                <Badge color="green" size="sm">
-                  Rank #{playerStanding.rank}
-                </Badge>
-              )}
-            </Group>
-            <Text size="sm" c="dimmed">
+            <div className="mb-1 flex flex-wrap items-center gap-2">
+              <h1 className="text-2xl font-bold tracking-tight">{player.name}</h1>
+              <Badge variant="secondary">Seed #{player.seed}</Badge>
+              {playerStanding && <Badge>Rank #{playerStanding.rank}</Badge>}
+            </div>
+            <p className="text-sm text-muted-foreground">
               {player.club ? `${player.club} • ` : ''}Rating: {player.rating || 'Unrated'}
-            </Text>
+            </p>
           </div>
 
-          <Paper p="md" withBorder radius="md" ta="center">
-            <Text size="xs" c="dimmed">
-              TOTAL SCORE
-            </Text>
-            <Title order={2} fw={900} c="yellow.5">
-              {playerStanding?.score ?? 0}
-            </Title>
-          </Paper>
-        </Group>
+          <div className="rounded-lg border px-4 py-2 text-center">
+            <p className="text-xs text-muted-foreground">Total score</p>
+            <p className="text-2xl font-bold">{playerStanding?.score ?? 0}</p>
+          </div>
+        </div>
 
         {playerStanding && playerStanding.colorHistory.length > 0 && (
-          <Paper p="sm" radius="md" className="playful-accent-box">
-            <Group gap="xs">
-              <Text size="xs" fw={700} c="dimmed">
-                COLOR SEQUENCE:
-              </Text>
-              <Group gap={6}>
-                {playerStanding.colorHistory.map((col, idx) => (
-                  <Group key={idx} gap={2}>
-                    <Text size="xs" fw={600} c="dimmed">
-                      R{idx + 1}:
-                    </Text>
-                    <span>{col === 'W' ? '⚪' : '⚫'}</span>
-                  </Group>
-                ))}
-              </Group>
-            </Group>
-          </Paper>
+          <div className="flex flex-wrap items-center gap-3 rounded-lg bg-muted px-3 py-2">
+            <span className="text-xs font-semibold text-muted-foreground">Color sequence</span>
+            {playerStanding.colorHistory.map((col, idx) => (
+              <span key={idx} className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+                R{idx + 1}
+                <ColorChip color={col === 'W' ? 'white' : 'black'} showLabel={false} />
+              </span>
+            ))}
+          </div>
         )}
       </Card>
 
-      <Title order={3} mb="md">
-        Tournament Game History
-      </Title>
+      <h2 className="mb-3 text-lg font-semibold">Tournament game history</h2>
 
       {playerGames.length === 0 ? (
-        <Paper p="lg" withBorder radius="md" ta="center">
-          <Text c="dimmed">No games played yet.</Text>
-        </Paper>
+        <Card className="p-8 text-center text-sm text-muted-foreground">No games played yet.</Card>
       ) : (
-        <Card withBorder padding="md" radius="md">
-          <Table striped highlightOnHover>
-            <Table.Thead>
-              <Table.Tr>
-                <Table.Th style={{ width: 70 }}>Round</Table.Th>
-                <Table.Th style={{ width: 70 }}>Board</Table.Th>
-                <Table.Th style={{ width: 60 }}>Color</Table.Th>
-                <Table.Th>Opponent</Table.Th>
-                <Table.Th style={{ width: 90 }}>Result</Table.Th>
-                <Table.Th style={{ width: 70 }}>Points</Table.Th>
-              </Table.Tr>
-            </Table.Thead>
-            <Table.Tbody>
+        <Card className="p-2">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Round</TableHead>
+                <TableHead>Board</TableHead>
+                <TableHead>Color</TableHead>
+                <TableHead>Opponent</TableHead>
+                <TableHead>Result</TableHead>
+                <TableHead>Points</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
               {playerGames.map((g) => {
                 const isBye = g.result === 'bye' || g.blackId === null;
                 const isWhite = g.whiteId === id;
@@ -167,66 +138,59 @@ export default async function PlayerProfilePage({ params }: Props) {
                 const opp = oppId ? playerMap.get(oppId) : null;
 
                 let outcomeText = 'Unplayed';
-                let outcomeColor = 'gray';
+                let outcomeClass = 'bg-muted text-muted-foreground';
                 let pts = 0;
 
                 if (isBye) {
                   outcomeText = '1 - 0 (Bye)';
-                  outcomeColor = 'blue';
+                  outcomeClass = 'bg-secondary text-secondary-foreground';
                   pts = 1;
                 } else if (g.result === 'draw') {
                   outcomeText = '½ - ½';
-                  outcomeColor = 'blue';
+                  outcomeClass = 'bg-secondary text-secondary-foreground';
                   pts = 0.5;
                 } else if (
                   (isWhite && (g.result === 'white_win' || g.result === 'black_forfeit_win')) ||
                   (!isWhite && (g.result === 'black_win' || g.result === 'white_forfeit_win'))
                 ) {
                   outcomeText = 'Won';
-                  outcomeColor = 'green';
+                  outcomeClass = 'bg-emerald-600 text-white';
                   pts = 1;
                 } else if (g.result !== 'unplayed') {
                   outcomeText = 'Lost';
-                  outcomeColor = 'red';
+                  outcomeClass = 'bg-destructive/10 text-destructive';
                   pts = 0;
                 }
 
                 return (
-                  <Table.Tr key={g.id}>
-                    <Table.Td fw={700}>R{g.roundNumber}</Table.Td>
-                    <Table.Td>#{g.board}</Table.Td>
-                    <Table.Td>{isBye ? '-' : isWhite ? '⚪ White' : '⚫ Black'}</Table.Td>
-                    <Table.Td>
+                  <TableRow key={g.id}>
+                    <TableCell className="font-bold">R{g.roundNumber}</TableCell>
+                    <TableCell>#{g.board}</TableCell>
+                    <TableCell>
+                      {isBye ? '-' : <ColorChip color={isWhite ? 'white' : 'black'} />}
+                    </TableCell>
+                    <TableCell>
                       {isBye ? (
-                        <Badge color="blue" variant="light">
-                          BYE
-                        </Badge>
+                        <Badge variant="secondary">BYE</Badge>
                       ) : opp ? (
-                        <Text
-                          component={Link}
-                          href={`/t/${tournament.slug}/players/${opp.id}`}
-                          fw={500}
-                          c="inherit"
-                        >
+                        <Link href={`/t/${tournament.slug}/players/${opp.id}`} className="font-medium hover:underline">
                           {opp.name} {opp.rating ? `(${opp.rating})` : ''}
-                        </Text>
+                        </Link>
                       ) : (
                         'Unknown'
                       )}
-                    </Table.Td>
-                    <Table.Td>
-                      <Badge color={outcomeColor} size="sm">
-                        {outcomeText}
-                      </Badge>
-                    </Table.Td>
-                    <Table.Td fw={700}>{g.result === 'unplayed' ? '-' : pts}</Table.Td>
-                  </Table.Tr>
+                    </TableCell>
+                    <TableCell>
+                      <Badge className={outcomeClass}>{outcomeText}</Badge>
+                    </TableCell>
+                    <TableCell className="font-bold">{g.result === 'unplayed' ? '-' : pts}</TableCell>
+                  </TableRow>
                 );
               })}
-            </Table.Tbody>
+            </TableBody>
           </Table>
         </Card>
       )}
-    </Container>
+    </div>
   );
 }

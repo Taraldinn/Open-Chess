@@ -2,35 +2,28 @@
 
 import { useState } from 'react';
 import {
-  Stepper,
-  Button,
-  Group,
-  TextInput,
-  Textarea,
-  Select,
-  NumberInput,
-  Radio,
-  Stack,
-  Card,
-  Title,
-  Text,
-  Badge,
-  Switch,
-  MultiSelect,
-  SimpleGrid,
-  Paper,
-} from '@mantine/core';
-import { notifications } from '@mantine/notifications';
-import {
-  IconTrophy,
-  IconClock,
-  IconMapPin,
-  IconSettings,
-  IconCheck,
-  IconArrowRight,
-  IconArrowLeft,
-  IconSparkles,
-} from '@tabler/icons-react';
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  CheckIcon,
+  ClockIcon,
+  Loader2Icon,
+  MapPinIcon,
+  SettingsIcon,
+  SparklesIcon,
+  TrophyIcon,
+} from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Checkbox } from '@/components/ui/checkbox';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Switch } from '@/components/ui/switch';
+import { Textarea } from '@/components/ui/textarea';
+import { notify } from '@/lib/notify';
+import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
 import { createTournamentAction } from '@/lib/actions/tournaments';
 import type { CreateTournamentInput } from '@/lib/validations/tournament';
@@ -108,7 +101,7 @@ export function CreateTournamentWizard() {
 
   const nextStep = () => {
     if (active === 0 && !name.trim()) {
-      notifications.show({
+      notify({
         title: 'Required Field',
         message: 'Please enter a tournament name.',
         color: 'red',
@@ -144,7 +137,7 @@ export function CreateTournamentWizard() {
 
       const res = await createTournamentAction(payload);
       if (res.success) {
-        notifications.show({
+        notify({
           title: 'Tournament Created!',
           message: `Tournament ${name} successfully initialized.`,
           color: 'green',
@@ -152,7 +145,7 @@ export function CreateTournamentWizard() {
         router.push(`/t/${res.slug}/manage/players`);
       }
     } catch (err: any) {
-      notifications.show({
+      notify({
         title: 'Creation Failed',
         message: err.message || 'An unexpected error occurred.',
         color: 'red',
@@ -162,272 +155,305 @@ export function CreateTournamentWizard() {
     }
   };
 
-  return (
-    <Card shadow="md" padding="md" radius="md" withBorder maw={840} mx="auto" my="xl" className="playful-card-glow">
-      <Group justify="space-between" align="flex-start" mb="lg">
-        <div>
-          <Title order={2} size="1.8rem" fw={900}>
-            Create Tournament
-          </Title>
-          <Text c="dimmed" size="sm">
-            Set up your format, rules, and rounds in 3 easy steps
-          </Text>
-        </div>
-        <Badge color="yellow" variant="light" size="sm">
-          Step {active < 3 ? active + 1 : 3} of 3
-        </Badge>
-      </Group>
+  const formatItems = [
+    { value: 'swiss', label: 'Swiss System (Non-elimination, score-based)' },
+    { value: 'round_robin', label: 'Round Robin (Everyone plays everyone)' },
+    { value: 'double_round_robin', label: 'Double Round Robin (Home & Away colors)' },
+    { value: 'knockout', label: 'Single Elimination (Knockout Bracket)' },
+  ];
 
-      <Stepper active={active} onStepClick={setActive} color="yellow" mb="xl">
-        <Stepper.Step label="Basics" description="Name & Venue" icon={<IconTrophy size={18} />}>
-          <Stack gap="md" mt="md">
-            <TextInput
-              label="Tournament Name"
+  const tieBreakItems = [
+    { value: 'buchholz', label: 'Buchholz (Sum of opponents scores)' },
+    { value: 'buchholz_cut1', label: 'Buchholz Cut-1 (Lowest score dropped)' },
+    { value: 'median_buchholz', label: 'Median Buchholz (Highest and lowest dropped)' },
+    { value: 'sonneborn_berger', label: 'Sonneborn-Berger' },
+    { value: 'wins', label: 'Most Total Wins' },
+    { value: 'direct_encounter', label: 'Direct Encounter (Head-to-head)' },
+  ];
+
+  const steps = [
+    { label: 'Basics', description: 'Name & venue', icon: TrophyIcon },
+    { label: 'Format & rounds', description: 'Rules & structure', icon: SettingsIcon },
+    { label: 'Scoring', description: 'Points & order', icon: TrophyIcon },
+    { label: 'Review', description: 'Confirm', icon: CheckIcon },
+  ];
+
+  const toggleTieBreak = (value: string, checked: boolean) =>
+    setTieBreaks((prev) => (checked ? [...prev, value] : prev.filter((v) => v !== value)));
+
+  return (
+    <Card className="mx-auto my-6 max-w-3xl gap-5 p-5 sm:p-6">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight">Create tournament</h1>
+          <p className="text-sm text-muted-foreground">
+            Set up your format, rules, and rounds in 3 easy steps
+          </p>
+        </div>
+        <Badge variant="secondary">Step {active < 3 ? active + 1 : 3} of 3</Badge>
+      </div>
+
+      <ol className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+        {steps.map((step, i) => (
+          <li key={step.label}>
+            <button
+              type="button"
+              onClick={() => setActive(i)}
+              className={cn(
+                'flex w-full items-center gap-2 rounded-lg border px-3 py-2 text-left text-sm transition-colors',
+                i === active ? 'border-primary bg-primary/5' : 'hover:bg-muted',
+                i < active && 'text-muted-foreground'
+              )}
+            >
+              <span
+                className={cn(
+                  'flex size-6 shrink-0 items-center justify-center rounded-full text-xs font-semibold',
+                  i <= active ? 'bg-primary text-primary-foreground' : 'bg-muted text-muted-foreground'
+                )}
+              >
+                {i < active ? <CheckIcon className="size-3.5" /> : i + 1}
+              </span>
+              <span className="min-w-0">
+                <span className="block truncate font-medium">{step.label}</span>
+                <span className="block truncate text-xs text-muted-foreground">{step.description}</span>
+              </span>
+            </button>
+          </li>
+        ))}
+      </ol>
+
+      {active === 0 && (
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="t-name">Tournament name</Label>
+            <Input
+              id="t-name"
               placeholder="e.g. City Open Rapid Chess Championship"
               required
               value={name}
               onChange={(e) => setName(e.currentTarget.value)}
             />
+          </div>
+          <div className="flex flex-col gap-2">
+            <Label htmlFor="t-desc">Description (optional)</Label>
             <Textarea
-              label="Description (Optional)"
+              id="t-desc"
               placeholder="FIDE rated, 5-round classical event open to all club members..."
-              minRows={2}
+              rows={3}
               value={description}
               onChange={(e) => setDescription(e.currentTarget.value)}
             />
-            <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
-              <TextInput
-                label="Time Control"
-                leftSection={<IconClock size={16} />}
-                placeholder="10m + 5s"
-                value={timeControl}
-                onChange={(e) => setTimeControl(e.currentTarget.value)}
-              />
-              <TextInput
-                label="Venue or Platform"
-                leftSection={<IconMapPin size={16} />}
-                placeholder="Club Hall / Online"
-                value={venue}
-                onChange={(e) => setVenue(e.currentTarget.value)}
-              />
-            </SimpleGrid>
-            <Radio.Group
-              label="Tournament Visibility"
-              value={visibility}
-              onChange={(v) => setVisibility(v as any)}
-            >
-              <Group mt="xs">
-                <Radio value="public" label="Public (discoverable on public home)" />
-                <Radio value="unlisted" label="Unlisted (only anyone with the link)" />
-                <Radio value="private" label="Private (organizer only)" />
-              </Group>
-            </Radio.Group>
-          </Stack>
-        </Stepper.Step>
+          </div>
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="t-tc">Time control</Label>
+              <div className="relative">
+                <ClockIcon className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  id="t-tc"
+                  className="pl-8"
+                  placeholder="10m + 5s"
+                  value={timeControl}
+                  onChange={(e) => setTimeControl(e.currentTarget.value)}
+                />
+              </div>
+            </div>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="t-venue">Venue or platform</Label>
+              <div className="relative">
+                <MapPinIcon className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+                <Input
+                  id="t-venue"
+                  className="pl-8"
+                  placeholder="Club Hall / Online"
+                  value={venue}
+                  onChange={(e) => setVenue(e.currentTarget.value)}
+                />
+              </div>
+            </div>
+          </div>
+          <div className="flex flex-col gap-2">
+            <Label>Tournament visibility</Label>
+            <RadioGroup value={visibility} onValueChange={(v) => setVisibility(v as any)}>
+              {[
+                ['public', 'Public (discoverable on public home)'],
+                ['unlisted', 'Unlisted (only anyone with the link)'],
+                ['private', 'Private (organizer only)'],
+              ].map(([value, label]) => (
+                <label key={value} className="flex items-center gap-2 text-sm">
+                  <RadioGroupItem value={value} />
+                  {label}
+                </label>
+              ))}
+            </RadioGroup>
+          </div>
+        </div>
+      )}
 
-        <Stepper.Step
-          label="Format & Rounds"
-          description="Rules & Structure"
-          icon={<IconSettings size={18} />}
-        >
-          <Stack gap="md" mt="md">
-            <Select
-              label="Tournament Format"
-              value={format}
-              onChange={handleFormatChange}
-              data={[
-                { value: 'swiss', label: 'Swiss System (Non-elimination, score-based)' },
-                { value: 'round_robin', label: 'Round Robin (Everyone plays everyone)' },
-                { value: 'double_round_robin', label: 'Double Round Robin (Home & Away colors)' },
-                { value: 'knockout', label: 'Single Elimination (Knockout Bracket)' },
-              ]}
-            />
+      {active === 1 && (
+        <div className="flex flex-col gap-4">
+          <div className="flex flex-col gap-2">
+            <Label>Tournament format</Label>
+            <Select items={formatItems} value={format} onValueChange={(v) => handleFormatChange(v as string | null)}>
+              <SelectTrigger className="w-full">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                {formatItems.map((item) => (
+                  <SelectItem key={item.value} value={item.value}>
+                    {item.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
 
-            <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="md">
-              <NumberInput
-                label="Estimated Player Count"
+          <div className="grid gap-4 sm:grid-cols-2">
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="t-players">Estimated player count</Label>
+              <Input
+                id="t-players"
+                type="number"
                 min={2}
                 max={500}
                 value={playerEstimate}
-                onChange={handlePlayerEstimateChange}
+                onChange={(e) => handlePlayerEstimateChange(e.currentTarget.value)}
               />
-              <NumberInput
-                label="Total Rounds"
+            </div>
+            <div className="flex flex-col gap-2">
+              <Label htmlFor="t-rounds">Total rounds</Label>
+              <Input
+                id="t-rounds"
+                type="number"
                 min={1}
                 max={50}
                 value={totalRounds}
-                onChange={(val) => setTotalRounds(Number(val) || 1)}
+                onChange={(e) => setTotalRounds(Number(e.currentTarget.value) || 1)}
               />
-            </SimpleGrid>
+            </div>
+          </div>
 
-            <Paper p="md" radius="md" className="playful-accent-box">
-              <Group justify="space-between" align="center" wrap="wrap" gap="xs">
-                <Group gap="xs">
-                  <IconSparkles size={20} color="var(--accent)" />
-                  <Text size="sm" fw={700}>
-                    Suggested Rounds:
-                  </Text>
-                  <Badge color="yellow" variant="filled" size="md">
-                    {suggested} Rounds
-                  </Badge>
-                </Group>
-                <Button
-                  size="xs"
-                  variant="light"
-                  color="yellow"
-                  radius="sm"
-                  fw={700}
-                  onClick={() => setTotalRounds(suggested)}
-                >
-                  Use Suggested ({suggested})
-                </Button>
-              </Group>
-            </Paper>
-          </Stack>
-        </Stepper.Step>
+          <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border bg-muted/50 p-3">
+            <div className="flex items-center gap-2 text-sm font-medium">
+              <SparklesIcon className="size-4" />
+              Suggested rounds:
+              <Badge>{suggested} rounds</Badge>
+            </div>
+            <Button variant="outline" size="sm" onClick={() => setTotalRounds(suggested)}>
+              Use suggested ({suggested})
+            </Button>
+          </div>
+        </div>
+      )}
 
-        <Stepper.Step
-          label="Scoring & Tie-breaks"
-          description="Points & Order"
-          icon={<IconTrophy size={18} />}
-        >
-          <Stack gap="md" mt="md">
-            <SimpleGrid cols={{ base: 1, sm: 3 }} spacing="md">
-              <NumberInput
-                label="Win Points"
-                step={0.5}
-                min={0}
-                value={winPoints}
-                onChange={(v) => setWinPoints(Number(v))}
-              />
-              <NumberInput
-                label="Draw Points"
-                step={0.5}
-                min={0}
-                value={drawPoints}
-                onChange={(v) => setDrawPoints(Number(v))}
-              />
-              <NumberInput
-                label="Bye Points"
-                step={0.5}
-                min={0}
-                value={byePoints}
-                onChange={(v) => setByePoints(Number(v))}
-              />
-            </SimpleGrid>
+      {active === 2 && (
+        <div className="flex flex-col gap-4">
+          <div className="grid gap-4 sm:grid-cols-3">
+            {[
+              ['Win points', winPoints, setWinPoints],
+              ['Draw points', drawPoints, setDrawPoints],
+              ['Bye points', byePoints, setByePoints],
+            ].map(([label, value, setter]: any) => (
+              <div key={label} className="flex flex-col gap-2">
+                <Label>{label}</Label>
+                <Input
+                  type="number"
+                  step={0.5}
+                  min={0}
+                  value={value}
+                  onChange={(e) => setter(Number(e.currentTarget.value))}
+                />
+              </div>
+            ))}
+          </div>
 
-            <Radio.Group
-              label="Round 1 Pairing Method"
-              value={firstRound}
-              onChange={(v) => setFirstRound(v as any)}
-            >
-              <Group mt="xs">
-                <Radio value="random" label="Random (Standard Swiss rapid/casual)" />
-                <Radio value="seeded" label="Seeded by Rating (FIDE style: top half vs bottom half)" />
-              </Group>
-            </Radio.Group>
+          <div className="flex flex-col gap-2">
+            <Label>Round 1 pairing method</Label>
+            <RadioGroup value={firstRound} onValueChange={(v) => setFirstRound(v as any)}>
+              <label className="flex items-center gap-2 text-sm">
+                <RadioGroupItem value="random" />
+                Random (Standard Swiss rapid/casual)
+              </label>
+              <label className="flex items-center gap-2 text-sm">
+                <RadioGroupItem value="seeded" />
+                Seeded by Rating (FIDE style: top half vs bottom half)
+              </label>
+            </RadioGroup>
+          </div>
 
-            <MultiSelect
-              label="Tie-break Order"
-              description="Evaluated in order when players have matching scores"
-              data={[
-                { value: 'buchholz', label: 'Buchholz (Sum of opponents scores)' },
-                { value: 'buchholz_cut1', label: 'Buchholz Cut-1 (Lowest score dropped)' },
-                { value: 'median_buchholz', label: 'Median Buchholz (Highest and lowest dropped)' },
-                { value: 'sonneborn_berger', label: 'Sonneborn-Berger' },
-                { value: 'wins', label: 'Most Total Wins' },
-                { value: 'direct_encounter', label: 'Direct Encounter (Head-to-head)' },
-              ]}
-              value={tieBreaks}
-              onChange={setTieBreaks}
-            />
+          <div className="flex flex-col gap-2">
+            <Label>Tie-break order</Label>
+            <p className="text-xs text-muted-foreground">
+              Evaluated in order when players have matching scores
+            </p>
+            <div className="grid gap-2 sm:grid-cols-2">
+              {tieBreakItems.map((item) => (
+                <label key={item.value} className="flex items-center gap-2 text-sm">
+                  <Checkbox
+                    checked={tieBreaks.includes(item.value)}
+                    onCheckedChange={(c) => toggleTieBreak(item.value, !!c)}
+                  />
+                  {item.label}
+                </label>
+              ))}
+            </div>
+          </div>
 
-            <Switch
-              label="Allow Late Entry (Players can join after Round 1)"
-              checked={allowLateEntry}
-              onChange={(e) => setAllowLateEntry(e.currentTarget.checked)}
-            />
-          </Stack>
-        </Stepper.Step>
+          <label className="flex items-center gap-3 text-sm">
+            <Switch checked={allowLateEntry} onCheckedChange={setAllowLateEntry} />
+            Allow late entry (players can join after Round 1)
+          </label>
+        </div>
+      )}
 
-        <Stepper.Completed>
-          <Stack gap="md" mt="md">
-            <Paper p="lg" withBorder radius="md">
-              <Title order={3} mb="xs">
-                {name || 'Untitled Tournament'}
-              </Title>
-              <Text c="dimmed" size="sm" mb="md">
-                {description || 'No description provided.'}
-              </Text>
-
-              <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="sm">
-                <div>
-                  <Text size="xs" c="dimmed">
-                    FORMAT
-                  </Text>
-                  <Text fw={600} tt="capitalize">
-                    {format.replace(/_/g, ' ')}
-                  </Text>
+      {active === 3 && (
+        <div className="flex flex-col gap-4">
+          <div className="rounded-lg border p-4">
+            <h2 className="mb-1 text-lg font-semibold">{name || 'Untitled Tournament'}</h2>
+            <p className="mb-4 text-sm text-muted-foreground">
+              {description || 'No description provided.'}
+            </p>
+            <div className="grid gap-3 sm:grid-cols-2">
+              {[
+                ['Format', format.replace(/_/g, ' ')],
+                ['Total rounds', `${totalRounds} rounds`],
+                ['Time control', timeControl || 'None'],
+                ['Venue', venue || 'Online'],
+              ].map(([label, value]) => (
+                <div key={label}>
+                  <p className="text-xs font-medium uppercase text-muted-foreground">{label}</p>
+                  <p className="text-sm font-semibold capitalize">{value}</p>
                 </div>
-                <div>
-                  <Text size="xs" c="dimmed">
-                    TOTAL ROUNDS
-                  </Text>
-                  <Text fw={600}>{totalRounds} Rounds</Text>
-                </div>
-                <div>
-                  <Text size="xs" c="dimmed">
-                    TIME CONTROL
-                  </Text>
-                  <Text fw={600}>{timeControl || 'None'}</Text>
-                </div>
-                <div>
-                  <Text size="xs" c="dimmed">
-                    VENUE
-                  </Text>
-                  <Text fw={600}>{venue || 'Online'}</Text>
-                </div>
-              </SimpleGrid>
-            </Paper>
+              ))}
+            </div>
+          </div>
+          <p className="text-sm text-muted-foreground">
+            Ready to initialize tournament. You will be directed to add players next.
+          </p>
+        </div>
+      )}
 
-            <Text size="sm" c="dimmed">
-              Ready to initialize tournament. You will be directed to add players next.
-            </Text>
-          </Stack>
-        </Stepper.Completed>
-      </Stepper>
-
-      <Group justify="space-between" mt="xl">
-        {active > 0 && (
-          <Button variant="default" onClick={prevStep} leftSection={<IconArrowLeft size={16} />}>
+      <div className="flex items-center justify-between">
+        {active > 0 ? (
+          <Button variant="outline" onClick={prevStep}>
+            <ArrowLeftIcon />
             Back
           </Button>
+        ) : (
+          <span />
         )}
-        <div style={{ marginLeft: 'auto' }}>
-          {active < 3 ? (
-            <Button
-              color="yellow"
-             
-              fw={700}
-              onClick={nextStep}
-              rightSection={<IconArrowRight size={16} />}
-            >
-              Next Step
-            </Button>
-          ) : (
-            <Button
-              color="yellow"
-             
-              fw={700}
-              onClick={handleSubmit}
-              loading={loading}
-              rightSection={<IconCheck size={16} />}
-            >
-              Create & Proceed to Players
-            </Button>
-          )}
-        </div>
-      </Group>
+        {active < 3 ? (
+          <Button onClick={nextStep}>
+            Next step
+            <ArrowRightIcon />
+          </Button>
+        ) : (
+          <Button onClick={handleSubmit} disabled={loading}>
+            {loading ? <Loader2Icon className="animate-spin" /> : <CheckIcon />}
+            Create &amp; proceed to players
+          </Button>
+        )}
+      </div>
     </Card>
   );
 }

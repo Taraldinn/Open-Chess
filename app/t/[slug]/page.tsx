@@ -1,33 +1,7 @@
-import {
-  Container,
-  Title,
-  Text,
-  Badge,
-  Group,
-  Tabs,
-  Card,
-  SimpleGrid,
-  Button,
-  Stack,
-  Table,
-} from '@mantine/core';
-import {
-  IconFlame,
-  IconTrophy,
-  IconChartBar,
-  IconUsers,
-  IconInfoCircle,
-  IconShare,
-  IconMapPin,
-  IconClock,
-} from '@tabler/icons-react';
 import { notFound } from 'next/navigation';
 import { getTournamentBySlugAction } from '@/lib/actions/tournaments';
 import { computeStandingsEngine } from '@/lib/tiebreaks/engine';
-import { PublicPairings, PublicRoundItem } from '@/components/chess/PublicPairings';
-import { StandingsTable } from '@/components/chess/StandingsTable';
-import { Crosstable } from '@/components/chess/Crosstable';
-import { RealtimeListener } from '@/components/chess/RealtimeListener';
+import type { PublicRoundItem } from '@/components/chess/PublicPairings';
 import { PublicPageClient } from './PublicPageClient';
 import type { PastGame, PlayerInfo } from '@/lib/formats';
 

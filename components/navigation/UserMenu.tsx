@@ -2,22 +2,24 @@
 
 import { useEffect, useState } from 'react';
 import {
-  Menu,
-  Button,
-  Avatar,
-  Group,
-  Text,
-  UnstyledButton,
-  Skeleton,
-} from '@mantine/core';
+  ChevronDownIcon,
+  LogOutIcon,
+  PlusIcon,
+  TrophyIcon,
+  UserIcon,
+} from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button, buttonVariants } from '@/components/ui/button';
 import {
-  IconLogout,
-  IconTrophy,
-  IconPlus,
-  IconChevronDown,
-  IconBrandGoogle,
-  IconUser,
-} from '@tabler/icons-react';
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuGroup,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Skeleton } from '@/components/ui/skeleton';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
@@ -59,20 +61,14 @@ export function UserMenu() {
   };
 
   if (loading) {
-    return <Skeleton height={36} width={90} radius="sm" />;
+    return <Skeleton className="h-8 w-24" />;
   }
 
   if (!user) {
     return (
-      <Link href="/login" style={{ textDecoration: 'none' }}>
-        <Button
-          variant="light"
-          color="yellow"
-          size="sm"
-          leftSection={<IconUser size={16} />}
-        >
-          Sign In
-        </Button>
+      <Link href="/login" className={buttonVariants({ variant: 'secondary' })}>
+        <UserIcon />
+        Sign in
       </Link>
     );
   }
@@ -85,66 +81,37 @@ export function UserMenu() {
     'Organizer';
 
   return (
-    <Menu shadow="md" width={220} position="bottom-end">
-      <Menu.Target>
-        <UnstyledButton
-          style={{
-            padding: '4px 8px',
-            borderRadius: 8,
-            display: 'flex',
-            alignItems: 'center',
-            backgroundColor: 'var(--mantine-color-default-hover)',
-          }}
-        >
-          <Group gap="xs">
-            <Avatar src={avatarUrl} alt={displayName} size="sm" radius="sm" color="yellow">
-              {displayName.charAt(0).toUpperCase()}
-            </Avatar>
-            <Text size="sm" fw={600} visibleFrom="sm" maw={120} truncate>
-              {displayName}
-            </Text>
-            <IconChevronDown size={14} />
-          </Group>
-        </UnstyledButton>
-      </Menu.Target>
-
-      <Menu.Dropdown>
-        <Menu.Label>
-          <Text size="xs" fw={700}>
-            {displayName}
-          </Text>
-          <Text size="xs" c="dimmed" truncate>
-            {user.email}
-          </Text>
-        </Menu.Label>
-        <Menu.Divider />
-
-        <Menu.Item
-          component={Link}
-          href="/dashboard"
-          leftSection={<IconTrophy size={16} />}
-        >
-          My Tournaments
-        </Menu.Item>
-
-        <Menu.Item
-          component={Link}
-          href="/t/new"
-          leftSection={<IconPlus size={16} />}
-        >
-          Create Tournament
-        </Menu.Item>
-
-        <Menu.Divider />
-
-        <Menu.Item
-          color="red"
-          leftSection={<IconLogout size={16} />}
-          onClick={handleSignOut}
-        >
-          Sign Out
-        </Menu.Item>
-      </Menu.Dropdown>
-    </Menu>
+    <DropdownMenu>
+      <DropdownMenuTrigger render={<Button variant="outline" className="gap-2 px-1.5" />}>
+        <Avatar className="size-6">
+          {avatarUrl && <AvatarImage src={avatarUrl} alt={displayName} />}
+          <AvatarFallback>{displayName.charAt(0).toUpperCase()}</AvatarFallback>
+        </Avatar>
+        <span className="hidden max-w-[120px] truncate text-sm font-medium md:inline">{displayName}</span>
+        <ChevronDownIcon className="size-3.5" />
+      </DropdownMenuTrigger>
+      <DropdownMenuContent align="end" className="w-56">
+        <DropdownMenuGroup>
+          <DropdownMenuLabel className="flex flex-col">
+            <span className="font-semibold text-foreground">{displayName}</span>
+            <span className="truncate text-xs font-normal">{user.email}</span>
+          </DropdownMenuLabel>
+        </DropdownMenuGroup>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem render={<Link href="/dashboard" />}>
+          <TrophyIcon />
+          My tournaments
+        </DropdownMenuItem>
+        <DropdownMenuItem render={<Link href="/t/new" />}>
+          <PlusIcon />
+          Create tournament
+        </DropdownMenuItem>
+        <DropdownMenuSeparator />
+        <DropdownMenuItem variant="destructive" onClick={handleSignOut}>
+          <LogOutIcon />
+          Sign out
+        </DropdownMenuItem>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }

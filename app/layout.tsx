@@ -1,20 +1,14 @@
-import '@mantine/core/styles.css';
-import '@mantine/notifications/styles.css';
-import './playful.css';
+import './globals.css';
 
-import { ColorSchemeScript, MantineProvider } from '@mantine/core';
-import { Notifications } from '@mantine/notifications';
-import { Inter } from 'next/font/google';
+import { Space_Grotesk } from 'next/font/google';
 import { Navbar } from '@/components/navigation/Navbar';
 import { Footer } from '@/components/navigation/Footer';
-import { theme } from '../theme';
+import { ThemeProvider } from '@/components/theme-provider';
+import { Toaster } from '@/components/ui/sonner';
+import { TooltipProvider } from '@/components/ui/tooltip';
+import { cn } from '@/lib/utils';
 
-const plusJakarta = Inter({
-  subsets: ['latin'],
-  weight: ['400', '500', '600', '700'],
-  variable: '--font-sans',
-  display: 'swap',
-});
+const spaceGrotesk = Space_Grotesk({ subsets: ['latin'], variable: '--font-sans' });
 
 export const viewport = {
   width: 'device-width',
@@ -25,26 +19,22 @@ export const metadata = {
   authors: [{ name: 'Taraldinn', url: 'https://github.com/Taraldinn' }],
   creator: 'Taraldinn',
   title: 'OpenVChess — Chess Tournament Manager',
-  description: 'Create and run Swiss, Round Robin, and Knockout chess tournaments with live pairings and standings.',
+  description:
+    'Create and run Swiss, Round Robin, and Knockout chess tournaments with live pairings and standings.',
 };
 
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en" suppressHydrationWarning className={plusJakarta.variable}>
-      <head>
-        <ColorSchemeScript defaultColorScheme="dark" />
-      </head>
-      <body>
-        <MantineProvider theme={theme} defaultColorScheme="dark">
-          <Notifications position="top-right" zIndex={1000} />
-          <Navbar />
-          <main>{children}</main>
-          <Footer />
-        </MantineProvider>
+    <html lang="en" suppressHydrationWarning className={cn('font-sans', spaceGrotesk.variable)}>
+      <body className="flex min-h-dvh flex-col">
+        <ThemeProvider>
+          <TooltipProvider>
+            <Navbar />
+            <main className="flex-1">{children}</main>
+            <Footer />
+            <Toaster position="top-right" />
+          </TooltipProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

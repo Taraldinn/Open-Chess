@@ -2,36 +2,40 @@
 
 import { useState, useRef, useEffect } from 'react';
 import {
-  Table,
-  Button,
-  Group,
-  TextInput,
-  NumberInput,
-  Badge,
-  ActionIcon,
-  Text,
-  Paper,
-  Card,
-  Menu,
-  SimpleGrid,
-  Tooltip,
-  Box,
-} from '@mantine/core';
+  ArrowDownIcon,
+  ArrowUpIcon,
+  ArrowDownWideNarrowIcon,
+  Loader2Icon,
+  MoreVerticalIcon,
+  PlayIcon,
+  PlusIcon,
+  SparklesIcon,
+  Trash2Icon,
+  UploadIcon,
+  UserCheckIcon,
+  UserMinusIcon,
+  UsersIcon,
+} from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import {
-  IconPlus,
-  IconArrowUp,
-  IconArrowDown,
-  IconDotsVertical,
-  IconTrash,
-  IconUserMinus,
-  IconUserCheck,
-  IconSortDescendingNumbers,
-  IconUpload,
-  IconPlayerPlay,
-  IconSparkles,
-  IconUsers,
-} from '@tabler/icons-react';
-import { notifications } from '@mantine/notifications';
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { notify } from '@/lib/notify';
 import {
   addPlayerAction,
   deletePlayerAction,
@@ -100,7 +104,7 @@ export function PlayerList({
         setNewName('');
         setNewRating('');
         setNewClub('');
-        notifications.show({
+        notify({
           title: 'Player Added',
           message: `${(res.player as any).name} added to tournament.`,
           color: 'green',
@@ -108,7 +112,7 @@ export function PlayerList({
         setTimeout(() => nameInputRef.current?.focus(), 50);
       }
     } catch (err: any) {
-      notifications.show({
+      notify({
         title: 'Error',
         message: err.message,
         color: 'red',
@@ -128,13 +132,13 @@ export function PlayerList({
             : p
         )
       );
-      notifications.show({
+      notify({
         title: res.newStatus === 'withdrawn' ? 'Player Withdrawn' : 'Player Re-activated',
         message: `${player.name} is now ${res.newStatus}.`,
         color: res.newStatus === 'withdrawn' ? 'orange' : 'green',
       });
     } catch (err: any) {
-      notifications.show({ title: 'Error', message: err.message, color: 'red' });
+      notify({ title: 'Error', message: err.message, color: 'red' });
     }
   };
 
@@ -142,13 +146,13 @@ export function PlayerList({
     try {
       await deletePlayerAction(player.id);
       setPlayers((prev) => prev.filter((p) => p.id !== player.id));
-      notifications.show({
+      notify({
         title: 'Player Removed',
         message: `${player.name} removed.`,
         color: 'gray',
       });
     } catch (err: any) {
-      notifications.show({ title: 'Error', message: err.message, color: 'red' });
+      notify({ title: 'Error', message: err.message, color: 'red' });
     }
   };
 
@@ -173,7 +177,7 @@ export function PlayerList({
     const updated = sorted.map((p, i) => ({ ...p, seed: i + 1 }));
     setPlayers(updated);
     await reorderPlayersAction(tournamentId, updated.map((p) => p.id));
-    notifications.show({
+    notify({
       title: 'Sorted by Rating',
       message: 'Seeds have been updated according to player ratings.',
       color: 'blue',
@@ -183,220 +187,162 @@ export function PlayerList({
   const activeCount = players.filter((p) => p.status === 'active').length;
 
   return (
-    <Card shadow="sm" padding="md" radius="md" withBorder className="playful-card-glow">
-      <Group justify="space-between" mb="lg" wrap="wrap" gap="md">
+    <Card className="gap-5 p-4 sm:p-6">
+      <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <Group gap="xs" align="center">
-            <Text fw={800} size="md">
-              Tournament Players
-            </Text>
-            <Badge color="yellow" variant="filled" size="md">
-              {players.length} Registered ({activeCount} Active)
+          <div className="flex flex-wrap items-center gap-2">
+            <h2 className="text-xl font-bold tracking-tight">Tournament players</h2>
+            <Badge variant="secondary">
+              {players.length} registered ({activeCount} active)
             </Badge>
-          </Group>
-          <Text size="sm" c="dimmed">
+          </div>
+          <p className="text-sm text-muted-foreground">
             Add, reorder seeds, or import players. At least 2 active players required.
-          </Text>
+          </p>
         </div>
 
-        <Group gap="xs">
-          <Button
-            variant="default"
-            radius="sm"
-            leftSection={<IconSortDescendingNumbers size={16} />}
-            onClick={sortByRating}
-            disabled={players.length < 2}
-          >
-            Sort by Rating
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" onClick={sortByRating} disabled={players.length < 2}>
+            <ArrowDownWideNarrowIcon />
+            Sort by rating
           </Button>
-
-          <Button
-            variant="light"
-            color="arcadeViolet"
-            radius="sm"
-            fw={700}
-            leftSection={<IconUpload size={16} />}
-            onClick={() => setBulkModalOpened(true)}
-          >
-            Paste / CSV Import
+          <Button variant="outline" onClick={() => setBulkModalOpened(true)}>
+            <UploadIcon />
+            Paste / CSV import
           </Button>
-
-          <Button
-            color="yellow"
-           
-            fw={800}
-            radius="sm"
-            leftSection={<IconPlayerPlay size={18} stroke={2.5} />}
-            onClick={onStartTournament}
-            loading={isStarting}
-            disabled={activeCount < 2}
-            className="playful-card-glow"
-          >
-            {tournamentStatus === 'draft' ? 'Start Tournament (Gen Round 1)' : 'Go to Rounds'}
+          <Button onClick={onStartTournament} disabled={activeCount < 2 || isStarting}>
+            {isStarting ? <Loader2Icon className="animate-spin" /> : <PlayIcon />}
+            {tournamentStatus === 'draft' ? 'Start tournament (gen round 1)' : 'Go to rounds'}
           </Button>
-        </Group>
-      </Group>
+        </div>
+      </div>
 
-      {/* Quick Add Player Inline Form */}
-      <Paper p="md" radius="md" mb="lg" className="playful-accent-box">
-        <Group justify="space-between" mb="xs">
-          <Group gap="xs">
-            <IconSparkles size={16} color="var(--accent)" />
-            <Text size="xs" fw={700} tt="uppercase" style={{ letterSpacing: '0.04em' }}>
-              Quick Add Player
-            </Text>
-          </Group>
-          <Text size="xs" c="dimmed">
-            Press Enter in any field to add immediately
-          </Text>
-        </Group>
-        <SimpleGrid cols={{ base: 1, sm: 4 }} spacing="sm">
-          <TextInput
-            placeholder="Player Name (e.g. Magnus Carlsen)"
+      <div className="rounded-lg border bg-muted/40 p-3">
+        <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
+          <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide">
+            <SparklesIcon className="size-4" />
+            Quick add player
+          </div>
+          <span className="text-xs text-muted-foreground">Press Enter in any field to add immediately</span>
+        </div>
+        <div className="grid gap-2 sm:grid-cols-[2fr_1fr_1.5fr_auto]">
+          <Input
+            placeholder="Player name (e.g. Magnus Carlsen)"
             value={newName}
             onChange={(e) => setNewName(e.currentTarget.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleAddPlayer()}
             ref={nameInputRef}
           />
-          <NumberInput
-            placeholder="Rating (Optional)"
+          <Input
+            type="number"
             min={0}
             max={3500}
+            placeholder="Rating (optional)"
             value={newRating}
-            onChange={(v) => setNewRating(typeof v === 'number' ? v : '')}
+            onChange={(e) => {
+              const v = e.currentTarget.value;
+              setNewRating(v === '' ? '' : Number(v));
+            }}
             onKeyDown={(e) => e.key === 'Enter' && handleAddPlayer()}
           />
-          <TextInput
-            placeholder="Club or Country (Optional)"
+          <Input
+            placeholder="Club or country (optional)"
             value={newClub}
             onChange={(e) => setNewClub(e.currentTarget.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleAddPlayer()}
           />
-          <Button
-            color="yellow"
-           
-            fw={800}
-            radius="sm"
-            onClick={handleAddPlayer}
-            loading={loadingAdd}
-            disabled={!newName.trim()}
-            leftSection={<IconPlus size={16} stroke={2.5} />}
-          >
-            Add Player
+          <Button onClick={handleAddPlayer} disabled={!newName.trim() || loadingAdd}>
+            {loadingAdd ? <Loader2Icon className="animate-spin" /> : <PlusIcon />}
+            Add player
           </Button>
-        </SimpleGrid>
-      </Paper>
+        </div>
+      </div>
 
-      {/* Table / Empty State */}
       {players.length === 0 ? (
-        <Paper p="1.5rem" ta="center" withBorder radius="md" my="md">
-          <Box className="playful-float" mb="sm">
-            <IconUsers size={48} color="var(--accent)" />
-          </Box>
-          <Text fw={800} size="md" mb={4}>
-            No players added yet
-          </Text>
-          <Text c="dimmed" size="sm" maw={440} mx="auto" mb="lg">
-            Add players one by one using the quick form above, or paste multiple players with our CSV importer.
-          </Text>
-          <Button
-            variant="light"
-            color="yellow"
-            radius="sm"
-            fw={700}
-            leftSection={<IconUpload size={16} />}
-            onClick={() => setBulkModalOpened(true)}
-          >
-            Open Bulk / CSV Import
+        <div className="flex flex-col items-center gap-2 rounded-lg border border-dashed px-6 py-10 text-center">
+          <UsersIcon className="size-10 text-muted-foreground" />
+          <p className="font-semibold">No players added yet</p>
+          <p className="max-w-md text-sm text-muted-foreground">
+            Add players one by one using the quick form above, or paste multiple players with the CSV
+            importer.
+          </p>
+          <Button variant="outline" onClick={() => setBulkModalOpened(true)}>
+            <UploadIcon />
+            Open bulk / CSV import
           </Button>
-        </Paper>
+        </div>
       ) : (
-        <Table striped highlightOnHover withTableBorder>
-          <Table.Thead>
-            <Table.Tr>
-              <Table.Th style={{ width: 60 }}>Seed</Table.Th>
-              <Table.Th>Name</Table.Th>
-              <Table.Th style={{ width: 100 }}>Rating</Table.Th>
-              <Table.Th>Club</Table.Th>
-              <Table.Th style={{ width: 100 }}>Status</Table.Th>
-              <Table.Th style={{ width: 110 }}>Reorder</Table.Th>
-              <Table.Th style={{ width: 60 }}></Table.Th>
-            </Table.Tr>
-          </Table.Thead>
-          <Table.Tbody>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead className="w-16">Seed</TableHead>
+              <TableHead>Name</TableHead>
+              <TableHead>Rating</TableHead>
+              <TableHead>Club</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead className="w-24">Reorder</TableHead>
+              <TableHead className="w-12" />
+            </TableRow>
+          </TableHeader>
+          <TableBody>
             {players.map((p, index) => (
-              <Table.Tr key={p.id}>
-                <Table.Td fw={700}>#{p.seed || index + 1}</Table.Td>
-                <Table.Td fw={600}>
-                  {p.name}
-                </Table.Td>
-                <Table.Td>{p.rating || '-'}</Table.Td>
-                <Table.Td>{p.club || '-'}</Table.Td>
-                <Table.Td>
+              <TableRow key={p.id}>
+                <TableCell className="font-bold">#{p.seed || index + 1}</TableCell>
+                <TableCell className="font-semibold">{p.name}</TableCell>
+                <TableCell>{p.rating || '-'}</TableCell>
+                <TableCell>{p.club || '-'}</TableCell>
+                <TableCell>
                   {p.status === 'active' ? (
-                    <Badge color="green" size="sm" variant="light">
-                      Active
-                    </Badge>
+                    <Badge variant="secondary">Active</Badge>
                   ) : (
-                    <Badge color="red" size="sm" variant="light">
-                      Withdrawn
-                    </Badge>
+                    <Badge variant="destructive">Withdrawn</Badge>
                   )}
-                </Table.Td>
-                <Table.Td>
-                  <Group gap={4}>
-                    <ActionIcon
-                      variant="subtle"
-                      size="sm"
+                </TableCell>
+                <TableCell>
+                  <div className="flex gap-1">
+                    <Button
+                      variant="ghost"
+                      size="icon-sm"
+                      aria-label="Move up"
                       disabled={index === 0}
                       onClick={() => movePlayer(index, 'up')}
                     >
-                      <IconArrowUp size={14} />
-                    </ActionIcon>
-                    <ActionIcon
-                      variant="subtle"
-                      size="sm"
+                      <ArrowUpIcon />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon-sm"
+                      aria-label="Move down"
                       disabled={index === players.length - 1}
                       onClick={() => movePlayer(index, 'down')}
                     >
-                      <IconArrowDown size={14} />
-                    </ActionIcon>
-                  </Group>
-                </Table.Td>
-                <Table.Td>
-                  <Menu shadow="md" width={160} position="bottom-end">
-                    <Menu.Target>
-                      <ActionIcon variant="subtle" size="sm">
-                        <IconDotsVertical size={16} />
-                      </ActionIcon>
-                    </Menu.Target>
-                    <Menu.Dropdown>
-                      <Menu.Item
-                        leftSection={
-                          p.status === 'active' ? (
-                            <IconUserMinus size={14} />
-                          ) : (
-                            <IconUserCheck size={14} />
-                          )
-                        }
-                        onClick={() => handleToggleWithdrawal(p)}
-                      >
-                        {p.status === 'active' ? 'Withdraw Player' : 'Reactivate'}
-                      </Menu.Item>
-                      <Menu.Divider />
-                      <Menu.Item
-                        color="red"
-                        leftSection={<IconTrash size={14} />}
-                        onClick={() => handleDeletePlayer(p)}
-                      >
-                        Delete Player
-                      </Menu.Item>
-                    </Menu.Dropdown>
-                  </Menu>
-                </Table.Td>
-              </Table.Tr>
+                      <ArrowDownIcon />
+                    </Button>
+                  </div>
+                </TableCell>
+                <TableCell>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger
+                      render={<Button variant="ghost" size="icon-sm" aria-label="Player actions" />}
+                    >
+                      <MoreVerticalIcon />
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-44">
+                      <DropdownMenuItem onClick={() => handleToggleWithdrawal(p)}>
+                        {p.status === 'active' ? <UserMinusIcon /> : <UserCheckIcon />}
+                        {p.status === 'active' ? 'Withdraw player' : 'Reactivate'}
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                      <DropdownMenuItem variant="destructive" onClick={() => handleDeletePlayer(p)}>
+                        <Trash2Icon />
+                        Delete player
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                </TableCell>
+              </TableRow>
             ))}
-          </Table.Tbody>
+          </TableBody>
         </Table>
       )}
 

@@ -1,25 +1,16 @@
-'use client';
-
-import { Container, Button, Group } from '@mantine/core';
-import { IconArrowLeft } from '@tabler/icons-react';
 import Link from 'next/link';
+import { ArrowLeftIcon } from 'lucide-react';
+import { buttonVariants } from '@/components/ui/button';
 import { CreateTournamentWizard } from '@/components/tournament/CreateTournamentWizard';
 
 export default function NewTournamentPage() {
   return (
-    <Container size="lg" py="xl">
-      <Group mb="md">
-        <Link href="/dashboard" style={{ textDecoration: 'none' }}>
-          <Button
-            variant="subtle"
-            className="subtle-nav-btn"
-            leftSection={<IconArrowLeft size={16} />}
-          >
-            Back to Dashboard
-          </Button>
-        </Link>
-      </Group>
+    <div className="mx-auto w-full max-w-6xl px-4 py-6">
+      <Link href="/dashboard" className={buttonVariants({ variant: 'ghost', size: 'sm' }) + ' mb-4'}>
+        <ArrowLeftIcon />
+        Back to dashboard
+      </Link>
       <CreateTournamentWizard />
-    </Container>
+    </div>
   );
 }

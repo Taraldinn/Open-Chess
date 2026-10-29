@@ -1,33 +1,31 @@
 'use client';
 
 import { useState } from 'react';
-import {
-  Container,
-  Title,
-  Text,
-  Badge,
-  Group,
-  Tabs,
-  Card,
-  SimpleGrid,
-  Button,
-  Stack,
-  Table,
-  Box,
-  Progress,
-} from '@mantine/core';
-import {
-  IconFlame,
-  IconTrophy,
-  IconChartBar,
-  IconUsers,
-  IconInfoCircle,
-  IconShare,
-  IconMapPin,
-  IconClock,
-  IconHome,
-} from '@tabler/icons-react';
 import Link from 'next/link';
+import {
+  BarChart3Icon,
+  ClockIcon,
+  FlameIcon,
+  HomeIcon,
+  InfoIcon,
+  MapPinIcon,
+  Share2Icon,
+  TrophyIcon,
+  UsersIcon,
+} from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Button, buttonVariants } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import { PublicPairings, PublicRoundItem } from '@/components/chess/PublicPairings';
 import { StandingsTable } from '@/components/chess/StandingsTable';
 import { Crosstable } from '@/components/chess/Crosstable';
@@ -43,13 +41,25 @@ interface Props {
   standings: StandingRow[];
 }
 
-export function PublicPageClient({
-  tournament,
-  players,
-  allGames,
-  publicRounds,
-  standings,
-}: Props) {
+function Stat({ value, label }: { value: React.ReactNode; label: string }) {
+  return (
+    <div className="rounded-lg border bg-card px-4 py-3">
+      <div className="text-2xl font-bold leading-tight tracking-tight">{value}</div>
+      <div className="text-xs font-medium text-muted-foreground">{label}</div>
+    </div>
+  );
+}
+
+function Detail({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div>
+      <p className="text-xs font-medium uppercase text-muted-foreground">{label}</p>
+      <p className="text-sm font-semibold">{children}</p>
+    </div>
+  );
+}
+
+export function PublicPageClient({ tournament, players, allGames, publicRounds, standings }: Props) {
   const [activeTab, setActiveTab] = useState<string>('overview');
   const [shareModalOpened, setShareModalOpened] = useState(false);
 
@@ -63,183 +73,152 @@ export function PublicPageClient({
   const isFinished = tournament.status === 'finished';
 
   return (
-    <Container size="lg" py={{ base: 'md', sm: 'xl' }}>
-      <Card className="hero-card" padding="md" radius="md" mb="lg">
-        <Group justify="space-between" align="flex-start" wrap="wrap" gap="sm">
-          <Box style={{ flex: 1, minWidth: 0 }}>
-            <Group gap="xs" mb={8} wrap="wrap">
-              <Badge color="yellow" variant="filled" size="sm" tt="uppercase">
+    <div className="mx-auto w-full max-w-6xl px-4 py-6 sm:py-8">
+      <Card className="mb-6 gap-5 bg-muted/40 p-5">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div className="min-w-0 flex-1">
+            <div className="mb-2 flex flex-wrap items-center gap-2">
+              <Badge variant="outline" className="uppercase">
                 {tournament.format.replace(/_/g, ' ')}
               </Badge>
-              <Badge
-                color={
-                  tournament.status === 'running'
-                    ? 'green'
-                    : tournament.status === 'finished'
-                    ? 'gray'
-                    : 'arcadeViolet'
-                }
-                variant="light"
-                size="sm"
-              >
+              <Badge variant={tournament.status === 'running' ? 'default' : 'secondary'}>
                 {tournament.status === 'draft'
-                  ? 'DRAFT'
+                  ? 'Draft'
                   : tournament.status === 'running'
-                  ? 'LIVE'
-                  : tournament.status.toUpperCase()}
+                  ? 'Live'
+                  : tournament.status}
               </Badge>
               <RealtimeListener tournamentId={tournament.id} />
-            </Group>
-            <Title order={1} fw={900} mb={6} style={{ fontSize: 'clamp(1.4rem, 5vw, 1.8rem)' }}>
-              {tournament.name}
-            </Title>
+            </div>
+            <h1 className="mb-1.5 text-2xl font-bold tracking-tight sm:text-3xl">{tournament.name}</h1>
             {tournament.description && (
-              <Text size="sm" c="dimmed" mb="xs" lineClamp={3}>
-                {tournament.description}
-              </Text>
+              <p className="mb-2 line-clamp-3 text-sm text-muted-foreground">{tournament.description}</p>
             )}
-            <Group gap="md" wrap="wrap">
+            <div className="flex flex-wrap gap-4 text-sm text-muted-foreground">
               {tournament.time_control && (
-                <Group gap={4}>
-                  <IconClock size={14} />
-                  <Text size="sm" c="dimmed">{tournament.time_control}</Text>
-                </Group>
+                <span className="inline-flex items-center gap-1.5">
+                  <ClockIcon className="size-3.5" />
+                  {tournament.time_control}
+                </span>
               )}
               {tournament.venue && (
-                <Group gap={4}>
-                  <IconMapPin size={14} />
-                  <Text size="sm" c="dimmed">{tournament.venue}</Text>
-                </Group>
+                <span className="inline-flex items-center gap-1.5">
+                  <MapPinIcon className="size-3.5" />
+                  {tournament.venue}
+                </span>
               )}
-            </Group>
-          </Box>
+            </div>
+          </div>
 
-          <Group gap="xs" wrap="wrap">
-            <Button
-              variant="default"
-              size="sm"
-              leftSection={<IconShare size={14} />}
-              onClick={() => setShareModalOpened(true)}
-            >
+          <div className="flex flex-wrap gap-2">
+            <Button variant="outline" onClick={() => setShareModalOpened(true)}>
+              <Share2Icon />
               Share
             </Button>
-            <Link href={`/t/${tournament.slug}/manage/rounds`} style={{ textDecoration: 'none' }}>
-              <Button variant="default" size="sm">
-                Arbiter
-              </Button>
+            <Link
+              href={`/t/${tournament.slug}/manage/rounds`}
+              className={buttonVariants({ variant: 'outline' })}
+            >
+              Arbiter
             </Link>
-          </Group>
-        </Group>
+          </div>
+        </div>
 
-        <SimpleGrid cols={{ base: 2, sm: 4 }} spacing="sm" mt="lg">
-          <div className="stat-tile">
-            <div className="stat-tile__value">{activePlayers}</div>
-            <div className="stat-tile__label">Players</div>
-          </div>
-          <div className="stat-tile">
-            <div className="stat-tile__value">
-              {tournament.current_round}/{tournament.total_rounds}
-            </div>
-            <div className="stat-tile__label">Round</div>
-          </div>
-          <div className="stat-tile">
-            <div className="stat-tile__value">
-              {gamesPlayed}
-              <Text component="span" size="sm" c="dimmed"> / {gamesTotal}</Text>
-            </div>
-            <div className="stat-tile__label">Games played</div>
-          </div>
-          <div className="stat-tile">
-            <div className="stat-tile__value">{leaders[0] ? leaders[0].score : '-'}</div>
-            <div className="stat-tile__label">Top score</div>
-          </div>
-        </SimpleGrid>
-        <Progress value={roundPct} color="yellow" size="sm" radius="sm" mt="md" />
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <Stat value={activePlayers} label="Players" />
+          <Stat value={`${tournament.current_round}/${tournament.total_rounds}`} label="Round" />
+          <Stat
+            value={
+              <>
+                {gamesPlayed}
+                <span className="text-sm font-normal text-muted-foreground"> / {gamesTotal}</span>
+              </>
+            }
+            label="Games played"
+          />
+          <Stat value={leaders[0] ? leaders[0].score : '-'} label="Top score" />
+        </div>
+        <Progress value={roundPct} />
       </Card>
 
-      <Tabs value={activeTab} onChange={(v) => v && setActiveTab(v)} color="yellow" variant="pills">
-        <Box className="scroll-x" mb="lg">
-          <Tabs.List style={{ flexWrap: 'nowrap', paddingBottom: 4 }}>
-            <Tabs.Tab value="overview" leftSection={<IconHome size={14} />}>
+      <Tabs value={activeTab} onValueChange={(v) => v && setActiveTab(String(v))}>
+        <div className="mb-4 max-w-full overflow-x-auto">
+          <TabsList className="w-max">
+            <TabsTrigger value="overview" className="px-3">
+              <HomeIcon />
               Overview
-            </Tabs.Tab>
-            <Tabs.Tab value="pairings" leftSection={<IconFlame size={14} />}>
+            </TabsTrigger>
+            <TabsTrigger value="pairings" className="px-3">
+              <FlameIcon />
               Pairings
-            </Tabs.Tab>
-            <Tabs.Tab value="standings" leftSection={<IconTrophy size={14} />}>
+            </TabsTrigger>
+            <TabsTrigger value="standings" className="px-3">
+              <TrophyIcon />
               Standings
-            </Tabs.Tab>
-            <Tabs.Tab value="crosstable" leftSection={<IconChartBar size={14} />}>
+            </TabsTrigger>
+            <TabsTrigger value="crosstable" className="px-3">
+              <BarChart3Icon />
               Crosstable
-            </Tabs.Tab>
-            <Tabs.Tab value="players" leftSection={<IconUsers size={14} />}>
+            </TabsTrigger>
+            <TabsTrigger value="players" className="px-3">
+              <UsersIcon />
               Players ({players.length})
-            </Tabs.Tab>
-            <Tabs.Tab value="info" leftSection={<IconInfoCircle size={14} />}>
+            </TabsTrigger>
+            <TabsTrigger value="info" className="px-3">
+              <InfoIcon />
               Info
-            </Tabs.Tab>
-          </Tabs.List>
-        </Box>
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
-        <Tabs.Panel value="overview">
-          <SimpleGrid cols={{ base: 1, md: 2 }} spacing="lg">
-            <Card withBorder padding="md" radius="md">
-              <Group justify="space-between" mb="sm">
-                <Title order={4}>{isFinished ? 'Final podium' : 'Leaderboard'}</Title>
-                <Button variant="subtle" size="xs" onClick={() => setActiveTab('standings')}>
+        <TabsContent value="overview">
+          <div className="grid gap-4 md:grid-cols-2">
+            <Card className="gap-3 p-4">
+              <div className="flex items-center justify-between">
+                <h2 className="font-semibold">{isFinished ? 'Final podium' : 'Leaderboard'}</h2>
+                <Button variant="ghost" size="sm" onClick={() => setActiveTab('standings')}>
                   Full standings
                 </Button>
-              </Group>
+              </div>
               {leaders.length === 0 ? (
-                <Text c="dimmed" size="sm">Standings appear once results are in.</Text>
+                <p className="text-sm text-muted-foreground">Standings appear once results are in.</p>
               ) : (
-                <Stack gap="xs">
+                <div className="flex flex-col gap-2">
                   {leaders.map((row) => (
-                    <Group
+                    <div
                       key={row.playerId}
-                      justify="space-between"
-                      wrap="nowrap"
-                      p="xs"
-                      style={{
-                        border: '1px solid var(--mantine-color-default-border)',
-                        borderRadius: 10,
-                      }}
+                      className="flex items-center justify-between gap-3 rounded-lg border p-2.5"
                     >
-                      <Group gap="sm" wrap="nowrap" style={{ minWidth: 0 }}>
-                        <Text fw={900} size="md" w={28}>
+                      <div className="flex min-w-0 items-center gap-3">
+                        <span className="w-6 text-center text-lg font-bold">
                           {row.rank === 1 ? '🥇' : row.rank === 2 ? '🥈' : row.rank === 3 ? '🥉' : `#${row.rank}`}
-                        </Text>
-                        <Box style={{ minWidth: 0 }}>
-                          <Text
-                            component={Link}
+                        </span>
+                        <div className="min-w-0">
+                          <Link
                             href={`/t/${tournament.slug}/players/${row.playerId}`}
-                            fw={700}
-                            size="sm"
-                            style={{ textDecoration: 'none', wordBreak: 'break-word' }}
+                            className="break-words text-sm font-semibold hover:underline"
                           >
                             {row.playerName}
-                          </Text>
-                          <Text size="xs" c="dimmed">
+                          </Link>
+                          <p className="text-xs text-muted-foreground">
                             {row.wins}W {row.draws}D {row.losses}L
-                          </Text>
-                        </Box>
-                      </Group>
-                      <Badge size="sm" variant="light" color="yellow">
-                        {row.score} pts
-                      </Badge>
-                    </Group>
+                          </p>
+                        </div>
+                      </div>
+                      <Badge variant="secondary">{row.score} pts</Badge>
+                    </div>
                   ))}
-                </Stack>
+                </div>
               )}
             </Card>
 
-            <Card withBorder padding="md" radius="md">
-              <Group justify="space-between" mb="sm">
-                <Title order={4}>Round {tournament.current_round || 1} boards</Title>
-                <Button variant="subtle" size="xs" onClick={() => setActiveTab('pairings')}>
+            <Card className="gap-3 p-4">
+              <div className="flex items-center justify-between">
+                <h2 className="font-semibold">Round {tournament.current_round || 1} boards</h2>
+                <Button variant="ghost" size="sm" onClick={() => setActiveTab('pairings')}>
                   All pairings
                 </Button>
-              </Group>
+              </div>
               <PublicPairings
                 rounds={publicRounds}
                 currentRound={tournament.current_round}
@@ -247,161 +226,107 @@ export function PublicPageClient({
                 hideRoundTabs
               />
             </Card>
-          </SimpleGrid>
-        </Tabs.Panel>
+          </div>
+        </TabsContent>
 
-        <Tabs.Panel value="pairings">
-          <PublicPairings
-            rounds={publicRounds}
-            currentRound={tournament.current_round}
-          />
-        </Tabs.Panel>
+        <TabsContent value="pairings">
+          <PublicPairings rounds={publicRounds} currentRound={tournament.current_round} />
+        </TabsContent>
 
-        <Tabs.Panel value="standings">
-          <Card withBorder padding="md" radius="md">
-            <StandingsTable
-              standings={standings}
-              tournamentSlug={tournament.slug}
-            />
+        <TabsContent value="standings">
+          <Card className="p-3">
+            <StandingsTable standings={standings} tournamentSlug={tournament.slug} />
           </Card>
-        </Tabs.Panel>
+        </TabsContent>
 
-        <Tabs.Panel value="crosstable">
-          <Card withBorder padding="md" radius="md">
-            <Crosstable
-              standings={standings}
-              games={allGames}
-              totalRounds={tournament.total_rounds}
-            />
+        <TabsContent value="crosstable">
+          <Card className="p-3">
+            <Crosstable standings={standings} games={allGames} totalRounds={tournament.total_rounds} />
           </Card>
-        </Tabs.Panel>
+        </TabsContent>
 
-        <Tabs.Panel value="players">
-          <Card withBorder padding="md" radius="md">
-            <Table striped highlightOnHover>
-              <Table.Thead>
-                <Table.Tr>
-                  <Table.Th style={{ width: 60 }}>Seed</Table.Th>
-                  <Table.Th>Name</Table.Th>
-                  <Table.Th style={{ width: 100 }}>Rating</Table.Th>
-                  <Table.Th>Club / Country</Table.Th>
-                  <Table.Th style={{ width: 100 }}>Status</Table.Th>
-                </Table.Tr>
-              </Table.Thead>
-              <Table.Tbody>
+        <TabsContent value="players">
+          <Card className="p-3">
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead className="w-16">Seed</TableHead>
+                  <TableHead>Name</TableHead>
+                  <TableHead>Rating</TableHead>
+                  <TableHead>Club / Country</TableHead>
+                  <TableHead>Status</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
                 {players.map((p) => (
-                  <Table.Tr key={p.id}>
-                    <Table.Td fw={700}>#{p.seed}</Table.Td>
-                    <Table.Td>
-                      <Text
-                        component={Link}
+                  <TableRow key={p.id}>
+                    <TableCell className="font-bold">#{p.seed}</TableCell>
+                    <TableCell>
+                      <Link
                         href={`/t/${tournament.slug}/players/${p.id}`}
-                        fw={600}
-                        c="inherit"
+                        className="font-semibold hover:underline"
                       >
                         {p.name}
-                      </Text>
-                    </Table.Td>
-                    <Table.Td>{p.rating || '-'}</Table.Td>
-                    <Table.Td>{p.club || '-'}</Table.Td>
-                    <Table.Td>
-                      <Badge
-                        color={p.status === 'active' ? 'green' : 'red'}
-                        size="sm"
-                        variant="light"
-                      >
-                        {p.status}
-                      </Badge>
-                    </Table.Td>
-                  </Table.Tr>
+                      </Link>
+                    </TableCell>
+                    <TableCell>{p.rating || '-'}</TableCell>
+                    <TableCell>{p.club || '-'}</TableCell>
+                    <TableCell>
+                      <Badge variant={p.status === 'active' ? 'secondary' : 'destructive'}>{p.status}</Badge>
+                    </TableCell>
+                  </TableRow>
                 ))}
-              </Table.Tbody>
+              </TableBody>
             </Table>
           </Card>
-        </Tabs.Panel>
+        </TabsContent>
 
-        <Tabs.Panel value="info">
-          <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="lg">
-            <Card withBorder padding="md" radius="md">
-              <Title order={4} mb="xs">
-                Tournament Details
-              </Title>
-              <Stack gap="xs">
-                <div>
-                  <Text size="xs" c="dimmed">
-                    FORMAT
-                  </Text>
-                  <Text fw={600} tt="capitalize">
-                    {tournament.format.replace(/_/g, ' ')}
-                  </Text>
-                </div>
-                <div>
-                  <Text size="xs" c="dimmed">
-                    TOTAL ROUNDS
-                  </Text>
-                  <Text fw={600}>{tournament.total_rounds} Rounds</Text>
-                </div>
-                <div>
-                  <Text size="xs" c="dimmed">
-                    TIME CONTROL
-                  </Text>
-                  <Text fw={600}>{tournament.time_control || 'Unspecified'}</Text>
-                </div>
-                <div>
-                  <Text size="xs" c="dimmed">
-                    VENUE
-                  </Text>
-                  <Text fw={600}>{tournament.venue || 'Online'}</Text>
-                </div>
-              </Stack>
+        <TabsContent value="info">
+          <div className="grid gap-4 md:grid-cols-2">
+            <Card className="gap-3 p-4">
+              <h2 className="font-semibold">Tournament details</h2>
+              <Detail label="Format">
+                <span className="capitalize">{tournament.format.replace(/_/g, ' ')}</span>
+              </Detail>
+              <Detail label="Total rounds">{tournament.total_rounds} rounds</Detail>
+              <Detail label="Time control">{tournament.time_control || 'Unspecified'}</Detail>
+              <Detail label="Venue">{tournament.venue || 'Online'}</Detail>
             </Card>
 
-            <Card withBorder padding="md" radius="md">
-              <Title order={4} mb="xs">
-                Scoring & Tie-breaks
-              </Title>
-              <Stack gap="xs">
-                <div>
-                  <Text size="xs" c="dimmed">
-                    POINTS SYSTEM
-                  </Text>
-                  <Text fw={600}>
-                    Win: {tournament.settings?.winPoints ?? 1} pt | Draw:{' '}
-                    {tournament.settings?.drawPoints ?? 0.5} pt | Bye:{' '}
-                    {tournament.settings?.byePoints ?? 1} pt
-                  </Text>
+            <Card className="gap-3 p-4">
+              <h2 className="font-semibold">Scoring &amp; tie-breaks</h2>
+              <Detail label="Points system">
+                Win: {tournament.settings?.winPoints ?? 1} pt | Draw: {tournament.settings?.drawPoints ?? 0.5}{' '}
+                pt | Bye: {tournament.settings?.byePoints ?? 1} pt
+              </Detail>
+              <div>
+                <p className="mb-1 text-xs font-medium uppercase text-muted-foreground">Tie-break order</p>
+                <div className="flex flex-wrap gap-1.5">
+                  {(tournament.settings?.tieBreaks || ['buchholz', 'sonneborn_berger', 'wins']).map(
+                    (tb: string) => (
+                      <Badge key={tb} variant="outline">
+                        {tb.replace(/_/g, ' ')}
+                      </Badge>
+                    )
+                  )}
                 </div>
-                <div>
-                  <Text size="xs" c="dimmed">
-                    TIE-BREAK ORDER
-                  </Text>
-                  <Group gap={6} mt={4}>
-                    {(tournament.settings?.tieBreaks || ['buchholz', 'sonneborn_berger', 'wins']).map(
-                      (tb: string) => (
-                        <Badge key={tb} variant="outline" color="yellow" size="sm">
-                          {tb.replace(/_/g, ' ')}
-                        </Badge>
-                      )
-                    )}
-                  </Group>
-                </div>
-              </Stack>
+              </div>
             </Card>
-          </SimpleGrid>
-        </Tabs.Panel>
+          </div>
+        </TabsContent>
       </Tabs>
 
-      <Text size="xs" c="dimmed" ta="center" mt="xl">
+      <p className="mt-8 text-center text-xs text-muted-foreground">
         Powered by OpenVChess ·{' '}
         <a
           href="https://github.com/Taraldinn"
           target="_blank"
           rel="noopener noreferrer"
-          style={{ color: 'inherit', fontWeight: 700 }}
+          className="font-semibold text-foreground hover:underline"
         >
           github.com/Taraldinn
         </a>
-      </Text>
+      </p>
 
       <ExportShareModal
         opened={shareModalOpened}
@@ -409,6 +334,6 @@ export function PublicPageClient({
         tournamentSlug={tournament.slug}
         tournamentName={tournament.name}
       />
-    </Container>
+    </div>
   );
 }

@@ -1,28 +1,13 @@
 'use client';
 
 import { useState } from 'react';
-import {
-  Card,
-  Group,
-  Title,
-  Text,
-  Badge,
-  Button,
-  Stack,
-  Tabs,
-  Progress,
-  Paper,
-  Alert,
-} from '@mantine/core';
-import {
-  IconCheck,
-  IconFlame,
-  IconArrowRight,
-  IconShare,
-  IconAlertCircle,
-  IconTrophy,
-} from '@tabler/icons-react';
-import { notifications } from '@mantine/notifications';
+import { ArrowRightIcon, CheckIcon, Loader2Icon, TrophyIcon } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { notify } from '@/lib/notify';
 import { useRouter } from 'next/navigation';
 import { PairingBoard, BoardGameItem } from '@/components/chess/PairingBoard';
 import {
@@ -66,7 +51,7 @@ export function RoundsManagementClient({ tournament, initialRounds }: Props) {
     try {
       await setGameResultAction(gameId, result);
     } catch (err: any) {
-      notifications.show({
+      notify({
         title: 'Error Saving Result',
         message: err.message,
         color: 'red',
@@ -83,13 +68,13 @@ export function RoundsManagementClient({ tournament, initialRounds }: Props) {
       setRounds((prev) =>
         prev.map((r) => (r.id === activeRound.id ? { ...r, status: 'published' } : r))
       );
-      notifications.show({
+      notify({
         title: 'Round Published',
         message: `Round ${activeRound.number} is now visible to the public.`,
         color: 'green',
       });
     } catch (err: any) {
-      notifications.show({ title: 'Error', message: err.message, color: 'red' });
+      notify({ title: 'Error', message: err.message, color: 'red' });
     } finally {
       setLoadingAction(false);
     }
@@ -101,13 +86,13 @@ export function RoundsManagementClient({ tournament, initialRounds }: Props) {
       const res = await generateNextRoundAction(tournament.id);
       if (res.success) {
         if (res.finished) {
-          notifications.show({
+          notify({
             title: 'Tournament Finished!',
             message: 'All scheduled rounds are complete. Final standings calculated.',
             color: 'yellow',
           });
         } else {
-          notifications.show({
+          notify({
             title: `Round ${res.roundNumber} Generated!`,
             message: 'Pairings ready for review and entry.',
             color: 'green',
@@ -117,7 +102,7 @@ export function RoundsManagementClient({ tournament, initialRounds }: Props) {
         router.refresh();
       }
     } catch (err: any) {
-      notifications.show({
+      notify({
         title: 'Cannot Generate Next Round',
         message: err.message,
         color: 'red',
@@ -141,112 +126,87 @@ export function RoundsManagementClient({ tournament, initialRounds }: Props) {
   const isFinalRound = tournament.current_round >= tournament.total_rounds;
 
   return (
-    <Stack gap="lg">
-      <Group justify="space-between" align="center">
+    <div className="flex flex-col gap-5">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <Title order={3}>Round Management</Title>
-          <Text size="sm" c="dimmed">
+          <h2 className="text-xl font-bold tracking-tight">Round management</h2>
+          <p className="text-sm text-muted-foreground">
             Enter results for each board. Standings and pairings calculate automatically.
-          </Text>
+          </p>
         </div>
 
-        <Group>
+        <div className="flex flex-wrap gap-2">
           {activeRound?.status === 'draft' && (
-            <Button
-              variant="light"
-              color="blue"
-              onClick={handlePublishRound}
-              loading={loadingAction}
-            >
-              Publish Round {activeRound.number}
+            <Button variant="outline" onClick={handlePublishRound} disabled={loadingAction}>
+              {loadingAction && <Loader2Icon className="animate-spin" />}
+              Publish round {activeRound.number}
             </Button>
           )}
 
           {isCurrentActiveRound && (
             <Button
-              color="yellow"
-             
-              fw={700}
-              disabled={!allCurrentGamesFinished}
+              disabled={!allCurrentGamesFinished || loadingAction}
               onClick={handleGenerateNextRound}
-              loading={loadingAction}
-              rightSection={isFinalRound ? <IconTrophy size={18} /> : <IconArrowRight size={18} />}
             >
-              {isFinalRound ? 'Complete Tournament' : `Generate Round ${tournament.current_round + 1}`}
+              {loadingAction && <Loader2Icon className="animate-spin" />}
+              {isFinalRound ? 'Complete tournament' : `Generate round ${tournament.current_round + 1}`}
+              {isFinalRound ? <TrophyIcon /> : <ArrowRightIcon />}
             </Button>
           )}
-        </Group>
-      </Group>
+        </div>
+      </div>
 
-      {/* Round Tabs */}
-      <Tabs
-        value={activeRoundNumber}
-        onChange={(v) => v && setActiveRoundNumber(v)}
-        color="yellow"
-        variant="pills"
-      >
-        <Tabs.List>
-          {rounds.map((r) => (
-            <Tabs.Tab
-              key={r.number}
-              value={String(r.number)}
-              rightSection={
-                r.status === 'completed' ? (
-                  <IconCheck size={14} color="var(--mantine-color-green-5)" />
+      <div className="overflow-x-auto">
+        <Tabs value={activeRoundNumber} onValueChange={(v) => v && setActiveRoundNumber(String(v))}>
+          <TabsList className="w-max">
+            {rounds.map((r) => (
+              <TabsTrigger key={r.number} value={String(r.number)} className="gap-2 px-3">
+                Round {r.number}
+                {r.status === 'completed' ? (
+                  <CheckIcon className="size-3.5 text-emerald-600" />
                 ) : r.status === 'published' ? (
-                  <Badge size="xs" color="blue" variant="light">
+                  <Badge variant="secondary" className="h-4 px-1.5 text-[10px]">
                     Live
                   </Badge>
                 ) : (
-                  <Badge size="xs" color="gray" variant="light">
+                  <Badge variant="outline" className="h-4 px-1.5 text-[10px]">
                     Draft
                   </Badge>
-                )
-              }
-            >
-              Round {r.number}
-            </Tabs.Tab>
-          ))}
-        </Tabs.List>
-      </Tabs>
+                )}
+              </TabsTrigger>
+            ))}
+          </TabsList>
+        </Tabs>
+      </div>
 
-      {/* Round Status Banner & Progress */}
       {activeRound && (
-        <Card withBorder padding="md" radius="md" className="playful-card-glow">
-          <Group justify="space-between" mb="xs">
-            <Group gap="xs">
-              <Text fw={700}>Round {activeRound.number} Progress:</Text>
-              <Text size="sm" c="dimmed">
-                {completedGamesInActiveRound} / {totalGamesInActiveRound} Boards Finished
-              </Text>
-            </Group>
-            <Badge
-              color={activeRound.status === 'completed' ? 'green' : 'blue'}
-              variant="filled"
-            >
+        <Card className="gap-3 p-4">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <p className="text-sm">
+              <span className="font-semibold">Round {activeRound.number} progress:</span>{' '}
+              <span className="text-muted-foreground">
+                {completedGamesInActiveRound} / {totalGamesInActiveRound} boards finished
+              </span>
+            </p>
+            <Badge variant={activeRound.status === 'completed' ? 'default' : 'secondary'}>
               {activeRound.status.toUpperCase()}
             </Badge>
-          </Group>
-          <Progress value={progressPercent} color="yellow" size="md" radius="sm" />
+          </div>
+          <Progress value={progressPercent} />
         </Card>
       )}
 
-      {/* Boards List */}
       {!activeRound || activeRound.games.length === 0 ? (
-        <Paper p="lg" ta="center" withBorder radius="md">
-          <Text c="dimmed">No pairings generated for this round yet.</Text>
-        </Paper>
+        <Card className="p-8 text-center text-sm text-muted-foreground">
+          No pairings generated for this round yet.
+        </Card>
       ) : (
-        <Stack gap="md">
+        <div className="flex flex-col gap-3">
           {activeRound.games.map((game) => (
-            <PairingBoard
-              key={game.id}
-              game={game}
-              onSetResult={handleSetResult}
-            />
+            <PairingBoard key={game.id} game={game} onSetResult={handleSetResult} />
           ))}
-        </Stack>
+        </div>
       )}
-    </Stack>
+    </div>
   );
 }

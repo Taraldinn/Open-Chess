@@ -1,19 +1,28 @@
 'use client';
 
 import { useState } from 'react';
+import { FileSpreadsheetIcon, Loader2Icon, UploadIcon } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import {
-  Modal,
-  Button,
-  Textarea,
-  Stack,
-  Text,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import {
   Table,
-  Group,
-  Badge,
-  FileInput,
-} from '@mantine/core';
-import { IconUpload, IconFileSpreadsheet, IconCheck } from '@tabler/icons-react';
-import { notifications } from '@mantine/notifications';
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
+import { notify } from '@/lib/notify';
 import { bulkAddPlayersAction } from '@/lib/actions/players';
 
 interface BulkImportModalProps {
@@ -74,7 +83,8 @@ export function BulkImportModal({
     parseLines(val);
   };
 
-  const handleFileUpload = (file: File | null) => {
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.currentTarget.files?.[0];
     if (!file) return;
     const reader = new FileReader();
     reader.onload = (e) => {
@@ -92,7 +102,7 @@ export function BulkImportModal({
     setLoading(true);
     try {
       await bulkAddPlayersAction(tournamentId, parsed);
-      notifications.show({
+      notify({
         title: 'Import Successful',
         message: `Imported ${parsed.length} players.`,
         color: 'green',
@@ -102,7 +112,7 @@ export function BulkImportModal({
       onSuccess();
       onClose();
     } catch (err: any) {
-      notifications.show({
+      notify({
         title: 'Import Failed',
         message: err.message,
         color: 'red',
@@ -113,89 +123,76 @@ export function BulkImportModal({
   };
 
   return (
-    <Modal
-      opened={opened}
-      onClose={onClose}
-      title="Bulk Import Players"
-      size="sm"
-      radius="md"
-    >
-      <Stack gap="md">
-        <Text size="sm" c="dimmed">
-          Paste a list of players (one per line). Format: <code>Name, Rating, Club</code> or simply <code>Name</code>. You can also upload a CSV.
-        </Text>
+    <Dialog open={opened} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent className="sm:max-w-2xl">
+        <DialogHeader>
+          <DialogTitle>Bulk import players</DialogTitle>
+          <DialogDescription>
+            Paste a list of players (one per line). Format: <code>Name, Rating, Club</code> or simply{' '}
+            <code>Name</code>. You can also upload a CSV.
+          </DialogDescription>
+        </DialogHeader>
 
-        <FileInput
-          placeholder="Upload CSV file"
-          leftSection={<IconFileSpreadsheet size={16} />}
-          accept=".csv,.txt"
-          onChange={handleFileUpload}
-        />
-
-        <Textarea
-          placeholder={"Magnus Carlsen, 2882, Norway\nHikaru Nakamura, 2875, USA\nFabiano Caruana, 2805"}
-          minRows={5}
-          maxRows={10}
-          value={rawText}
-          onChange={handleTextChange}
-        />
-
-        {parsed.length > 0 && (
-          <div>
-            <Group justify="space-between" mb="xs">
-              <Text size="sm" fw={600}>
-                Preview Parsed Players
-              </Text>
-              <Badge color="yellow" variant="light">
-                {parsed.length} players detected
-              </Badge>
-            </Group>
-
-            <Table striped highlightOnHover withTableBorder>
-              <Table.Thead>
-                <Table.Tr>
-                  <Table.Th>#</Table.Th>
-                  <Table.Th>Name</Table.Th>
-                  <Table.Th>Rating</Table.Th>
-                  <Table.Th>Club</Table.Th>
-                </Table.Tr>
-              </Table.Thead>
-              <Table.Tbody>
-                {parsed.slice(0, 8).map((p, i) => (
-                  <Table.Tr key={i}>
-                    <Table.Td>{i + 1}</Table.Td>
-                    <Table.Td fw={500}>{p.name}</Table.Td>
-                    <Table.Td>{p.rating || '-'}</Table.Td>
-                    <Table.Td>{p.club || '-'}</Table.Td>
-                  </Table.Tr>
-                ))}
-              </Table.Tbody>
-            </Table>
-            {parsed.length > 8 && (
-              <Text size="xs" c="dimmed" mt="xs" ta="center">
-                + {parsed.length - 8} more players
-              </Text>
-            )}
+        <div className="flex flex-col gap-3">
+          <div className="relative">
+            <FileSpreadsheetIcon className="pointer-events-none absolute left-2.5 top-1/2 size-4 -translate-y-1/2 text-muted-foreground" />
+            <Input type="file" accept=".csv,.txt" className="pl-8" onChange={handleFileUpload} />
           </div>
-        )}
 
-        <Group justify="flex-end" mt="md">
-          <Button variant="default" onClick={onClose}>
+          <Textarea
+            placeholder={'Magnus Carlsen, 2882, Norway\nHikaru Nakamura, 2875, USA\nFabiano Caruana, 2805'}
+            rows={6}
+            value={rawText}
+            onChange={handleTextChange}
+          />
+
+          {parsed.length > 0 && (
+            <div>
+              <div className="mb-2 flex items-center justify-between">
+                <p className="text-sm font-semibold">Preview parsed players</p>
+                <Badge variant="secondary">{parsed.length} players detected</Badge>
+              </div>
+              <div className="rounded-lg border">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>#</TableHead>
+                      <TableHead>Name</TableHead>
+                      <TableHead>Rating</TableHead>
+                      <TableHead>Club</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {parsed.slice(0, 8).map((p, i) => (
+                      <TableRow key={i}>
+                        <TableCell>{i + 1}</TableCell>
+                        <TableCell className="font-medium">{p.name}</TableCell>
+                        <TableCell>{p.rating || '-'}</TableCell>
+                        <TableCell>{p.club || '-'}</TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+              {parsed.length > 8 && (
+                <p className="mt-2 text-center text-xs text-muted-foreground">
+                  + {parsed.length - 8} more players
+                </p>
+              )}
+            </div>
+          )}
+        </div>
+
+        <DialogFooter>
+          <Button variant="outline" onClick={onClose}>
             Cancel
           </Button>
-          <Button
-            color="yellow"
-           
-            fw={700}
-            onClick={handleImport}
-            disabled={parsed.length === 0}
-            loading={loading}
-            leftSection={<IconUpload size={16} />}
-          >
-            Import {parsed.length > 0 ? `${parsed.length} Players` : ''}
+          <Button onClick={handleImport} disabled={parsed.length === 0 || loading}>
+            {loading ? <Loader2Icon className="animate-spin" /> : <UploadIcon />}
+            Import {parsed.length > 0 ? `${parsed.length} players` : ''}
           </Button>
-        </Group>
-      </Stack>
-    </Modal>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
   );
 }

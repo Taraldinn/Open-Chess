@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { notifications } from '@mantine/notifications';
+import { notify } from '@/lib/notify';
 import { PlayerList, PlayerItem } from '@/components/players/PlayerList';
 import { startTournamentAction } from '@/lib/actions/rounds';
 
@@ -25,7 +25,7 @@ export function PlayerManagementClient({ tournament, initialPlayers }: Props) {
     try {
       const res = await startTournamentAction(tournament.id);
       if (res.success) {
-        notifications.show({
+        notify({
           title: 'Tournament Started!',
           message: 'Round 1 pairings generated successfully.',
           color: 'green',
@@ -33,7 +33,7 @@ export function PlayerManagementClient({ tournament, initialPlayers }: Props) {
         router.push(`/t/${tournament.slug}/manage/rounds`);
       }
     } catch (err: any) {
-      notifications.show({
+      notify({
         title: 'Could Not Start Tournament',
         message: err.message,
         color: 'red',

@@ -1,4 +1,3 @@
-import { Container } from '@mantine/core';
 import { notFound, redirect } from 'next/navigation';
 import { getTournamentBySlugAction } from '@/lib/actions/tournaments';
 import { verifyUserIsTournamentAdmin } from '@/lib/actions/authGuards';
@@ -23,7 +22,7 @@ export default async function ManagePlayersPage({ params }: Props) {
   }
 
   return (
-    <Container size="lg" py="xl">
+    <div className="mx-auto w-full max-w-6xl px-4 py-6">
       <TournamentManageHeader
         name={tournament.name}
         slug={tournament.slug}
@@ -37,6 +36,6 @@ export default async function ManagePlayersPage({ params }: Props) {
         tournament={tournament}
         initialPlayers={tournament.players || []}
       />
-    </Container>
+    </div>
   );
 }

@@ -1,193 +1,99 @@
 'use client';
 
-import {
-  Group,
-  Button,
-  Text,
-  ActionIcon,
-  useMantineColorScheme,
-  useComputedColorScheme,
-  Container,
-  Box,
-  Drawer,
-  Stack,
-  Burger,
-  Divider,
-} from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
-import {
-  IconSun,
-  IconMoon,
-  IconTrophy,
-  IconPlus,
-  IconLayoutDashboard,
-  IconBrandGithub,
-} from '@tabler/icons-react';
 import Link from 'next/link';
+import { LayoutDashboardIcon, MenuIcon, PlusIcon, TrophyIcon } from 'lucide-react';
+import { GithubIcon } from '@/components/icons/github-icon';
+import { Button, buttonVariants } from '@/components/ui/button';
+import {
+  Sheet,
+  SheetClose,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+} from '@/components/ui/sheet';
+import { Separator } from '@/components/ui/separator';
+import { ThemeToggle } from '@/components/theme-toggle';
 import { UserMenu } from './UserMenu';
 
+const GITHUB_URL = 'https://github.com/Taraldinn';
+
 export function Navbar() {
-  const { setColorScheme } = useMantineColorScheme();
-  const computedColorScheme = useComputedColorScheme('dark', { getInitialValueInEffect: true });
-  const [drawerOpened, { open: openDrawer, close: closeDrawer }] = useDisclosure(false);
-
-  const toggleColorScheme = () => {
-    setColorScheme(computedColorScheme === 'dark' ? 'light' : 'dark');
-  };
-
   return (
-    <>
-      <header
-        style={{
-          borderBottom: '1px solid var(--mantine-color-default-border)',
-          backgroundColor: 'var(--mantine-color-body)',
-          position: 'sticky',
-          top: 0,
-          zIndex: 100,
-          backdropFilter: 'blur(8px)',
-        }}
-      >
-        <Container size="lg" h={64}>
-          <Group justify="space-between" h="100%" wrap="nowrap">
-            <Link href="/" style={{ textDecoration: 'none' }}>
-              <Group gap="xs" align="center">
-                <Box className="playful-float">
-                  <IconTrophy size={26} color="var(--accent)" />
-                </Box>
-                <Text fw={900} size="md" c="var(--mantine-color-text)" style={{ letterSpacing: '-0.02em' }}>
-                  Open<Text component="span" className="playful-gradient-text" inherit>VChess</Text>
-                </Text>
-              </Group>
-            </Link>
+    <header className="sticky top-0 z-40 border-b bg-background/80 backdrop-blur">
+      <div className="mx-auto flex h-14 w-full max-w-6xl items-center justify-between gap-2 px-4">
+        <Link href="/" className="flex items-center gap-2 font-bold tracking-tight">
+          <TrophyIcon className="size-5 text-primary" />
+          OpenVChess
+        </Link>
 
-            {/* Desktop nav */}
-            <Group gap="sm" visibleFrom="sm">
-              <Link href="/dashboard" style={{ textDecoration: 'none' }}>
-                <Button variant="subtle" size="sm" radius="sm" className="subtle-nav-btn">
-                  Dashboard
-                </Button>
-              </Link>
-              <Link href="/t/new" style={{ textDecoration: 'none' }}>
-                <Button
-                  color="yellow"
-                 
-                  size="sm"
-                  radius="sm"
-                  fw={800}
-                  leftSection={<IconPlus size={16} stroke={2.5} />}
-                >
-                  New Tournament
-                </Button>
-              </Link>
-              <ActionIcon
-                component="a"
-                href="https://github.com/Taraldinn"
-                target="_blank"
-                rel="noopener noreferrer"
-                variant="default"
-                size="sm"
-                radius="sm"
-                aria-label="GitHub: Taraldinn"
-              >
-                <IconBrandGithub size={20} />
-              </ActionIcon>
-              <UserMenu />
-              <ActionIcon
-                onClick={toggleColorScheme}
-                variant="default"
-                size="sm"
-                radius="sm"
-                aria-label="Toggle color scheme"
-              >
-                <>
-                  <IconSun size={20} className="icon-show-dark" />
-                  <IconMoon size={20} className="icon-show-light" />
-                </>
-              </ActionIcon>
-            </Group>
-
-            {/* Mobile nav */}
-            <Group gap={6} hiddenFrom="sm" wrap="nowrap">
-              <ActionIcon
-                onClick={toggleColorScheme}
-                variant="default"
-                size="md"
-                radius="sm"
-                aria-label="Toggle color scheme"
-              >
-                <>
-                  <IconSun size={16} className="icon-show-dark" />
-                  <IconMoon size={16} className="icon-show-light" />
-                </>
-              </ActionIcon>
-              <UserMenu />
-              <Burger
-                opened={drawerOpened}
-                onClick={drawerOpened ? closeDrawer : openDrawer}
-                size="sm"
-                aria-label="Toggle navigation"
-              />
-            </Group>
-          </Group>
-        </Container>
-      </header>
-
-      {/* Mobile drawer */}
-      <Drawer
-        opened={drawerOpened}
-        onClose={closeDrawer}
-        title={
-          <Group gap="xs">
-            <IconTrophy size={20} color="var(--accent)" />
-            <Text fw={900} size="md">OpenVChess</Text>
-          </Group>
-        }
-        position="right"
-        size="xs"
-        zIndex={200}
-      >
-        <Stack gap="sm" pt="md">
-          <Link href="/dashboard" style={{ textDecoration: 'none' }} onClick={closeDrawer}>
-            <Button
-              variant="light"
-              color="yellow"
-              fullWidth
-              leftSection={<IconLayoutDashboard size={16} />}
-              fw={700}
-            >
-              Dashboard
-            </Button>
+        <nav className="hidden items-center gap-2 md:flex">
+          <Link href="/dashboard" className={buttonVariants({ variant: 'ghost' })}>
+            Dashboard
           </Link>
-          <Link href="/t/new" style={{ textDecoration: 'none' }} onClick={closeDrawer}>
-            <Button
-              color="yellow"
-             
-              fullWidth
-              leftSection={<IconPlus size={16} stroke={2.5} />}
-              fw={800}
-            >
-              New Tournament
-            </Button>
+          <Link href="/t/new" className={buttonVariants()}>
+            <PlusIcon />
+            New tournament
           </Link>
-          <Divider />
-          <Link href="/" style={{ textDecoration: 'none' }} onClick={closeDrawer}>
-            <Button variant="subtle" fullWidth fw={600}>
-              Home
-            </Button>
-          </Link>
-          <Button
-            component="a"
-            href="https://github.com/Taraldinn"
+          <a
+            href={GITHUB_URL}
             target="_blank"
             rel="noopener noreferrer"
-            variant="default"
-            fullWidth
-            leftSection={<IconBrandGithub size={16} />}
+            aria-label="GitHub: Taraldinn"
+            className={buttonVariants({ variant: 'outline', size: 'icon' })}
           >
-            github.com/Taraldinn
-          </Button>
-        </Stack>
-      </Drawer>
-    </>
+            <GithubIcon />
+          </a>
+          <UserMenu />
+          <ThemeToggle />
+        </nav>
+
+        <div className="flex items-center gap-1.5 md:hidden">
+          <ThemeToggle />
+          <UserMenu />
+          <Sheet>
+            <SheetTrigger
+              render={<Button variant="outline" size="icon" aria-label="Open navigation" />}
+            >
+              <MenuIcon />
+            </SheetTrigger>
+            <SheetContent side="right">
+              <SheetHeader>
+                <SheetTitle className="flex items-center gap-2">
+                  <TrophyIcon className="size-5 text-primary" />
+                  OpenVChess
+                </SheetTitle>
+              </SheetHeader>
+              <div className="flex flex-col gap-2 px-4">
+                <SheetClose
+                  nativeButton={false}
+                  render={<Link href="/dashboard" className={buttonVariants({ variant: 'secondary' })} />}
+                >
+                  <LayoutDashboardIcon />
+                  Dashboard
+                </SheetClose>
+                <SheetClose nativeButton={false} render={<Link href="/t/new" className={buttonVariants()} />}>
+                  <PlusIcon />
+                  New tournament
+                </SheetClose>
+                <Separator className="my-1" />
+                <SheetClose nativeButton={false} render={<Link href="/" className={buttonVariants({ variant: 'ghost' })} />}>
+                  Home
+                </SheetClose>
+                <a
+                  href={GITHUB_URL}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={buttonVariants({ variant: 'outline' })}
+                >
+                  <GithubIcon />
+                  github.com/Taraldinn
+                </a>
+              </div>
+            </SheetContent>
+          </Sheet>
+        </div>
+      </div>
+    </header>
   );
 }

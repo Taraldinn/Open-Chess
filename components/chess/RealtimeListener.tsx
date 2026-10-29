@@ -3,7 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
-import { Badge, Group } from '@mantine/core';
+import { Badge } from '@/components/ui/badge';
 
 interface RealtimeListenerProps {
   tournamentId: string;
@@ -19,27 +19,13 @@ export function RealtimeListener({ tournamentId }: RealtimeListenerProps) {
       .channel(`tournament-live-${tournamentId}`)
       .on(
         'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'games',
-          filter: `tournament_id=eq.${tournamentId}`,
-        },
-        () => {
-          router.refresh();
-        }
+        { event: '*', schema: 'public', table: 'games', filter: `tournament_id=eq.${tournamentId}` },
+        () => router.refresh()
       )
       .on(
         'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'rounds',
-          filter: `tournament_id=eq.${tournamentId}`,
-        },
-        () => {
-          router.refresh();
-        }
+        { event: '*', schema: 'public', table: 'rounds', filter: `tournament_id=eq.${tournamentId}` },
+        () => router.refresh()
       )
       .subscribe();
 
@@ -49,20 +35,9 @@ export function RealtimeListener({ tournamentId }: RealtimeListenerProps) {
   }, [tournamentId, router]);
 
   return (
-    <Group gap={6}>
-      <span
-        style={{
-          width: 8,
-          height: 8,
-          borderRadius: '50%',
-          backgroundColor: 'var(--mantine-color-mintJoy-5)',
-          display: 'inline-block',
-          boxShadow: 'none',
-        }}
-      />
-      <Badge color="green" variant="light" size="sm">
-        Live Updates On
-      </Badge>
-    </Group>
+    <Badge variant="outline" className="gap-1.5">
+      <span className="size-1.5 rounded-full bg-emerald-500" />
+      Live updates on
+    </Badge>
   );
 }

@@ -1,8 +1,11 @@
 'use client';
 
 import { useState } from 'react';
-import { Card, Group, Text, Badge, Stack, Tabs, Paper, Box } from '@mantine/core';
 import type { GameResult } from '@/types/database';
+import { Badge } from '@/components/ui/badge';
+import { Card } from '@/components/ui/card';
+import { Tabs, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { cn } from '@/lib/utils';
 import { ColorChip } from './ColorChip';
 
 export interface PublicBoardItem {
@@ -31,20 +34,20 @@ interface PublicPairingsProps {
 }
 
 export function formatResultBadge(result: GameResult, isBye: boolean) {
-  if (isBye) return <Badge color="arcadeViolet" variant="light">1 - 0 (BYE)</Badge>;
+  if (isBye) return <Badge variant="secondary">1 - 0 (BYE)</Badge>;
   switch (result) {
     case 'white_win':
     case 'black_forfeit_win':
-      return <Badge color="yellow" variant="filled">1 - 0</Badge>;
+      return <Badge>1 - 0</Badge>;
     case 'black_win':
     case 'white_forfeit_win':
-      return <Badge color="yellow" variant="filled">0 - 1</Badge>;
+      return <Badge>0 - 1</Badge>;
     case 'draw':
-      return <Badge color="arcadeViolet" variant="filled">½ - ½</Badge>;
+      return <Badge variant="secondary">½ - ½</Badge>;
     case 'double_forfeit':
-      return <Badge color="red" variant="filled">0F - 0F</Badge>;
+      return <Badge variant="destructive">0F - 0F</Badge>;
     default:
-      return <Badge color="gray" variant="light">Pending</Badge>;
+      return <Badge variant="outline">Pending</Badge>;
   }
 }
 
@@ -58,26 +61,21 @@ function Side({
   rating?: number | null;
 }) {
   return (
-    <div className={`matchup__side matchup__side--${color}`}>
+    <div
+      className={cn(
+        'flex flex-col gap-0.5 rounded-lg border px-3 py-2',
+        color === 'white' ? 'bg-card' : 'bg-muted',
+        color === 'black' && 'md:items-end md:text-right'
+      )}
+    >
       <ColorChip color={color} />
-      <Text fw={700} size="sm" style={{ wordBreak: 'break-word' }}>
-        {name}
-      </Text>
-      {rating ? (
-        <Text size="xs" c="dimmed">
-          {rating}
-        </Text>
-      ) : null}
+      <p className="break-words text-sm font-semibold">{name}</p>
+      {rating ? <p className="text-xs text-muted-foreground">{rating}</p> : null}
     </div>
   );
 }
 
-export function PublicPairings({
-  rounds,
-  currentRound,
-  limit,
-  hideRoundTabs,
-}: PublicPairingsProps) {
+export function PublicPairings({ rounds, currentRound, limit, hideRoundTabs }: PublicPairingsProps) {
   const [selectedRound, setSelectedRound] = useState<string>(
     String(currentRound || (rounds.length > 0 ? rounds[rounds.length - 1].number : 1))
   );
@@ -86,52 +84,41 @@ export function PublicPairings({
   const games = activeRound ? (limit ? activeRound.games.slice(0, limit) : activeRound.games) : [];
 
   return (
-    <Stack gap="md">
+    <div className="flex flex-col gap-4">
       {!hideRoundTabs && (
-        <Tabs
-          value={selectedRound}
-          onChange={(v) => v && setSelectedRound(v)}
-          color="yellow"
-          variant="pills"
-        >
-          <Box className="scroll-x">
-            <Tabs.List style={{ flexWrap: 'nowrap', paddingBottom: 4 }}>
+        <div className="overflow-x-auto">
+          <Tabs value={selectedRound} onValueChange={(v) => v && setSelectedRound(String(v))}>
+            <TabsList>
               {rounds.map((r) => (
-                <Tabs.Tab key={r.number} value={String(r.number)}>
+                <TabsTrigger key={r.number} value={String(r.number)} className="px-3">
                   Round {r.number}
-                </Tabs.Tab>
+                </TabsTrigger>
               ))}
-            </Tabs.List>
-          </Box>
-        </Tabs>
+            </TabsList>
+          </Tabs>
+        </div>
       )}
 
       {!activeRound || games.length === 0 ? (
-        <Paper p="lg" ta="center" withBorder radius="md">
-          <Text c="dimmed">No pairings published for this round yet.</Text>
-        </Paper>
+        <Card className="p-8 text-center text-sm text-muted-foreground">
+          No pairings published for this round yet.
+        </Card>
       ) : (
-        <Stack gap="sm">
+        <div className="flex flex-col gap-2">
           {games.map((game) => {
             const isBye = game.result === 'bye' || !game.blackId;
             return (
-              <Card key={game.id} withBorder shadow="xs" padding="md" radius="md">
-                <Group justify="space-between" align="center" mb={10}>
-                  <Badge size="md" variant="light" color="gray">
-                    Board {game.board}
-                  </Badge>
+              <Card key={game.id} className="gap-3 p-4">
+                <div className="flex items-center justify-between">
+                  <Badge variant="outline">Board {game.board}</Badge>
                   {formatResultBadge(game.result, isBye)}
-                </Group>
-                <div className="matchup">
+                </div>
+                <div className="grid grid-cols-1 items-stretch gap-1.5 md:grid-cols-[1fr_auto_1fr] md:items-center">
                   <Side color="white" name={game.whiteName} rating={game.whiteRating} />
-                  <Text className="matchup__vs" size="xs" fw={800} c="dimmed">
-                    VS
-                  </Text>
+                  <span className="text-center text-xs font-semibold text-muted-foreground">VS</span>
                   {isBye ? (
-                    <div className="matchup__side">
-                      <Badge color="blue" variant="outline">
-                        BYE
-                      </Badge>
+                    <div className="rounded-lg border px-3 py-2 md:text-right">
+                      <Badge variant="outline">BYE</Badge>
                     </div>
                   ) : (
                     <Side color="black" name={game.blackName || 'TBD'} rating={game.blackRating} />
@@ -140,8 +127,8 @@ export function PublicPairings({
               </Card>
             );
           })}
-        </Stack>
+        </div>
       )}
-    </Stack>
+    </div>
   );
 }

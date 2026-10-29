@@ -1,53 +1,47 @@
-'use client';
-
-import { Container, Group, Text, Button, Divider, Stack } from '@mantine/core';
-import { IconBrandGithub, IconTrophy } from '@tabler/icons-react';
+import { TrophyIcon } from 'lucide-react';
+import { GithubIcon } from '@/components/icons/github-icon';
+import { buttonVariants } from '@/components/ui/button';
+import { Separator } from '@/components/ui/separator';
 
 export const GITHUB_URL = 'https://github.com/Taraldinn';
 
 export function Footer() {
   return (
-    <footer style={{ paddingTop: '2rem', paddingBottom: '1.5rem' }}>
-      <Divider mb="lg" color="var(--mantine-color-default-border)" />
-      <Container size="lg">
-        <Group justify="space-between" align="center" wrap="wrap" gap="md">
-          <Stack gap={4}>
-            <Group gap="xs" align="center">
-              <IconTrophy size={18} color="var(--accent)" />
-              <Text fw={800}>
-                Open<Text component="span" className="playful-gradient-text" inherit>VChess</Text>
-              </Text>
-            </Group>
-            <Text size="xs" c="dimmed">
+    <footer className="pb-6 pt-8">
+      <Separator className="mb-6" />
+      <div className="mx-auto w-full max-w-6xl px-4">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div className="flex flex-col gap-1">
+            <div className="flex items-center gap-2 font-bold">
+              <TrophyIcon className="size-[18px] text-primary" />
+              OpenVChess
+            </div>
+            <p className="text-xs text-muted-foreground">
               Swiss, Round Robin and Knockout tournaments with live pairings.
-            </Text>
-          </Stack>
-
-          <Button
-            component="a"
+            </p>
+          </div>
+          <a
             href={GITHUB_URL}
             target="_blank"
             rel="noopener noreferrer"
-            size="xs"
-            variant="default"
-            leftSection={<IconBrandGithub size={14} />}
+            className={buttonVariants({ variant: 'outline', size: 'sm' })}
           >
+            <GithubIcon />
             github.com/Taraldinn
-          </Button>
-        </Group>
-
-        <Text size="xs" c="dimmed" ta="center" mt="lg">
+          </a>
+        </div>
+        <p className="mt-6 text-center text-xs text-muted-foreground">
           © {new Date().getFullYear()} OpenVChess · Built by{' '}
           <a
             href={GITHUB_URL}
             target="_blank"
             rel="noopener noreferrer"
-            style={{ color: 'inherit', fontWeight: 700 }}
+            className="font-semibold text-foreground hover:underline"
           >
             Taraldinn
           </a>
-        </Text>
-      </Container>
+        </p>
+      </div>
     </footer>
   );
 }
