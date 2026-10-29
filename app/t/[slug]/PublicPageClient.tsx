@@ -64,7 +64,7 @@ export function PublicPageClient({
 
   return (
     <Container size="lg" py={{ base: 'md', sm: 'xl' }}>
-      <Card className="hero-card" padding="lg" radius="lg" mb="lg">
+      <Card className="hero-card" padding="md" radius="md" mb="lg">
         <Group justify="space-between" align="flex-start" wrap="wrap" gap="sm">
           <Box style={{ flex: 1, minWidth: 0 }}>
             <Group gap="xs" mb={8} wrap="wrap">
@@ -90,7 +90,7 @@ export function PublicPageClient({
               </Badge>
               <RealtimeListener tournamentId={tournament.id} />
             </Group>
-            <Title order={1} fw={900} mb={6} style={{ fontSize: 'clamp(1.4rem, 5vw, 2.4rem)' }}>
+            <Title order={1} fw={900} mb={6} style={{ fontSize: 'clamp(1.4rem, 5vw, 1.8rem)' }}>
               {tournament.name}
             </Title>
             {tournament.description && (
@@ -154,7 +154,7 @@ export function PublicPageClient({
             <div className="stat-tile__label">Top score</div>
           </div>
         </SimpleGrid>
-        <Progress value={roundPct} color="yellow" size="sm" radius="xl" mt="md" />
+        <Progress value={roundPct} color="yellow" size="sm" radius="sm" mt="md" />
       </Card>
 
       <Tabs value={activeTab} onChange={(v) => v && setActiveTab(v)} color="yellow" variant="pills">
@@ -206,7 +206,7 @@ export function PublicPageClient({
                       }}
                     >
                       <Group gap="sm" wrap="nowrap" style={{ minWidth: 0 }}>
-                        <Text fw={900} size="lg" w={28}>
+                        <Text fw={900} size="md" w={28}>
                           {row.rank === 1 ? '🥇' : row.rank === 2 ? '🥈' : row.rank === 3 ? '🥉' : `#${row.rank}`}
                         </Text>
                         <Box style={{ minWidth: 0 }}>
@@ -224,7 +224,7 @@ export function PublicPageClient({
                           </Text>
                         </Box>
                       </Group>
-                      <Badge size="lg" variant="light" color="yellow">
+                      <Badge size="sm" variant="light" color="yellow">
                         {row.score} pts
                       </Badge>
                     </Group>
@@ -322,7 +322,7 @@ export function PublicPageClient({
 
         <Tabs.Panel value="info">
           <SimpleGrid cols={{ base: 1, sm: 2 }} spacing="lg">
-            <Card withBorder padding="lg" radius="md">
+            <Card withBorder padding="md" radius="md">
               <Title order={4} mb="xs">
                 Tournament Details
               </Title>
@@ -356,7 +356,7 @@ export function PublicPageClient({
               </Stack>
             </Card>
 
-            <Card withBorder padding="lg" radius="md">
+            <Card withBorder padding="md" radius="md">
               <Title order={4} mb="xs">
                 Scoring & Tie-breaks
               </Title>

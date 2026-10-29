@@ -86,18 +86,18 @@ export default async function PlayerProfilePage({ params }: Props) {
         </Button>
       </Link>
 
-      <Card withBorder padding="xl" radius="md" mb="xl">
+      <Card withBorder padding="md" radius="md" mb="xl">
         <Group justify="space-between" align="flex-start" mb="md">
           <div>
             <Group gap="xs" mb="xs">
               <Title order={1} size="2rem" fw={800}>
                 {player.name}
               </Title>
-              <Badge color="yellow" variant="light" size="lg">
+              <Badge color="yellow" variant="light" size="sm">
                 Seed #{player.seed}
               </Badge>
               {playerStanding && (
-                <Badge color="green" size="lg">
+                <Badge color="green" size="sm">
                   Rank #{playerStanding.rank}
                 </Badge>
               )}
@@ -143,7 +143,7 @@ export default async function PlayerProfilePage({ params }: Props) {
       </Title>
 
       {playerGames.length === 0 ? (
-        <Paper p="xl" withBorder radius="md" ta="center">
+        <Paper p="lg" withBorder radius="md" ta="center">
           <Text c="dimmed">No games played yet.</Text>
         </Paper>
       ) : (

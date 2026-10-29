@@ -117,7 +117,7 @@ export function BulkImportModal({
       opened={opened}
       onClose={onClose}
       title="Bulk Import Players"
-      size="lg"
+      size="sm"
       radius="md"
     >
       <Stack gap="md">

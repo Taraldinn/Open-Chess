@@ -54,7 +54,7 @@ export function TournamentManageHeader({
           <Button
             variant="default"
             size="xs"
-            radius="xl"
+            radius="sm"
             rightSection={<IconExternalLink size={14} />}
           >
             Public Link

@@ -212,7 +212,7 @@ export function RoundsManagementClient({ tournament, initialRounds }: Props) {
 
       {/* Round Status Banner & Progress */}
       {activeRound && (
-        <Card withBorder padding="md" radius="lg" className="playful-card-glow">
+        <Card withBorder padding="md" radius="md" className="playful-card-glow">
           <Group justify="space-between" mb="xs">
             <Group gap="xs">
               <Text fw={700}>Round {activeRound.number} Progress:</Text>
@@ -227,13 +227,13 @@ export function RoundsManagementClient({ tournament, initialRounds }: Props) {
               {activeRound.status.toUpperCase()}
             </Badge>
           </Group>
-          <Progress value={progressPercent} color="yellow" size="md" radius="xl" />
+          <Progress value={progressPercent} color="yellow" size="md" radius="sm" />
         </Card>
       )}
 
       {/* Boards List */}
       {!activeRound || activeRound.games.length === 0 ? (
-        <Paper p="xl" ta="center" withBorder radius="md">
+        <Paper p="lg" ta="center" withBorder radius="md">
           <Text c="dimmed">No pairings generated for this round yet.</Text>
         </Paper>
       ) : (

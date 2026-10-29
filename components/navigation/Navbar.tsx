@@ -63,7 +63,7 @@ export function Navbar() {
             {/* Desktop nav */}
             <Group gap="sm" visibleFrom="sm">
               <Link href="/dashboard" style={{ textDecoration: 'none' }}>
-                <Button variant="subtle" size="sm" radius="xl" className="subtle-nav-btn">
+                <Button variant="subtle" size="sm" radius="sm" className="subtle-nav-btn">
                   Dashboard
                 </Button>
               </Link>
@@ -72,7 +72,7 @@ export function Navbar() {
                   color="yellow"
                  
                   size="sm"
-                  radius="xl"
+                  radius="sm"
                   fw={800}
                   leftSection={<IconPlus size={16} stroke={2.5} />}
                 >
@@ -85,8 +85,8 @@ export function Navbar() {
                 target="_blank"
                 rel="noopener noreferrer"
                 variant="default"
-                size="lg"
-                radius="xl"
+                size="sm"
+                radius="sm"
                 aria-label="GitHub: Taraldinn"
               >
                 <IconBrandGithub size={20} />
@@ -95,8 +95,8 @@ export function Navbar() {
               <ActionIcon
                 onClick={toggleColorScheme}
                 variant="default"
-                size="lg"
-                radius="xl"
+                size="sm"
+                radius="sm"
                 aria-label="Toggle color scheme"
               >
                 <>
@@ -112,7 +112,7 @@ export function Navbar() {
                 onClick={toggleColorScheme}
                 variant="default"
                 size="md"
-                radius="xl"
+                radius="sm"
                 aria-label="Toggle color scheme"
               >
                 <>

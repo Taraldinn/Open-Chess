@@ -62,7 +62,7 @@ export default async function DashboardPage() {
     <Container size="lg" py={{ base: 'md', sm: 'xl' }}>
       <Group justify="space-between" mb="xl" wrap="wrap" gap="sm" align="flex-end">
         <div>
-          <Title order={1} fw={900} style={{ letterSpacing: '-0.02em', fontSize: 'clamp(1.5rem, 4vw, 2.4rem)' }}>
+          <Title order={1} fw={900} style={{ letterSpacing: '-0.02em', fontSize: 'clamp(1.5rem, 4vw, 1.8rem)' }}>
             Dashboard
           </Title>
           <Text c="dimmed" size="sm">
@@ -75,7 +75,7 @@ export default async function DashboardPage() {
            
             fw={800}
             size="md"
-            radius="xl"
+            radius="sm"
             leftSection={<IconPlus size={18} stroke={2.5} />}
             className="playful-card-glow"
           >
@@ -85,7 +85,7 @@ export default async function DashboardPage() {
       </Group>
 
       {tournaments.length === 0 ? (
-        <Paper p="2.5rem" withBorder radius="xl" ta="center" my={50} className="playful-card-glow">
+        <Paper p="1.5rem" withBorder radius="sm" ta="center" my={50} className="playful-card-glow">
           <Box className="playful-float" mb="md">
             <IconTrophy size={56} color="var(--accent)" />
           </Box>
@@ -100,8 +100,8 @@ export default async function DashboardPage() {
               color="yellow"
              
               fw={800}
-              size="lg"
-              radius="xl"
+              size="sm"
+              radius="sm"
               leftSection={<IconPlus size={20} stroke={2.5} />}
               className="playful-card-glow"
             >
@@ -112,7 +112,7 @@ export default async function DashboardPage() {
       ) : (
         <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="lg">
           {tournaments.map((t) => (
-            <Card key={t.id} shadow="sm" padding="lg" radius="lg" withBorder>
+            <Card key={t.id} shadow="sm" padding="md" radius="md" withBorder>
               <Group justify="space-between" mb="xs">
                 {getStatusBadge(t.status)}
                 <Badge variant="outline" color="yellow" size="sm">
@@ -149,7 +149,7 @@ export default async function DashboardPage() {
                     variant="light"
                     color="yellow"
                     size="sm"
-                    radius="xl"
+                    radius="sm"
                     fullWidth
                     fw={700}
                   >
@@ -160,7 +160,7 @@ export default async function DashboardPage() {
                   <Button
                     variant="default"
                     size="sm"
-                    radius="xl"
+                    radius="sm"
                     fw={600}
                     rightSection={<IconExternalLink size={14} />}
                   >

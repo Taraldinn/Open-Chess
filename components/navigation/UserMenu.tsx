@@ -59,7 +59,7 @@ export function UserMenu() {
   };
 
   if (loading) {
-    return <Skeleton height={36} width={90} radius="xl" />;
+    return <Skeleton height={36} width={90} radius="sm" />;
   }
 
   if (!user) {
@@ -97,7 +97,7 @@ export function UserMenu() {
           }}
         >
           <Group gap="xs">
-            <Avatar src={avatarUrl} alt={displayName} size="sm" radius="xl" color="yellow">
+            <Avatar src={avatarUrl} alt={displayName} size="sm" radius="sm" color="yellow">
               {displayName.charAt(0).toUpperCase()}
             </Avatar>
             <Text size="sm" fw={600} visibleFrom="sm" maw={120} truncate>

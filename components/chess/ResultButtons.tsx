@@ -19,7 +19,7 @@ export function ResultButtons({
 }: ResultButtonsProps) {
   if (isBye) {
     return (
-      <Badge color="arcadeViolet" size="lg" variant="light">
+      <Badge color="arcadeViolet" size="sm" variant="light">
         1 - 0 (BYE)
       </Badge>
     );
@@ -37,7 +37,7 @@ export function ResultButtons({
         color={isWhiteWin ? 'yellow' : undefined}
         c={isWhiteWin ? 'dark.9' : undefined}
         fw={800}
-        radius="xl"
+        radius="sm"
         disabled={disabled}
         onClick={() => onSetResult('white_win')}
       >
@@ -49,7 +49,7 @@ export function ResultButtons({
         variant={isDraw ? 'filled' : 'default'}
         color={isDraw ? 'arcadeViolet' : undefined}
         fw={800}
-        radius="xl"
+        radius="sm"
         disabled={disabled}
         onClick={() => onSetResult('draw')}
       >
@@ -62,7 +62,7 @@ export function ResultButtons({
         color={isBlackWin ? 'yellow' : undefined}
         c={isBlackWin ? 'dark.9' : undefined}
         fw={800}
-        radius="xl"
+        radius="sm"
         disabled={disabled}
         onClick={() => onSetResult('black_win')}
       >

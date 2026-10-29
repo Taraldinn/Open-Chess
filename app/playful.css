@@ -111,9 +111,9 @@ main {
 }
 
 .color-chip__swatch {
-  width: 16px;
-  height: 16px;
-  border-radius: 4px;
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
   border: 1.5px solid #8a9693;
   flex-shrink: 0;
 }
@@ -145,14 +145,14 @@ main {
 }
 
 .stat-tile {
-  padding: 12px 14px;
-  border-radius: 10px;
+  padding: 8px 10px;
+  border-radius: 6px;
   border: 1px solid var(--mantine-color-default-border);
   background: var(--surface);
 }
 
 .stat-tile__value {
-  font-size: 1.35rem;
+  font-size: 1.1rem;
   font-weight: 700;
   line-height: 1.1;
 }
@@ -205,8 +205,8 @@ main {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  padding: 8px 12px;
-  border-radius: 8px;
+  padding: 6px 10px;
+  border-radius: 6px;
   border: 1px solid var(--mantine-color-default-border);
 }
 

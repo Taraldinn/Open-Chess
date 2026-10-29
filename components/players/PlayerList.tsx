@@ -183,11 +183,11 @@ export function PlayerList({
   const activeCount = players.filter((p) => p.status === 'active').length;
 
   return (
-    <Card shadow="sm" padding="xl" radius="lg" withBorder className="playful-card-glow">
+    <Card shadow="sm" padding="md" radius="md" withBorder className="playful-card-glow">
       <Group justify="space-between" mb="lg" wrap="wrap" gap="md">
         <div>
           <Group gap="xs" align="center">
-            <Text fw={800} size="xl">
+            <Text fw={800} size="md">
               Tournament Players
             </Text>
             <Badge color="yellow" variant="filled" size="md">
@@ -202,7 +202,7 @@ export function PlayerList({
         <Group gap="xs">
           <Button
             variant="default"
-            radius="xl"
+            radius="sm"
             leftSection={<IconSortDescendingNumbers size={16} />}
             onClick={sortByRating}
             disabled={players.length < 2}
@@ -213,7 +213,7 @@ export function PlayerList({
           <Button
             variant="light"
             color="arcadeViolet"
-            radius="xl"
+            radius="sm"
             fw={700}
             leftSection={<IconUpload size={16} />}
             onClick={() => setBulkModalOpened(true)}
@@ -225,7 +225,7 @@ export function PlayerList({
             color="yellow"
            
             fw={800}
-            radius="xl"
+            radius="sm"
             leftSection={<IconPlayerPlay size={18} stroke={2.5} />}
             onClick={onStartTournament}
             loading={isStarting}
@@ -238,7 +238,7 @@ export function PlayerList({
       </Group>
 
       {/* Quick Add Player Inline Form */}
-      <Paper p="md" radius="lg" mb="lg" className="playful-accent-box">
+      <Paper p="md" radius="md" mb="lg" className="playful-accent-box">
         <Group justify="space-between" mb="xs">
           <Group gap="xs">
             <IconSparkles size={16} color="var(--accent)" />
@@ -276,7 +276,7 @@ export function PlayerList({
             color="yellow"
            
             fw={800}
-            radius="xl"
+            radius="sm"
             onClick={handleAddPlayer}
             loading={loadingAdd}
             disabled={!newName.trim()}
@@ -289,11 +289,11 @@ export function PlayerList({
 
       {/* Table / Empty State */}
       {players.length === 0 ? (
-        <Paper p="2.5rem" ta="center" withBorder radius="lg" my="md">
+        <Paper p="1.5rem" ta="center" withBorder radius="md" my="md">
           <Box className="playful-float" mb="sm">
             <IconUsers size={48} color="var(--accent)" />
           </Box>
-          <Text fw={800} size="lg" mb={4}>
+          <Text fw={800} size="md" mb={4}>
             No players added yet
           </Text>
           <Text c="dimmed" size="sm" maw={440} mx="auto" mb="lg">
@@ -302,7 +302,7 @@ export function PlayerList({
           <Button
             variant="light"
             color="yellow"
-            radius="xl"
+            radius="sm"
             fw={700}
             leftSection={<IconUpload size={16} />}
             onClick={() => setBulkModalOpened(true)}

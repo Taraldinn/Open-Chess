@@ -163,7 +163,7 @@ export function CreateTournamentWizard() {
   };
 
   return (
-    <Card shadow="md" padding="xl" radius="lg" withBorder maw={840} mx="auto" my="xl" className="playful-card-glow">
+    <Card shadow="md" padding="md" radius="md" withBorder maw={840} mx="auto" my="xl" className="playful-card-glow">
       <Group justify="space-between" align="flex-start" mb="lg">
         <div>
           <Title order={2} size="1.8rem" fw={900}>
@@ -173,7 +173,7 @@ export function CreateTournamentWizard() {
             Set up your format, rules, and rounds in 3 easy steps
           </Text>
         </div>
-        <Badge color="yellow" variant="light" size="lg">
+        <Badge color="yellow" variant="light" size="sm">
           Step {active < 3 ? active + 1 : 3} of 3
         </Badge>
       </Group>
@@ -260,7 +260,7 @@ export function CreateTournamentWizard() {
               />
             </SimpleGrid>
 
-            <Paper p="md" radius="lg" className="playful-accent-box">
+            <Paper p="md" radius="md" className="playful-accent-box">
               <Group justify="space-between" align="center" wrap="wrap" gap="xs">
                 <Group gap="xs">
                   <IconSparkles size={20} color="var(--accent)" />
@@ -275,7 +275,7 @@ export function CreateTournamentWizard() {
                   size="xs"
                   variant="light"
                   color="yellow"
-                  radius="xl"
+                  radius="sm"
                   fw={700}
                   onClick={() => setTotalRounds(suggested)}
                 >

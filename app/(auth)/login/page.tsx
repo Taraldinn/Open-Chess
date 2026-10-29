@@ -85,7 +85,7 @@ function LoginForm() {
   };
 
   return (
-    <Paper withBorder shadow="md" p={32} radius="xl" className="playful-card-glow">
+    <Paper withBorder shadow="md" p={32} radius="sm" className="playful-card-glow">
       <Box className="playful-float" ta="center" mb="xs">
         <IconTrophy size={42} color="var(--accent)" />
       </Box>

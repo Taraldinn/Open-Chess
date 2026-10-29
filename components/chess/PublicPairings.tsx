@@ -107,7 +107,7 @@ export function PublicPairings({
       )}
 
       {!activeRound || games.length === 0 ? (
-        <Paper p="xl" ta="center" withBorder radius="md">
+        <Paper p="lg" ta="center" withBorder radius="md">
           <Text c="dimmed">No pairings published for this round yet.</Text>
         </Paper>
       ) : (
