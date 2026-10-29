@@ -185,7 +185,7 @@ export function BulkImportModal({
           </Button>
           <Button
             color="yellow"
-            c="dark.9"
+           
             fw={700}
             onClick={handleImport}
             disabled={parsed.length === 0}

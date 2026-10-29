@@ -13,7 +13,7 @@ export function Footer() {
         <Group justify="space-between" align="center" wrap="wrap" gap="md">
           <Stack gap={4}>
             <Group gap="xs" align="center">
-              <IconTrophy size={18} color="#fcc419" />
+              <IconTrophy size={18} color="var(--accent)" />
               <Text fw={800}>
                 Open<Text component="span" className="playful-gradient-text" inherit>VChess</Text>
               </Text>

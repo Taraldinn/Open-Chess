@@ -165,7 +165,7 @@ export function RoundsManagementClient({ tournament, initialRounds }: Props) {
           {isCurrentActiveRound && (
             <Button
               color="yellow"
-              c="dark.9"
+             
               fw={700}
               disabled={!allCurrentGamesFinished}
               onClick={handleGenerateNextRound}

@@ -34,25 +34,25 @@ export default async function DashboardPage() {
       case 'running':
         return (
           <Badge color="green" variant="filled" size="md">
-            ⚡ Live
+            Live
           </Badge>
         );
       case 'registration':
         return (
           <Badge color="arcadeViolet" variant="light" size="md">
-            🎟️ Registration
+            Registration
           </Badge>
         );
       case 'finished':
         return (
           <Badge color="gray" variant="light" size="md">
-            🏁 Finished
+            Finished
           </Badge>
         );
       default:
         return (
           <Badge color="yellow" variant="light" size="md">
-            ✏️ Draft
+            Draft
           </Badge>
         );
     }
@@ -72,7 +72,7 @@ export default async function DashboardPage() {
         <Link href="/t/new" style={{ textDecoration: 'none' }}>
           <Button
             color="yellow"
-            c="dark.9"
+           
             fw={800}
             size="md"
             radius="xl"
@@ -87,7 +87,7 @@ export default async function DashboardPage() {
       {tournaments.length === 0 ? (
         <Paper p="2.5rem" withBorder radius="xl" ta="center" my={50} className="playful-card-glow">
           <Box className="playful-float" mb="md">
-            <IconTrophy size={56} color="#fab005" />
+            <IconTrophy size={56} color="var(--accent)" />
           </Box>
           <Title order={3} mb="xs" fw={800}>
             No Tournaments Yet!
@@ -98,7 +98,7 @@ export default async function DashboardPage() {
           <Link href="/t/new" style={{ textDecoration: 'none' }}>
             <Button
               color="yellow"
-              c="dark.9"
+             
               fw={800}
               size="lg"
               radius="xl"
@@ -130,13 +130,13 @@ export default async function DashboardPage() {
 
               <Stack gap="xs" mb="lg">
                 <Group gap="xs">
-                  <IconCalendar size={16} color="#fab005" />
+                  <IconCalendar size={16} color="var(--accent)" />
                   <Text size="xs" c="dimmed" fw={500}>
                     Rounds: {t.current_round} / {t.total_rounds}
                   </Text>
                 </Group>
                 <Group gap="xs">
-                  <IconTrophy size={16} color="#ff4d6d" />
+                  <IconTrophy size={16} color="var(--mantine-color-coral-5)" />
                   <Text size="xs" c="dimmed" fw={500}>
                     {t.time_control || 'Standard Time Control'}
                   </Text>

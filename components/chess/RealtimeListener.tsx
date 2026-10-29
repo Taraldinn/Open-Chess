@@ -55,9 +55,9 @@ export function RealtimeListener({ tournamentId }: RealtimeListenerProps) {
           width: 8,
           height: 8,
           borderRadius: '50%',
-          backgroundColor: '#40c057',
+          backgroundColor: 'var(--mantine-color-mintJoy-5)',
           display: 'inline-block',
-          boxShadow: '0 0 6px #40c057',
+          boxShadow: 'none',
         }}
       />
       <Badge color="green" variant="light" size="sm">

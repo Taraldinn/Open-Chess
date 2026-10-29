@@ -33,7 +33,7 @@ export function StandingsTable({ standings, tournamentSlug }: StandingsTableProp
           <Table.Tr key={row.playerId}>
             <Table.Td fw={700}>
               {row.rank === 1 ? (
-                <Badge color="yellow" c="dark.9" variant="filled" size="md">
+                <Badge color="yellow" variant="filled" size="md">
                   🥇 1
                 </Badge>
               ) : row.rank === 2 ? (

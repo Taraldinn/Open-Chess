@@ -87,7 +87,7 @@ function LoginForm() {
   return (
     <Paper withBorder shadow="md" p={32} radius="xl" className="playful-card-glow">
       <Box className="playful-float" ta="center" mb="xs">
-        <IconTrophy size={42} color="#fab005" />
+        <IconTrophy size={42} color="var(--accent)" />
       </Box>
       <Title order={2} ta="center" fw={900} mb="xs">
         Welcome to OpenVChess
@@ -151,7 +151,7 @@ function LoginForm() {
             <Button
               type="submit"
               color="yellow"
-              c="dark.9"
+             
               fw={700}
               size="md"
               loading={loading}

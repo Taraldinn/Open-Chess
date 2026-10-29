@@ -1,15 +1,30 @@
-/* OpenVChess theme: emerald board + gold accent */
+/* OpenVChess calm theme: sage, sand and soft charcoal. Low contrast edges, no glow, no motion. */
 
 :root {
-  --brand-gradient: linear-gradient(135deg, #38d9a9 0%, #fcc419 100%);
-  --brand-glow: 0 6px 20px -6px rgba(18, 184, 134, 0.35);
-  --board-light: #f0d9b5;
-  --board-dark: #b58863;
+  --accent: var(--mantine-color-sage-6);
+  --accent-soft: rgba(90, 132, 121, 0.12);
+  --accent-line: rgba(90, 132, 121, 0.3);
+}
+
+[data-mantine-color-scheme="light"] {
+  --mantine-color-body: #f5f3ee;
+  --mantine-color-text: #2d3836;
+  --mantine-color-dimmed: #6b7773;
+  --surface: #fbfaf7;
+  --accent: #5a8479;
+}
+
+[data-mantine-color-scheme="dark"] {
+  --mantine-color-body: #1b2221;
+  --mantine-color-text: #dde3e1;
+  --mantine-color-dimmed: #97a3a0;
+  --surface: #222a29;
+  --accent: #86aca3;
 }
 
 html,
 body {
-  transition: background-color 0.25s ease, color 0.25s ease;
+  transition: background-color 0.3s ease, color 0.3s ease;
   overflow-x: hidden;
 }
 
@@ -17,103 +32,74 @@ body {
   min-height: 100dvh;
   display: flex;
   flex-direction: column;
+  -webkit-font-smoothing: antialiased;
 }
 
 main {
   flex: 1 0 auto;
 }
 
-.mantine-Button-root {
-  transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease !important;
+/* Surfaces: slightly lifted from the page, soft borders */
+.mantine-Card-root,
+.mantine-Paper-root:not(.mantine-Modal-content):not(.mantine-Menu-dropdown) {
+  background-color: var(--surface);
 }
 
-.mantine-Button-root:not([data-disabled]):hover {
-  transform: translateY(-1px);
-  filter: brightness(1.05);
-}
-
-.mantine-Button-root:not([data-disabled]):active {
-  transform: translateY(1px);
+.mantine-Button-root,
+.mantine-ActionIcon-root {
+  transition: background-color 0.15s ease, border-color 0.15s ease;
 }
 
 .mantine-Badge-root {
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
-  font-weight: 800;
+  letter-spacing: 0.01em;
+  text-transform: none;
+  font-weight: 600;
 }
 
 .playful-gradient-text {
-  background: var(--brand-gradient);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  display: inline-block;
-}
-
-@keyframes playful-float {
-  0% { transform: translateY(0); }
-  50% { transform: translateY(-3px); }
-  100% { transform: translateY(0); }
+  color: var(--accent);
+  font-weight: 800;
 }
 
 .playful-float {
   display: inline-block;
-  animation: playful-float 3.5s ease-in-out infinite;
 }
 
 .playful-card-glow {
-  box-shadow: var(--brand-glow);
+  box-shadow: none;
 }
 
 .playful-hover-card {
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
 }
 
 .playful-hover-card:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--brand-glow);
+  border-color: var(--accent-line);
 }
 
 .mantine-TextInput-input:focus,
 .mantine-Select-input:focus,
 .mantine-NumberInput-input:focus {
-  border-color: #12b886 !important;
-  box-shadow: 0 0 0 3px rgba(18, 184, 134, 0.2) !important;
+  border-color: var(--accent) !important;
+  box-shadow: 0 0 0 3px var(--accent-soft) !important;
 }
 
-[data-mantine-color-scheme="light"] .playful-accent-box {
-  background-color: rgba(18, 184, 134, 0.07) !important;
-  border: 1px solid rgba(18, 184, 134, 0.28) !important;
-  color: #121816 !important;
+.playful-accent-box {
+  background-color: var(--accent-soft) !important;
+  border: 1px solid var(--accent-line) !important;
 }
 
-[data-mantine-color-scheme="dark"] .playful-accent-box {
-  background-color: #1a221f !important;
-  border: 1px solid rgba(18, 184, 134, 0.25) !important;
-  color: #f1f5f4 !important;
-}
-
-[data-mantine-color-scheme="light"] .playful-finished-game {
-  background-color: rgba(18, 184, 134, 0.06) !important;
-  border-color: rgba(18, 184, 134, 0.25) !important;
-}
-
-[data-mantine-color-scheme="dark"] .playful-finished-game {
-  background-color: rgba(18, 184, 134, 0.08) !important;
-  border-color: rgba(18, 184, 134, 0.22) !important;
+.playful-finished-game {
+  background-color: var(--accent-soft) !important;
+  border-color: var(--accent-line) !important;
 }
 
 .subtle-nav-btn {
   color: var(--mantine-color-text) !important;
-  font-weight: 700 !important;
 }
 
 .subtle-nav-btn:hover {
   background-color: var(--mantine-color-default-hover) !important;
-}
-
-.mantine-Stepper-stepIcon[data-progress],
-.mantine-Stepper-stepIcon[data-completed] {
-  color: #121816 !important;
 }
 
 /* Piece color chip: always shows who plays White / Black */
@@ -125,85 +111,58 @@ main {
 }
 
 .color-chip__swatch {
-  width: 18px;
-  height: 18px;
-  border-radius: 5px;
-  border: 1.5px solid #6b7b75;
+  width: 16px;
+  height: 16px;
+  border-radius: 4px;
+  border: 1.5px solid #8a9693;
   flex-shrink: 0;
 }
 
 .color-chip__swatch--white {
-  background: #ffffff;
+  background: #f7f6f2;
 }
 
 .color-chip__swatch--black {
-  background: #111;
-  border-color: #111;
+  background: #2a3230;
+  border-color: #2a3230;
 }
 
 [data-mantine-color-scheme="dark"] .color-chip__swatch--black {
-  border-color: #9aa8a3;
+  border-color: #97a3a0;
 }
 
 .color-chip__label {
   font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 0.05em;
+  font-weight: 700;
+  letter-spacing: 0.04em;
   text-transform: uppercase;
-  opacity: 0.7;
+  opacity: 0.65;
 }
 
-/* Hero + stat tiles for the public tournament home */
 .hero-card {
-  position: relative;
-  overflow: hidden;
-  background:
-    linear-gradient(135deg, rgba(18, 184, 134, 0.16) 0%, rgba(252, 196, 25, 0.1) 100%),
-    var(--mantine-color-body);
-  border: 1px solid rgba(18, 184, 134, 0.3);
-}
-
-.hero-card::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: 0.06;
-  background-image:
-    linear-gradient(45deg, #000 25%, transparent 25%, transparent 75%, #000 75%),
-    linear-gradient(45deg, #000 25%, transparent 25%, transparent 75%, #000 75%);
-  background-size: 36px 36px;
-  background-position: 0 0, 18px 18px;
-}
-
-[data-mantine-color-scheme="dark"] .hero-card::after {
-  filter: invert(1);
-}
-
-.hero-card > * {
-  position: relative;
-  z-index: 1;
+  background-color: var(--accent-soft) !important;
+  border: 1px solid var(--accent-line);
 }
 
 .stat-tile {
   padding: 12px 14px;
-  border-radius: 12px;
+  border-radius: 10px;
   border: 1px solid var(--mantine-color-default-border);
-  background: var(--mantine-color-body);
+  background: var(--surface);
 }
 
 .stat-tile__value {
-  font-size: 1.4rem;
-  font-weight: 800;
+  font-size: 1.35rem;
+  font-weight: 700;
   line-height: 1.1;
 }
 
 .stat-tile__label {
   font-size: 11px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
+  font-weight: 600;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
-  opacity: 0.65;
+  opacity: 0.6;
 }
 
 .scroll-x {
@@ -215,4 +174,16 @@ main {
   .mantine-Table-table {
     font-size: 13px;
   }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+[data-mantine-color-scheme="light"] .icon-show-dark,
+[data-mantine-color-scheme="dark"] .icon-show-light {
+  display: none;
 }

@@ -190,7 +190,7 @@ export function PlayerList({
             <Text fw={800} size="xl">
               Tournament Players
             </Text>
-            <Badge color="yellow" c="dark.9" variant="filled" size="md">
+            <Badge color="yellow" variant="filled" size="md">
               {players.length} Registered ({activeCount} Active)
             </Badge>
           </Group>
@@ -223,7 +223,7 @@ export function PlayerList({
 
           <Button
             color="yellow"
-            c="dark.9"
+           
             fw={800}
             radius="xl"
             leftSection={<IconPlayerPlay size={18} stroke={2.5} />}
@@ -241,13 +241,13 @@ export function PlayerList({
       <Paper p="md" radius="lg" mb="lg" className="playful-accent-box">
         <Group justify="space-between" mb="xs">
           <Group gap="xs">
-            <IconSparkles size={16} color="#fab005" />
+            <IconSparkles size={16} color="var(--accent)" />
             <Text size="xs" fw={700} tt="uppercase" style={{ letterSpacing: '0.04em' }}>
               Quick Add Player
             </Text>
           </Group>
           <Text size="xs" c="dimmed">
-            💡 Press Enter in any field to add immediately
+            Press Enter in any field to add immediately
           </Text>
         </Group>
         <SimpleGrid cols={{ base: 1, sm: 4 }} spacing="sm">
@@ -274,7 +274,7 @@ export function PlayerList({
           />
           <Button
             color="yellow"
-            c="dark.9"
+           
             fw={800}
             radius="xl"
             onClick={handleAddPlayer}
@@ -291,7 +291,7 @@ export function PlayerList({
       {players.length === 0 ? (
         <Paper p="2.5rem" ta="center" withBorder radius="lg" my="md">
           <Box className="playful-float" mb="sm">
-            <IconUsers size={48} color="#fab005" />
+            <IconUsers size={48} color="var(--accent)" />
           </Box>
           <Text fw={800} size="lg" mb={4}>
             No players added yet

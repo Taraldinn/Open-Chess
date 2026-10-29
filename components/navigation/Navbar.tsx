@@ -52,7 +52,7 @@ export function Navbar() {
             <Link href="/" style={{ textDecoration: 'none' }}>
               <Group gap="xs" align="center">
                 <Box className="playful-float">
-                  <IconTrophy size={26} color="#fab005" />
+                  <IconTrophy size={26} color="var(--accent)" />
                 </Box>
                 <Text fw={900} size="md" c="var(--mantine-color-text)" style={{ letterSpacing: '-0.02em' }}>
                   Open<Text component="span" className="playful-gradient-text" inherit>VChess</Text>
@@ -70,7 +70,7 @@ export function Navbar() {
               <Link href="/t/new" style={{ textDecoration: 'none' }}>
                 <Button
                   color="yellow"
-                  c="dark.9"
+                 
                   size="sm"
                   radius="xl"
                   fw={800}
@@ -99,11 +99,10 @@ export function Navbar() {
                 radius="xl"
                 aria-label="Toggle color scheme"
               >
-                {computedColorScheme === 'dark' ? (
-                  <IconSun size={20} color="#ffd43b" />
-                ) : (
-                  <IconMoon size={20} color="#7950f2" />
-                )}
+                <>
+                  <IconSun size={20} className="icon-show-dark" />
+                  <IconMoon size={20} className="icon-show-light" />
+                </>
               </ActionIcon>
             </Group>
 
@@ -116,11 +115,10 @@ export function Navbar() {
                 radius="xl"
                 aria-label="Toggle color scheme"
               >
-                {computedColorScheme === 'dark' ? (
-                  <IconSun size={16} color="#ffd43b" />
-                ) : (
-                  <IconMoon size={16} color="#7950f2" />
-                )}
+                <>
+                  <IconSun size={16} className="icon-show-dark" />
+                  <IconMoon size={16} className="icon-show-light" />
+                </>
               </ActionIcon>
               <UserMenu />
               <Burger
@@ -140,7 +138,7 @@ export function Navbar() {
         onClose={closeDrawer}
         title={
           <Group gap="xs">
-            <IconTrophy size={20} color="#fab005" />
+            <IconTrophy size={20} color="var(--accent)" />
             <Text fw={900} size="md">OpenVChess</Text>
           </Group>
         }
@@ -163,7 +161,7 @@ export function Navbar() {
           <Link href="/t/new" style={{ textDecoration: 'none' }} onClick={closeDrawer}>
             <Button
               color="yellow"
-              c="dark.9"
+             
               fullWidth
               leftSection={<IconPlus size={16} stroke={2.5} />}
               fw={800}

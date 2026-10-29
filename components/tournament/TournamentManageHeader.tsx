@@ -68,7 +68,7 @@ export function TournamentManageHeader({
             {name}
           </Title>
           <Group gap="xs" wrap="wrap">
-            <Badge color="yellow" c="dark.9" variant="filled" size="sm" tt="uppercase">
+            <Badge color="yellow" variant="filled" size="sm" tt="uppercase">
               {format.replace(/_/g, ' ')}
             </Badge>
             <Badge
@@ -76,7 +76,7 @@ export function TournamentManageHeader({
               variant="light"
               size="sm"
             >
-              {status === 'draft' ? '✏️ DRAFT' : status === 'running' ? '⚡ LIVE' : status.toUpperCase()}
+              {status === 'draft' ? 'DRAFT' : status === 'running' ? 'LIVE' : status.toUpperCase()}
             </Badge>
             <Text size="sm" c="dimmed">
               Round {currentRound} / {totalRounds}

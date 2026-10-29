@@ -263,11 +263,11 @@ export function CreateTournamentWizard() {
             <Paper p="md" radius="lg" className="playful-accent-box">
               <Group justify="space-between" align="center" wrap="wrap" gap="xs">
                 <Group gap="xs">
-                  <IconSparkles size={20} color="#fab005" />
+                  <IconSparkles size={20} color="var(--accent)" />
                   <Text size="sm" fw={700}>
                     Suggested Rounds:
                   </Text>
-                  <Badge color="yellow" c="dark.9" variant="filled" size="md">
+                  <Badge color="yellow" variant="filled" size="md">
                     {suggested} Rounds
                   </Badge>
                 </Group>
@@ -407,7 +407,7 @@ export function CreateTournamentWizard() {
           {active < 3 ? (
             <Button
               color="yellow"
-              c="dark.9"
+             
               fw={700}
               onClick={nextStep}
               rightSection={<IconArrowRight size={16} />}
@@ -417,7 +417,7 @@ export function CreateTournamentWizard() {
           ) : (
             <Button
               color="yellow"
-              c="dark.9"
+             
               fw={700}
               onClick={handleSubmit}
               loading={loading}

@@ -87,7 +87,7 @@ export function Crosstable({ standings, games, totalRounds }: CrosstableProps) {
                   <Table.Td key={r} ta="center">
                     <Text size="xs" fw={scoreChar === '1' ? 700 : 400}>
                       {oppRank}
-                      <span style={{ color: isWhite ? '#ffd54f' : '#9e9e9e' }}>
+                      <span style={{ color: isWhite ? 'var(--mantine-color-gold-5)' : 'var(--mantine-color-dimmed)' }}>
                         {colorChar}
                       </span>
                       {scoreChar}

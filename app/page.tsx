@@ -36,7 +36,7 @@ export default function HomePage() {
           leftSection={<IconSparkles size={14} />}
           style={{ padding: '6px 16px', border: '1px solid rgba(250, 176, 5, 0.3)' }}
         >
-          ✨ Playful, Fast & Fair Chess Manager
+          Fast, fair chess tournament manager
         </Badge>
 
         <Title order={1} fw={900} style={{ letterSpacing: '-0.03em', lineHeight: 1.15, fontSize: 'clamp(1.8rem, 5vw, 3.5rem)' }}>
@@ -48,15 +48,15 @@ export default function HomePage() {
 
         <Text c="dimmed" size="lg" maw={660} style={{ lineHeight: 1.6 }}>
           Swiss pairings with perfect Edmonds-Blossom matching, Round Robin tables,
-          instant brackets, mobile-ready live score entry, and cheerful public standings.
+          instant brackets, mobile-ready live score entry, and public standings.
         </Text>
 
         {/* Playful Floating Chess Badges */}
         <Group gap="xs" my="xs">
-          <Badge size="lg" variant="dot" color="yellow">♟️ Swiss</Badge>
-          <Badge size="lg" variant="dot" color="coral">♞ Round Robin</Badge>
-          <Badge size="lg" variant="dot" color="arcadeViolet">♛ Knockout</Badge>
-          <Badge size="lg" variant="dot" color="mintJoy">⚡ Live Sync</Badge>
+          <Badge size="lg" variant="dot" color="yellow">Swiss</Badge>
+          <Badge size="lg" variant="dot" color="coral">Round Robin</Badge>
+          <Badge size="lg" variant="dot" color="arcadeViolet">Knockout</Badge>
+          <Badge size="lg" variant="dot" color="mintJoy">Live Sync</Badge>
         </Group>
 
         <Group mt="md" gap="sm" justify="center">
@@ -64,7 +64,7 @@ export default function HomePage() {
             <Button
               size="lg"
               color="yellow"
-              c="dark.9"
+             
               fw={800}
               radius="xl"
               rightSection={<IconArrowRight size={20} />}
@@ -79,7 +79,7 @@ export default function HomePage() {
               variant="default"
               radius="xl"
               fw={700}
-              leftSection={<IconPlayerPlay size={20} color="#fab005" />}
+              leftSection={<IconPlayerPlay size={20} color="var(--accent)" />}
             >
               Create Tournament
             </Button>
@@ -90,7 +90,7 @@ export default function HomePage() {
       <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }} spacing="lg" mt={{ base: 32, sm: 60 }}>
         <Card shadow="sm" padding="xl" radius="lg" withBorder className="playful-hover-card">
           <ThemeIcon size={52} radius="xl" color="yellow" variant="light" mb="md">
-            <IconTrophy size={30} color="#fab005" />
+            <IconTrophy size={30} color="var(--accent)" />
           </ThemeIcon>
           <Text fw={800} size="lg" mb="xs">
             Multiple Formats
@@ -102,7 +102,7 @@ export default function HomePage() {
 
         <Card shadow="sm" padding="xl" radius="lg" withBorder className="playful-hover-card">
           <ThemeIcon size={52} radius="xl" color="coral" variant="light" mb="md">
-            <IconFlame size={30} color="#ff4d6d" />
+            <IconFlame size={30} color="var(--mantine-color-coral-5)" />
           </ThemeIcon>
           <Text fw={800} size="lg" mb="xs">
             Rule-Based Pairings
@@ -114,7 +114,7 @@ export default function HomePage() {
 
         <Card shadow="sm" padding="xl" radius="lg" withBorder className="playful-hover-card">
           <ThemeIcon size={52} radius="xl" color="arcadeViolet" variant="light" mb="md">
-            <IconChartBar size={30} color="#cc5de8" />
+            <IconChartBar size={30} color="var(--mantine-color-arcadeViolet-5)" />
           </ThemeIcon>
           <Text fw={800} size="lg" mb="xs">
             Live Standings
@@ -126,7 +126,7 @@ export default function HomePage() {
 
         <Card shadow="sm" padding="xl" radius="lg" withBorder className="playful-hover-card">
           <ThemeIcon size={52} radius="xl" color="mintJoy" variant="light" mb="md">
-            <IconUsers size={30} color="#20c997" />
+            <IconUsers size={30} color="var(--mantine-color-mintJoy-5)" />
           </ThemeIcon>
           <Text fw={800} size="lg" mb="xs">
             Public Live Pages

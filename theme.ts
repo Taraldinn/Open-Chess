@@ -1,202 +1,86 @@
 import { createTheme, MantineColorsTuple } from '@mantine/core';
 
-// Chess-board emerald: primary brand color (aliased as `yellow` so existing color="yellow" props pick it up)
-const board: MantineColorsTuple = [
-  '#e6fcf5',
-  '#c3fae8',
-  '#96f2d7',
-  '#63e6be',
-  '#38d9a9',
-  '#20c997',
-  '#12b886',
-  '#0ca678',
-  '#099268',
-  '#087f5b',
+// Calm preset: low-saturation sage primary, soft sand / clay / slate / green accents.
+const sage: MantineColorsTuple = [
+  '#eef5f3', '#dbe8e4', '#bfd5cf', '#a0bfb7', '#86aca3',
+  '#6f9a90', '#5a8479', '#496d64', '#3a564f', '#2c413c',
 ];
-
-// Warm gold accent for trophies and highlights
-const gold: MantineColorsTuple = [
-  '#fff9db',
-  '#fff3bf',
-  '#ffec99',
-  '#ffe066',
-  '#ffd43b',
-  '#fcc419',
-  '#fab005',
-  '#f59f00',
-  '#f08c00',
-  '#e67700',
+const sand: MantineColorsTuple = [
+  '#faf6ec', '#f1e8d0', '#e6d6ae', '#dac28a', '#cfb06b',
+  '#c4a05a', '#a8864a', '#8a6d3c', '#6d552f', '#4f3e22',
 ];
-
-// Playful punchy watermelon/coral for accents
-const coral: MantineColorsTuple = [
-  '#fff0f3',
-  '#ffe3e8',
-  '#ffccd5',
-  '#ffb3c1',
-  '#ff758f',
-  '#ff4d6d',
-  '#c9184a',
-  '#a4133c',
-  '#800f2f',
-  '#590d22',
+const clay: MantineColorsTuple = [
+  '#faf0ee', '#f1dcd7', '#e5c1b9', '#d8a398', '#cc887b',
+  '#c2776a', '#a8604f', '#8a4e40', '#6d3e33', '#502e26',
 ];
-
-// Joyful electric violet for arcade highlights
-const arcadeViolet: MantineColorsTuple = [
-  '#f8f0fc',
-  '#f3d9fa',
-  '#eebefa',
-  '#e599f7',
-  '#da77f2',
-  '#cc5de8',
-  '#ae3ec9',
-  '#9c36b5',
-  '#862e9c',
-  '#702688',
+const slate: MantineColorsTuple = [
+  '#f3f2f8', '#e3e1ee', '#cbc8de', '#b0abcb', '#968fb9',
+  '#8279a8', '#6c6490', '#585275', '#443f5b', '#322e44',
 ];
-
-// Fresh spring mint for wins & confirmations
-const mintJoy: MantineColorsTuple = [
-  '#ebfbee',
-  '#d3f9d8',
-  '#b2f2bb',
-  '#8ce99a',
-  '#69db7c',
-  '#51cf66',
-  '#40c057',
-  '#37b24d',
-  '#2f9e44',
-  '#2b8a3e',
+const moss: MantineColorsTuple = [
+  '#eff5ec', '#dce8d5', '#c0d5b5', '#a3c297', '#8bb27c',
+  '#78a468', '#628b53', '#4e7042', '#3d5733', '#2d4126',
 ];
-
-// Neutral deep green-slate dark mode
-const playfulDark: MantineColorsTuple = [
-  '#f1f5f4',
-  '#cbd5d1',
-  '#9aa8a3',
-  '#6b7b75',
-  '#33403b',
-  '#232d29',
-  '#1a221f',
-  '#121816',
-  '#0c100f',
-  '#070908',
+// Soft blue-charcoal dark mode (no pure black, text is off-white)
+const calmDark: MantineColorsTuple = [
+  '#dde3e1', '#c0c9c6', '#97a3a0', '#6f7d7a', '#3b4644',
+  '#2b3432', '#222a29', '#1b2221', '#151b1a', '#101514',
 ];
 
 export const theme = createTheme({
-  primaryColor: 'board',
-  primaryShade: { light: 6, dark: 5 },
+  primaryColor: 'sage',
+  primaryShade: { light: 6, dark: 4 },
   autoContrast: true,
+  black: '#2d3836',
   colors: {
-    board,
-    yellow: board,
-    gold,
-    coral,
-    arcadeViolet,
-    mintJoy,
-    green: mintJoy,
-    dark: playfulDark,
+    sage,
+    yellow: sage,
+    board: sage,
+    gold: sand,
+    coral: clay,
+    arcadeViolet: slate,
+    mintJoy: moss,
+    green: moss,
+    dark: calmDark,
   },
   fontFamily:
     'var(--font-sans), "Plus Jakarta Sans", "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
   headings: {
     fontFamily:
       'var(--font-sans), "Plus Jakarta Sans", "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-    fontWeight: '800',
+    fontWeight: '700',
   },
   defaultRadius: 'md',
   cursorType: 'pointer',
+  shadows: {
+    xs: '0 1px 2px rgba(30, 40, 38, 0.06)',
+    sm: '0 1px 3px rgba(30, 40, 38, 0.08)',
+    md: '0 4px 12px rgba(30, 40, 38, 0.08)',
+    lg: '0 8px 24px rgba(30, 40, 38, 0.1)',
+    xl: '0 12px 32px rgba(30, 40, 38, 0.12)',
+  },
   components: {
-    Button: {
-      defaultProps: {
-        radius: 'xl',
-        fw: 700,
-      },
-    },
-    Badge: {
-      defaultProps: {
-        radius: 'xl',
-        fw: 700,
-      },
-    },
-    Card: {
-      defaultProps: {
-        radius: 'lg',
-        shadow: 'sm',
-        withBorder: true,
-      },
-    },
-    Paper: {
-      defaultProps: {
-        radius: 'lg',
-      },
-    },
-    ActionIcon: {
-      defaultProps: {
-        radius: 'xl',
-      },
-    },
-    TextInput: {
-      defaultProps: {
-        radius: 'md',
-      },
-    },
-    Select: {
-      defaultProps: {
-        radius: 'md',
-      },
-    },
-    Modal: {
-      defaultProps: {
-        radius: 'xl',
-      },
-    },
+    Button: { defaultProps: { radius: 'md', fw: 600 } },
+    Badge: { defaultProps: { radius: 'sm', fw: 600 } },
+    Card: { defaultProps: { radius: 'md', shadow: 'xs', withBorder: true } },
+    Paper: { defaultProps: { radius: 'md' } },
+    ActionIcon: { defaultProps: { radius: 'md' } },
+    TextInput: { defaultProps: { radius: 'md' } },
+    NumberInput: { defaultProps: { radius: 'md' } },
+    Textarea: { defaultProps: { radius: 'md' } },
+    Select: { defaultProps: { radius: 'md' } },
+    Modal: { defaultProps: { radius: 'lg' } },
+    Drawer: { defaultProps: { radius: 'md' } },
     Tabs: {
-      defaultProps: {
-        radius: 'xl',
-      },
-      styles: {
-        tab: {
-          fontWeight: 700,
-          borderRadius: '9999px',
-        },
-      },
+      defaultProps: { radius: 'md' },
+      styles: { tab: { fontWeight: 600, borderRadius: 8 } },
     },
-    Table: {
-      defaultProps: {
-        striped: true,
-        highlightOnHover: true,
-      },
-    },
-    Stepper: {
-      defaultProps: {
-        color: 'yellow',
-        radius: 'xl',
-      },
-    },
-    Switch: {
-      defaultProps: {
-        color: 'yellow',
-        radius: 'xl',
-      },
-    },
-    Radio: {
-      defaultProps: {
-        color: 'yellow',
-      },
-    },
-    Checkbox: {
-      defaultProps: {
-        color: 'yellow',
-        radius: 'md',
-      },
-    },
-    Menu: {
-      defaultProps: {
-        radius: 'lg',
-        shadow: 'md',
-      },
-    },
+    Table: { defaultProps: { highlightOnHover: true } },
+    Stepper: { defaultProps: { color: 'sage', radius: 'md' } },
+    Switch: { defaultProps: { color: 'sage' } },
+    Radio: { defaultProps: { color: 'sage' } },
+    Checkbox: { defaultProps: { color: 'sage', radius: 'sm' } },
+    Menu: { defaultProps: { radius: 'md', shadow: 'md' } },
+    Progress: { defaultProps: { color: 'sage' } },
   },
 });
