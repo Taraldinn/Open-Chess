@@ -48,7 +48,7 @@ export function formatResultBadge(result: GameResult, isBye: boolean) {
   }
 }
 
-function SideRow({
+function Side({
   color,
   name,
   rating,
@@ -58,19 +58,17 @@ function SideRow({
   rating?: number | null;
 }) {
   return (
-    <Group gap="sm" wrap="nowrap">
-      <div style={{ width: 74 }}>
-        <ColorChip color={color} />
-      </div>
-      <Text fw={600} size="sm" style={{ minWidth: 0, wordBreak: 'break-word' }}>
+    <div className={`matchup__side matchup__side--${color}`}>
+      <ColorChip color={color} />
+      <Text fw={700} size="sm" style={{ wordBreak: 'break-word' }}>
         {name}
-        {rating ? (
-          <Text component="span" size="xs" c="dimmed" ml={6}>
-            ({rating})
-          </Text>
-        ) : null}
       </Text>
-    </Group>
+      {rating ? (
+        <Text size="xs" c="dimmed">
+          {rating}
+        </Text>
+      ) : null}
+    </div>
   );
 }
 
@@ -118,26 +116,27 @@ export function PublicPairings({
             const isBye = game.result === 'bye' || !game.blackId;
             return (
               <Card key={game.id} withBorder shadow="xs" padding="md" radius="md">
-                <Group justify="space-between" align="center" mb={8}>
+                <Group justify="space-between" align="center" mb={10}>
                   <Badge size="md" variant="light" color="gray">
                     Board {game.board}
                   </Badge>
                   {formatResultBadge(game.result, isBye)}
                 </Group>
-                <Stack gap={6}>
-                  <SideRow color="white" name={game.whiteName} rating={game.whiteRating} />
+                <div className="matchup">
+                  <Side color="white" name={game.whiteName} rating={game.whiteRating} />
+                  <Text className="matchup__vs" size="xs" fw={800} c="dimmed">
+                    VS
+                  </Text>
                   {isBye ? (
-                    <Badge color="blue" variant="outline" w="fit-content">
-                      BYE
-                    </Badge>
+                    <div className="matchup__side">
+                      <Badge color="blue" variant="outline">
+                        BYE
+                      </Badge>
+                    </div>
                   ) : (
-                    <SideRow
-                      color="black"
-                      name={game.blackName || 'TBD'}
-                      rating={game.blackRating}
-                    />
+                    <Side color="black" name={game.blackName || 'TBD'} rating={game.blackRating} />
                   )}
-                </Stack>
+                </div>
               </Card>
             );
           })}
