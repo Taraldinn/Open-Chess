@@ -34,3 +34,6 @@ next-env.d.ts
 
 # superpowers sdd
 .superpowers/
+/dist/
+.vinext/
+.cloudflare/
