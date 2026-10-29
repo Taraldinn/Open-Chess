@@ -297,7 +297,7 @@ export function PublicPageClient({
                         component={Link}
                         href={`/t/${tournament.slug}/players/${p.id}`}
                         fw={600}
-                        c="yellow.4"
+                        c="inherit"
                       >
                         {p.name}
                       </Text>

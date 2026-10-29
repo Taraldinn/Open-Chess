@@ -1,99 +1,109 @@
 import { createTheme, MantineColorsTuple } from '@mantine/core';
 
-// Calm preset: low-saturation sage primary, soft sand / clay / slate / green accents.
-const sage: MantineColorsTuple = [
-  '#eef5f3', '#dbe8e4', '#bfd5cf', '#a0bfb7', '#86aca3',
-  '#6f9a90', '#5a8479', '#496d64', '#3a564f', '#2c413c',
+// shadcn/ui "zinc" look. Primary is near-black in light mode and near-white in dark mode:
+// index 6 is used in light mode, index 4 in dark mode (see primaryShade).
+const zinc: MantineColorsTuple = [
+  '#fafafa', '#f4f4f5', '#e4e4e7', '#d4d4d8', '#fafafa',
+  '#71717a', '#18181b', '#3f3f46', '#27272a', '#09090b',
 ];
-const sand: MantineColorsTuple = [
-  '#faf6ec', '#f1e8d0', '#e6d6ae', '#dac28a', '#cfb06b',
-  '#c4a05a', '#a8864a', '#8a6d3c', '#6d552f', '#4f3e22',
+const gray: MantineColorsTuple = [
+  '#fafafa', '#f4f4f5', '#e4e4e7', '#d4d4d8', '#a1a1aa',
+  '#71717a', '#52525b', '#3f3f46', '#27272a', '#18181b',
 ];
-const clay: MantineColorsTuple = [
-  '#faf0ee', '#f1dcd7', '#e5c1b9', '#d8a398', '#cc887b',
-  '#c2776a', '#a8604f', '#8a4e40', '#6d3e33', '#502e26',
+const green: MantineColorsTuple = [
+  '#f0fdf4', '#dcfce7', '#bbf7d0', '#86efac', '#4ade80',
+  '#22c55e', '#16a34a', '#15803d', '#166534', '#14532d',
 ];
-const slate: MantineColorsTuple = [
-  '#f3f2f8', '#e3e1ee', '#cbc8de', '#b0abcb', '#968fb9',
-  '#8279a8', '#6c6490', '#585275', '#443f5b', '#322e44',
+const red: MantineColorsTuple = [
+  '#fef2f2', '#fee2e2', '#fecaca', '#fca5a5', '#f87171',
+  '#ef4444', '#dc2626', '#b91c1c', '#991b1b', '#7f1d1d',
 ];
-const moss: MantineColorsTuple = [
-  '#eff5ec', '#dce8d5', '#c0d5b5', '#a3c297', '#8bb27c',
-  '#78a468', '#628b53', '#4e7042', '#3d5733', '#2d4126',
+const amber: MantineColorsTuple = [
+  '#fffbeb', '#fef3c7', '#fde68a', '#fcd34d', '#fbbf24',
+  '#f59e0b', '#d97706', '#b45309', '#92400e', '#78350f',
 ];
-// Soft blue-charcoal dark mode (no pure black, text is off-white)
-const calmDark: MantineColorsTuple = [
-  '#dde3e1', '#c0c9c6', '#97a3a0', '#6f7d7a', '#3b4644',
-  '#2b3432', '#222a29', '#1b2221', '#151b1a', '#101514',
+const violet: MantineColorsTuple = [
+  '#f5f3ff', '#ede9fe', '#ddd6fe', '#c4b5fd', '#a78bfa',
+  '#8b5cf6', '#7c3aed', '#6d28d9', '#5b21b6', '#4c1d95',
+];
+const blue: MantineColorsTuple = [
+  '#eff6ff', '#dbeafe', '#bfdbfe', '#93c5fd', '#60a5fa',
+  '#3b82f6', '#2563eb', '#1d4ed8', '#1e40af', '#1e3a8a',
+];
+// Dark mode surfaces: body = dark.7 (#09090b)
+const dark: MantineColorsTuple = [
+  '#fafafa', '#e4e4e7', '#a1a1aa', '#71717a', '#3f3f46',
+  '#27272a', '#18181b', '#09090b', '#050506', '#000000',
 ];
 
 export const theme = createTheme({
-  primaryColor: 'sage',
+  primaryColor: 'zinc',
   primaryShade: { light: 6, dark: 4 },
   autoContrast: true,
-  black: '#2d3836',
+  black: '#09090b',
   colors: {
-    sage,
-    yellow: sage,
-    board: sage,
-    gold: sand,
-    coral: clay,
-    arcadeViolet: slate,
-    mintJoy: moss,
-    green: moss,
-    dark: calmDark,
+    zinc,
+    sage: zinc,
+    yellow: zinc,
+    board: zinc,
+    gray,
+    green,
+    mintJoy: green,
+    red,
+    coral: red,
+    gold: amber,
+    arcadeViolet: violet,
+    blue,
+    dark,
   },
   fontFamily:
-    'var(--font-sans), "Plus Jakarta Sans", "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
-  defaultRadius: 'sm',
-  radius: { xs: '2px', sm: '4px', md: '6px', lg: '8px', xl: '10px' },
-  spacing: { xs: '6px', sm: '8px', md: '12px', lg: '16px', xl: '24px' },
-  fontSizes: { xs: '11px', sm: '13px', md: '14px', lg: '16px', xl: '18px' },
-  lineHeights: { xs: '1.3', sm: '1.4', md: '1.45', lg: '1.5', xl: '1.5' },
+    'var(--font-sans), Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+  defaultRadius: 'md',
+  radius: { xs: '2px', sm: '4px', md: '6px', lg: '8px', xl: '12px' },
+  spacing: { xs: '4px', sm: '8px', md: '16px', lg: '24px', xl: '32px' },
+  fontSizes: { xs: '12px', sm: '14px', md: '14px', lg: '16px', xl: '18px' },
+  lineHeights: { xs: '1.4', sm: '1.45', md: '1.5', lg: '1.5', xl: '1.5' },
   headings: {
     fontFamily:
-      'var(--font-sans), "Plus Jakarta Sans", "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
+      'var(--font-sans), Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
     fontWeight: '700',
     sizes: {
-      h1: { fontSize: '26px', lineHeight: '1.25' },
-      h2: { fontSize: '22px', lineHeight: '1.3' },
-      h3: { fontSize: '18px', lineHeight: '1.3' },
-      h4: { fontSize: '16px', lineHeight: '1.35' },
+      h1: { fontSize: '30px', lineHeight: '1.2' },
+      h2: { fontSize: '24px', lineHeight: '1.25' },
+      h3: { fontSize: '20px', lineHeight: '1.3' },
+      h4: { fontSize: '16px', lineHeight: '1.4' },
       h5: { fontSize: '14px', lineHeight: '1.4' },
-      h6: { fontSize: '13px', lineHeight: '1.4' },
+      h6: { fontSize: '12px', lineHeight: '1.4' },
     },
   },
   cursorType: 'pointer',
   shadows: {
-    xs: '0 1px 2px rgba(30, 40, 38, 0.06)',
-    sm: '0 1px 3px rgba(30, 40, 38, 0.08)',
-    md: '0 4px 12px rgba(30, 40, 38, 0.08)',
-    lg: '0 8px 24px rgba(30, 40, 38, 0.1)',
-    xl: '0 12px 32px rgba(30, 40, 38, 0.12)',
+    xs: '0 1px 2px rgba(0, 0, 0, 0.05)',
+    sm: '0 1px 3px rgba(0, 0, 0, 0.1), 0 1px 2px rgba(0, 0, 0, 0.06)',
+    md: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.06)',
+    lg: '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.06)',
+    xl: '0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.06)',
   },
   components: {
-    Button: { defaultProps: { radius: 'sm', fw: 600, size: 'sm' } },
-    Badge: { defaultProps: { radius: 'sm', fw: 600, size: 'sm' } },
-    Card: { defaultProps: { radius: 'md', shadow: 'xs', withBorder: true, padding: 'md' } },
-    Paper: { defaultProps: { radius: 'md' } },
-    ActionIcon: { defaultProps: { radius: 'sm', size: 'md' } },
-    TextInput: { defaultProps: { radius: 'sm', size: 'sm' } },
-    NumberInput: { defaultProps: { radius: 'sm', size: 'sm' } },
-    Textarea: { defaultProps: { radius: 'sm', size: 'sm' } },
-    Select: { defaultProps: { radius: 'sm', size: 'sm' } },
-    FileInput: { defaultProps: { radius: 'sm', size: 'sm' } },
-    Modal: { defaultProps: { radius: 'md', padding: 'md' } },
-    Drawer: { defaultProps: { radius: 'sm' } },
-    Tabs: {
-      defaultProps: { radius: 'sm' },
-      styles: { tab: { fontWeight: 600, borderRadius: 6, padding: '6px 12px' } },
-    },
-    Table: { defaultProps: { highlightOnHover: true, verticalSpacing: 'xs', horizontalSpacing: 'sm' } },
-    Stepper: { defaultProps: { color: 'sage', radius: 'sm', size: 'sm' } },
-    Switch: { defaultProps: { color: 'sage', size: 'sm' } },
-    Radio: { defaultProps: { color: 'sage', size: 'sm' } },
-    Checkbox: { defaultProps: { color: 'sage', radius: 'xs', size: 'sm' } },
-    Menu: { defaultProps: { radius: 'sm', shadow: 'md' } },
-    Progress: { defaultProps: { color: 'sage', size: 'sm' } },
+    Button: { defaultProps: { radius: 'md', fw: 500, size: 'sm' } },
+    Badge: { defaultProps: { radius: 'xl', fw: 600, size: 'md' } },
+    Card: { defaultProps: { radius: 'lg', shadow: 'xs', withBorder: true, padding: 'lg' } },
+    Paper: { defaultProps: { radius: 'lg' } },
+    ActionIcon: { defaultProps: { radius: 'md', size: 'lg' } },
+    TextInput: { defaultProps: { radius: 'md', size: 'sm' } },
+    NumberInput: { defaultProps: { radius: 'md', size: 'sm' } },
+    Textarea: { defaultProps: { radius: 'md', size: 'sm' } },
+    Select: { defaultProps: { radius: 'md', size: 'sm' } },
+    FileInput: { defaultProps: { radius: 'md', size: 'sm' } },
+    Modal: { defaultProps: { radius: 'lg', padding: 'lg' } },
+    Drawer: { defaultProps: { radius: 'md' } },
+    Tabs: { defaultProps: { radius: 'md' } },
+    Table: { defaultProps: { highlightOnHover: true, verticalSpacing: 'sm', horizontalSpacing: 'md' } },
+    Stepper: { defaultProps: { color: 'zinc', radius: 'md', size: 'sm' } },
+    Switch: { defaultProps: { color: 'zinc', size: 'md' } },
+    Radio: { defaultProps: { color: 'zinc', size: 'sm' } },
+    Checkbox: { defaultProps: { color: 'zinc', radius: 'sm', size: 'sm' } },
+    Menu: { defaultProps: { radius: 'md', shadow: 'md' } },
+    Progress: { defaultProps: { color: 'zinc', size: 'sm', radius: 'xl' } },
   },
 });

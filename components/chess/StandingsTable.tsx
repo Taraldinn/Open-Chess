@@ -53,7 +53,7 @@ export function StandingsTable({ standings, tournamentSlug }: StandingsTableProp
                 component={Link}
                 href={`/t/${tournamentSlug}/players/${row.playerId}`}
                 fw={600}
-                c="yellow.4"
+                c="inherit"
                 style={{ textDecoration: 'none' }}
               >
                 {row.playerName}

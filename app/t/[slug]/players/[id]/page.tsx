@@ -206,7 +206,7 @@ export default async function PlayerProfilePage({ params }: Props) {
                           component={Link}
                           href={`/t/${tournament.slug}/players/${opp.id}`}
                           fw={500}
-                          c="yellow.4"
+                          c="inherit"
                         >
                           {opp.name} {opp.rating ? `(${opp.rating})` : ''}
                         </Text>

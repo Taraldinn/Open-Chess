@@ -38,7 +38,7 @@ export default function HomePage() {
           Fast, fair chess tournament manager
         </Badge>
 
-        <Title order={1} fw={900} style={{ letterSpacing: '-0.03em', lineHeight: 1.15, fontSize: 'clamp(1.6rem, 5vw, 1.8rem)' }}>
+        <Title order={1} fw={900} style={{ letterSpacing: '-0.025em', lineHeight: 1.15, fontSize: 'clamp(1.6rem, 5vw, 1.8rem)' }}>
           Run Chess Tournaments in{' '}
           <Text component="span" className="playful-gradient-text" inherit>
             Minutes
