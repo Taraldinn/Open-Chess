@@ -13,6 +13,7 @@ import {
   Button,
   Stack,
   Table,
+  Box,
 } from '@mantine/core';
 import {
   IconFlame,
@@ -51,16 +52,16 @@ export function PublicPageClient({
   const [shareModalOpened, setShareModalOpened] = useState(false);
 
   return (
-    <Container size="lg" py="xl">
+    <Container size="lg" py={{ base: 'md', sm: 'xl' }}>
       {/* Header */}
-      <Stack gap="md" mb="xl">
-        <Group justify="space-between" align="flex-start" wrap="wrap">
-          <div>
-            <Group gap="xs" mb="xs">
-              <Title order={1} size="2.2rem" fw={900}>
-                {tournament.name}
-              </Title>
-              <Badge color="yellow" c="dark.9" variant="filled" size="md" tt="uppercase">
+      <Stack gap="sm" mb="lg">
+        <Group justify="space-between" align="flex-start" wrap="wrap" gap="sm">
+          <Box style={{ flex: 1, minWidth: 0 }}>
+            <Title order={1} fw={900} mb={6} style={{ fontSize: 'clamp(1.3rem, 4vw, 2.2rem)' }}>
+              {tournament.name}
+            </Title>
+            <Group gap="xs" mb="xs" wrap="wrap">
+              <Badge color="yellow" c="dark.9" variant="filled" size="sm" tt="uppercase">
                 {tournament.format.replace(/_/g, ' ')}
               </Badge>
               <Badge
@@ -72,16 +73,16 @@ export function PublicPageClient({
                     : 'arcadeViolet'
                 }
                 variant="light"
-                size="md"
+                size="sm"
               >
                 {tournament.status === 'draft' ? '✏️ DRAFT' : tournament.status === 'running' ? '⚡ LIVE' : tournament.status.toUpperCase()}
               </Badge>
             </Group>
 
-            <Group gap="md">
+            <Group gap="md" wrap="wrap">
               {tournament.time_control && (
                 <Group gap={4}>
-                  <IconClock size={16} color="gray" />
+                  <IconClock size={14} color="gray" />
                   <Text size="sm" c="dimmed">
                     {tournament.time_control}
                   </Text>
@@ -89,59 +90,62 @@ export function PublicPageClient({
               )}
               {tournament.venue && (
                 <Group gap={4}>
-                  <IconMapPin size={16} color="gray" />
+                  <IconMapPin size={14} color="gray" />
                   <Text size="sm" c="dimmed">
                     {tournament.venue}
                   </Text>
                 </Group>
               )}
               <Text size="sm" c="dimmed">
-                Round: {tournament.current_round} / {tournament.total_rounds}
+                Round {tournament.current_round} / {tournament.total_rounds}
               </Text>
             </Group>
-          </div>
+          </Box>
 
-          <Group>
+          <Group gap="xs" wrap="wrap">
             <RealtimeListener tournamentId={tournament.id} />
             <Button
               variant="light"
               color="yellow"
-              leftSection={<IconShare size={16} />}
+              size="sm"
+              leftSection={<IconShare size={14} />}
               onClick={() => setShareModalOpened(true)}
             >
-              Share & QR
+              Share
             </Button>
             <Link
               href={`/t/${tournament.slug}/manage/rounds`}
               style={{ textDecoration: 'none' }}
             >
               <Button variant="default" size="sm">
-                Arbiter View
+                Arbiter
               </Button>
             </Link>
           </Group>
         </Group>
       </Stack>
 
-      {/* Tabs */}
+      {/* Tabs — horizontally scrollable on mobile */}
       <Tabs value={activeTab} onChange={(v) => v && setActiveTab(v)} color="yellow" variant="pills">
-        <Tabs.List mb="lg">
-          <Tabs.Tab value="pairings" leftSection={<IconFlame size={16} />}>
-            Pairings & Results
-          </Tabs.Tab>
-          <Tabs.Tab value="standings" leftSection={<IconTrophy size={16} />}>
-            Standings
-          </Tabs.Tab>
-          <Tabs.Tab value="crosstable" leftSection={<IconChartBar size={16} />}>
-            Crosstable
-          </Tabs.Tab>
-          <Tabs.Tab value="players" leftSection={<IconUsers size={16} />}>
-            Players ({players.length})
-          </Tabs.Tab>
-          <Tabs.Tab value="info" leftSection={<IconInfoCircle size={16} />}>
-            Info & Rules
-          </Tabs.Tab>
-        </Tabs.List>
+        <Box style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }} mb="lg">
+          <Tabs.List style={{ flexWrap: 'nowrap', paddingBottom: 4 }}>
+            <Tabs.Tab value="pairings" leftSection={<IconFlame size={14} />}>
+              Pairings
+            </Tabs.Tab>
+            <Tabs.Tab value="standings" leftSection={<IconTrophy size={14} />}>
+              Standings
+            </Tabs.Tab>
+            <Tabs.Tab value="crosstable" leftSection={<IconChartBar size={14} />}>
+              Crosstable
+            </Tabs.Tab>
+            <Tabs.Tab value="players" leftSection={<IconUsers size={14} />}>
+              Players ({players.length})
+            </Tabs.Tab>
+            <Tabs.Tab value="info" leftSection={<IconInfoCircle size={14} />}>
+              Info
+            </Tabs.Tab>
+          </Tabs.List>
+        </Box>
 
         <Tabs.Panel value="pairings">
           <PublicPairings

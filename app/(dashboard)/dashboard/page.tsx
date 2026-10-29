@@ -59,14 +59,14 @@ export default async function DashboardPage() {
   };
 
   return (
-    <Container size="lg" py="xl">
-      <Group justify="space-between" mb="xl">
+    <Container size="lg" py={{ base: 'md', sm: 'xl' }}>
+      <Group justify="space-between" mb="xl" wrap="wrap" gap="sm" align="flex-end">
         <div>
-          <Title order={1} size="2.4rem" fw={900} style={{ letterSpacing: '-0.02em' }}>
-            Tournament Dashboard
+          <Title order={1} fw={900} style={{ letterSpacing: '-0.02em', fontSize: 'clamp(1.5rem, 4vw, 2.4rem)' }}>
+            Dashboard
           </Title>
-          <Text c="dimmed" size="md">
-            Manage your chess tournaments, pairings, and live battle results
+          <Text c="dimmed" size="sm">
+            Manage your chess tournaments, pairings, and results
           </Text>
         </div>
         <Link href="/t/new" style={{ textDecoration: 'none' }}>

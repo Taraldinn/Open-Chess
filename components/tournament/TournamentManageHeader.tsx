@@ -39,7 +39,7 @@ export function TournamentManageHeader({
 
   return (
     <div style={{ marginBottom: 24 }}>
-      <Group justify="space-between" mb="xs">
+      <Group justify="space-between" mb="xs" wrap="wrap" gap="xs">
         <Link href="/dashboard" style={{ textDecoration: 'none' }}>
           <Button
             variant="subtle"
@@ -47,7 +47,7 @@ export function TournamentManageHeader({
             className="subtle-nav-btn"
             leftSection={<IconArrowLeft size={14} />}
           >
-            All Tournaments
+            Back
           </Button>
         </Link>
         <Link href={`/t/${slug}`} target="_blank" style={{ textDecoration: 'none' }}>
@@ -57,31 +57,31 @@ export function TournamentManageHeader({
             radius="xl"
             rightSection={<IconExternalLink size={14} />}
           >
-            Public Live Link
+            Public Link
           </Button>
         </Link>
       </Group>
 
-      <Group justify="space-between" align="flex-start" mb="md">
-        <div>
-          <Group gap="xs" align="center" mb={4}>
-            <Title order={2} size="1.8rem" fw={900}>
-              {name}
-            </Title>
-            <Badge color="yellow" c="dark.9" variant="filled" size="md" tt="uppercase">
+      <Group justify="space-between" align="flex-start" mb="md" wrap="wrap" gap="sm">
+        <div style={{ minWidth: 0, flex: 1 }}>
+          <Title order={2} fw={900} mb={4} style={{ fontSize: 'clamp(1.1rem, 3.5vw, 1.8rem)' }}>
+            {name}
+          </Title>
+          <Group gap="xs" wrap="wrap">
+            <Badge color="yellow" c="dark.9" variant="filled" size="sm" tt="uppercase">
               {format.replace(/_/g, ' ')}
             </Badge>
             <Badge
               color={status === 'running' ? 'green' : status === 'finished' ? 'gray' : 'arcadeViolet'}
               variant="light"
-              size="md"
+              size="sm"
             >
               {status === 'draft' ? '✏️ DRAFT' : status === 'running' ? '⚡ LIVE' : status.toUpperCase()}
             </Badge>
+            <Text size="sm" c="dimmed">
+              Round {currentRound} / {totalRounds}
+            </Text>
           </Group>
-          <Text size="sm" c="dimmed">
-            Round: {currentRound} of {totalRounds}
-          </Text>
         </div>
       </Group>
 

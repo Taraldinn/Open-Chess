@@ -69,12 +69,19 @@ function LoginForm() {
   const handleGoogleSignIn = async () => {
     const supabase = createClient();
     const siteUrl = getCanonicalSiteUrl();
-    await supabase.auth.signInWithOAuth({
+    const { error } = await supabase.auth.signInWithOAuth({
       provider: 'google',
       options: {
         redirectTo: `${siteUrl}/auth/callback?next=${encodeURIComponent(next)}`,
       },
     });
+    if (error) {
+      notifications.show({
+        title: 'Google Sign In Failed',
+        message: error.message,
+        color: 'red',
+      });
+    }
   };
 
   return (
@@ -161,7 +168,7 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <Container size="xs" py={80}>
+    <Container size="xs" py={{ base: 32, sm: 80 }}>
       <Link href="/" style={{ textDecoration: 'none' }}>
         <Button
           variant="subtle"

@@ -27,27 +27,27 @@ import { Footer } from '@/components/navigation/Footer';
 
 export default function HomePage() {
   return (
-    <Container size="lg" py="xl">
-      <Stack gap="xl" align="center" my={50} ta="center">
+    <Container size="lg" py={{ base: 'lg', sm: 'xl' }}>
+      <Stack gap="xl" align="center" my={{ base: 24, sm: 50 }} ta="center">
         <Badge
-          size="xl"
+          size="lg"
           variant="light"
           color="yellow"
           radius="xl"
-          leftSection={<IconSparkles size={16} />}
-          style={{ padding: '8px 18px', border: '1px solid rgba(250, 176, 5, 0.3)' }}
+          leftSection={<IconSparkles size={14} />}
+          style={{ padding: '6px 16px', border: '1px solid rgba(250, 176, 5, 0.3)' }}
         >
           ✨ Playful, Fast & Fair Chess Manager
         </Badge>
 
-        <Title order={1} size="3.5rem" fw={900} style={{ letterSpacing: '-0.03em', lineHeight: 1.15 }}>
-          Run Joyful Chess Tournaments in{' '}
+        <Title order={1} fw={900} style={{ letterSpacing: '-0.03em', lineHeight: 1.15, fontSize: 'clamp(1.8rem, 5vw, 3.5rem)' }}>
+          Run Chess Tournaments in{' '}
           <Text component="span" className="playful-gradient-text" inherit>
             Minutes
           </Text>
         </Title>
 
-        <Text c="dimmed" size="xl" maw={660} style={{ lineHeight: 1.6 }}>
+        <Text c="dimmed" size="lg" maw={660} style={{ lineHeight: 1.6 }}>
           Swiss pairings with perfect Edmonds-Blossom matching, Round Robin tables,
           instant brackets, mobile-ready live score entry, and cheerful public standings.
         </Text>
@@ -60,15 +60,15 @@ export default function HomePage() {
           <Badge size="lg" variant="dot" color="mintJoy">⚡ Live Sync</Badge>
         </Group>
 
-        <Group mt="md" gap="md">
+        <Group mt="md" gap="sm" justify="center">
           <Link href="/dashboard" style={{ textDecoration: 'none' }}>
             <Button
-              size="xl"
+              size="lg"
               color="yellow"
               c="dark.9"
               fw={800}
               radius="xl"
-              rightSection={<IconArrowRight size={22} />}
+              rightSection={<IconArrowRight size={20} />}
               className="playful-card-glow"
             >
               Go to Dashboard
@@ -76,11 +76,11 @@ export default function HomePage() {
           </Link>
           <Link href="/t/new" style={{ textDecoration: 'none' }}>
             <Button
-              size="xl"
+              size="lg"
               variant="default"
               radius="xl"
               fw={700}
-              leftSection={<IconPlayerPlay size={22} color="#fab005" />}
+              leftSection={<IconPlayerPlay size={20} color="#fab005" />}
             >
               Create Tournament
             </Button>
@@ -88,7 +88,7 @@ export default function HomePage() {
         </Group>
       </Stack>
 
-      <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }} spacing="lg" mt={60}>
+      <SimpleGrid cols={{ base: 1, sm: 2, md: 4 }} spacing="lg" mt={{ base: 32, sm: 60 }}>
         <Card shadow="sm" padding="xl" radius="lg" withBorder className="playful-hover-card">
           <ThemeIcon size={52} radius="xl" color="yellow" variant="light" mb="md">
             <IconTrophy size={30} color="#fab005" />
