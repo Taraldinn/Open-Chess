@@ -1,9 +1,24 @@
 import { createTheme, MantineColorsTuple } from '@mantine/core';
 
-// Cheerful sunshine honey/amber gold
-const sunshine: MantineColorsTuple = [
+// Chess-board emerald: primary brand color (aliased as `yellow` so existing color="yellow" props pick it up)
+const board: MantineColorsTuple = [
+  '#e6fcf5',
+  '#c3fae8',
+  '#96f2d7',
+  '#63e6be',
+  '#38d9a9',
+  '#20c997',
+  '#12b886',
+  '#0ca678',
+  '#099268',
+  '#087f5b',
+];
+
+// Warm gold accent for trophies and highlights
+const gold: MantineColorsTuple = [
   '#fff9db',
   '#fff3bf',
+  '#ffec99',
   '#ffe066',
   '#ffd43b',
   '#fcc419',
@@ -11,7 +26,6 @@ const sunshine: MantineColorsTuple = [
   '#f59f00',
   '#f08c00',
   '#e67700',
-  '#d9480f',
 ];
 
 // Playful punchy watermelon/coral for accents
@@ -56,26 +70,28 @@ const mintJoy: MantineColorsTuple = [
   '#2b8a3e',
 ];
 
-// Rich, warm cozy indigo-slate dark mode (warm midnight instead of stark cold gray)
+// Neutral deep green-slate dark mode
 const playfulDark: MantineColorsTuple = [
-  '#f1f5f9', // 0: text primary
-  '#cbd5e1', // 1: text secondary
-  '#94a3b8', // 2: text muted
-  '#64748b', // 3: subtle borders
-  '#334155', // 4: active hover
-  '#222a3f', // 5: input bg / card border
-  '#191f32', // 6: card / paper background
-  '#101423', // 7: body background
-  '#0b0e19', // 8: deep header
-  '#06080f', // 9: lowest floor
+  '#f1f5f4',
+  '#cbd5d1',
+  '#9aa8a3',
+  '#6b7b75',
+  '#33403b',
+  '#232d29',
+  '#1a221f',
+  '#121816',
+  '#0c100f',
+  '#070908',
 ];
 
 export const theme = createTheme({
-  primaryColor: 'yellow',
-  primaryShade: { light: 5, dark: 4 },
+  primaryColor: 'board',
+  primaryShade: { light: 6, dark: 5 },
+  autoContrast: true,
   colors: {
-    yellow: sunshine,
-    sunshine,
+    board,
+    yellow: board,
+    gold,
     coral,
     arcadeViolet,
     mintJoy,
@@ -89,7 +105,7 @@ export const theme = createTheme({
       'var(--font-sans), "Plus Jakarta Sans", "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
     fontWeight: '800',
   },
-  defaultRadius: 'lg',
+  defaultRadius: 'md',
   cursorType: 'pointer',
   components: {
     Button: {

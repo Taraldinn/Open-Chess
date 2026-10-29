@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import {
   Table,
   Button,
@@ -71,6 +71,9 @@ export function PlayerList({
 }: PlayerListProps) {
   const router = useRouter();
   const [players, setPlayers] = useState<PlayerItem[]>(initialPlayers);
+  useEffect(() => {
+    setPlayers(initialPlayers);
+  }, [initialPlayers]);
   const [bulkModalOpened, setBulkModalOpened] = useState(false);
   const nameInputRef = useRef<HTMLInputElement>(null);
 

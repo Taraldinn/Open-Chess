@@ -1,8 +1,9 @@
 'use client';
 
-import { Card, Group, Text, Badge, Stack, Box } from '@mantine/core';
+import { Card, Group, Text, Badge, Stack } from '@mantine/core';
 import type { GameResult } from '@/types/database';
 import { ResultButtons } from './ResultButtons';
+import { ColorChip } from './ColorChip';
 
 export interface BoardGameItem {
   id: string;
@@ -28,6 +29,32 @@ interface PairingBoardProps {
   onSetResult: (gameId: string, result: GameResult) => void;
 }
 
+function PlayerRow({
+  color,
+  name,
+  rating,
+}: {
+  color: 'white' | 'black';
+  name: string;
+  rating?: number | null;
+}) {
+  return (
+    <Group gap="sm" wrap="nowrap" align="center">
+      <div style={{ width: 74 }}>
+        <ColorChip color={color} />
+      </div>
+      <Text fw={700} size="sm" style={{ minWidth: 0, wordBreak: 'break-word' }}>
+        {name}
+        {rating ? (
+          <Text component="span" size="xs" c="dimmed" ml={6}>
+            ({rating})
+          </Text>
+        ) : null}
+      </Text>
+    </Group>
+  );
+}
+
 export function PairingBoard({ game, disabled, onSetResult }: PairingBoardProps) {
   const isBye = game.result === 'bye' || game.blackId === null;
   const isFinished = game.result !== 'unplayed';
@@ -37,72 +64,38 @@ export function PairingBoard({ game, disabled, onSetResult }: PairingBoardProps)
       withBorder
       shadow="xs"
       padding="md"
-      radius="lg"
+      radius="md"
       className={isFinished ? 'playful-finished-game' : undefined}
     >
-      <Group justify="space-between" align="center" wrap="wrap" gap="md">
-        {/* Board Number Badge */}
-        <Badge
-          size="lg"
-          variant={isFinished ? 'light' : 'filled'}
-          color={isFinished ? 'mintJoy' : 'yellow'}
-          style={{ minWidth: 84 }}
-        >
-          Board {game.board}
-        </Badge>
-
-        {/* Players Matchup */}
-        <Group gap="xl" align="center" style={{ flex: 1, minWidth: 260 }}>
-          {/* White Player */}
-          <Box style={{ flex: 1, textAlign: 'right' }}>
-            <Group gap="xs" justify="flex-end">
-              <div>
-                <Text fw={700} size="sm">
-                  {game.whitePlayer?.name || 'Unknown'}
-                </Text>
-                {game.whitePlayer?.rating && (
-                  <Text size="xs" c="dimmed">
-                    ({game.whitePlayer.rating})
-                  </Text>
-                )}
-              </div>
-              <Text size="lg" title="White Pieces">
-                ⚪
-              </Text>
-            </Group>
-          </Box>
-
-          <Badge size="xs" variant="light" color="coral">
-            VS
+      <Group justify="space-between" align="flex-start" wrap="wrap" gap="md">
+        <Stack gap={8} style={{ flex: 1, minWidth: 220 }}>
+          <Badge
+            size="md"
+            variant={isFinished ? 'light' : 'filled'}
+            color={isFinished ? 'mintJoy' : 'yellow'}
+            w="fit-content"
+          >
+            Board {game.board}
           </Badge>
 
-          {/* Black Player */}
-          <Box style={{ flex: 1 }}>
-            {isBye ? (
-              <Badge color="arcadeViolet" variant="light">
-                BYE
-              </Badge>
-            ) : (
-              <Group gap="xs" justify="flex-start">
-                <Text size="lg" title="Black Pieces">
-                  ⚫
-                </Text>
-                <div>
-                  <Text fw={700} size="sm">
-                    {game.blackPlayer?.name || 'Unknown'}
-                  </Text>
-                  {game.blackPlayer?.rating && (
-                    <Text size="xs" c="dimmed">
-                      ({game.blackPlayer.rating})
-                    </Text>
-                  )}
-                </div>
-              </Group>
-            )}
-          </Box>
-        </Group>
+          <PlayerRow
+            color="white"
+            name={game.whitePlayer?.name || 'Unknown'}
+            rating={game.whitePlayer?.rating}
+          />
+          {isBye ? (
+            <Badge color="arcadeViolet" variant="light" w="fit-content">
+              BYE
+            </Badge>
+          ) : (
+            <PlayerRow
+              color="black"
+              name={game.blackPlayer?.name || 'Unknown'}
+              rating={game.blackPlayer?.rating}
+            />
+          )}
+        </Stack>
 
-        {/* Result Action Buttons */}
         <ResultButtons
           currentResult={game.result}
           isBye={isBye}

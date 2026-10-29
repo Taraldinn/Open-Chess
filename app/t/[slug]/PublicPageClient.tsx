@@ -14,6 +14,7 @@ import {
   Stack,
   Table,
   Box,
+  Progress,
 } from '@mantine/core';
 import {
   IconFlame,
@@ -24,6 +25,7 @@ import {
   IconShare,
   IconMapPin,
   IconClock,
+  IconHome,
 } from '@tabler/icons-react';
 import Link from 'next/link';
 import { PublicPairings, PublicRoundItem } from '@/components/chess/PublicPairings';
@@ -48,20 +50,25 @@ export function PublicPageClient({
   publicRounds,
   standings,
 }: Props) {
-  const [activeTab, setActiveTab] = useState<string>('pairings');
+  const [activeTab, setActiveTab] = useState<string>('overview');
   const [shareModalOpened, setShareModalOpened] = useState(false);
+
+  const gamesPlayed = allGames.filter((g) => g.result !== 'unplayed').length;
+  const gamesTotal = allGames.length;
+  const activePlayers = players.filter((p) => p.status === 'active').length;
+  const roundPct = tournament.total_rounds
+    ? Math.min(100, Math.round((tournament.current_round / tournament.total_rounds) * 100))
+    : 0;
+  const leaders = standings.slice(0, 3);
+  const isFinished = tournament.status === 'finished';
 
   return (
     <Container size="lg" py={{ base: 'md', sm: 'xl' }}>
-      {/* Header */}
-      <Stack gap="sm" mb="lg">
+      <Card className="hero-card" padding="lg" radius="lg" mb="lg">
         <Group justify="space-between" align="flex-start" wrap="wrap" gap="sm">
           <Box style={{ flex: 1, minWidth: 0 }}>
-            <Title order={1} fw={900} mb={6} style={{ fontSize: 'clamp(1.3rem, 4vw, 2.2rem)' }}>
-              {tournament.name}
-            </Title>
-            <Group gap="xs" mb="xs" wrap="wrap">
-              <Badge color="yellow" c="dark.9" variant="filled" size="sm" tt="uppercase">
+            <Group gap="xs" mb={8} wrap="wrap">
+              <Badge color="yellow" variant="filled" size="sm" tt="uppercase">
                 {tournament.format.replace(/_/g, ' ')}
               </Badge>
               <Badge
@@ -75,60 +82,87 @@ export function PublicPageClient({
                 variant="light"
                 size="sm"
               >
-                {tournament.status === 'draft' ? '✏️ DRAFT' : tournament.status === 'running' ? '⚡ LIVE' : tournament.status.toUpperCase()}
+                {tournament.status === 'draft'
+                  ? 'DRAFT'
+                  : tournament.status === 'running'
+                  ? 'LIVE'
+                  : tournament.status.toUpperCase()}
               </Badge>
+              <RealtimeListener tournamentId={tournament.id} />
             </Group>
-
+            <Title order={1} fw={900} mb={6} style={{ fontSize: 'clamp(1.4rem, 5vw, 2.4rem)' }}>
+              {tournament.name}
+            </Title>
+            {tournament.description && (
+              <Text size="sm" c="dimmed" mb="xs" lineClamp={3}>
+                {tournament.description}
+              </Text>
+            )}
             <Group gap="md" wrap="wrap">
               {tournament.time_control && (
                 <Group gap={4}>
-                  <IconClock size={14} color="gray" />
-                  <Text size="sm" c="dimmed">
-                    {tournament.time_control}
-                  </Text>
+                  <IconClock size={14} />
+                  <Text size="sm" c="dimmed">{tournament.time_control}</Text>
                 </Group>
               )}
               {tournament.venue && (
                 <Group gap={4}>
-                  <IconMapPin size={14} color="gray" />
-                  <Text size="sm" c="dimmed">
-                    {tournament.venue}
-                  </Text>
+                  <IconMapPin size={14} />
+                  <Text size="sm" c="dimmed">{tournament.venue}</Text>
                 </Group>
               )}
-              <Text size="sm" c="dimmed">
-                Round {tournament.current_round} / {tournament.total_rounds}
-              </Text>
             </Group>
           </Box>
 
           <Group gap="xs" wrap="wrap">
-            <RealtimeListener tournamentId={tournament.id} />
             <Button
-              variant="light"
-              color="yellow"
+              variant="default"
               size="sm"
               leftSection={<IconShare size={14} />}
               onClick={() => setShareModalOpened(true)}
             >
               Share
             </Button>
-            <Link
-              href={`/t/${tournament.slug}/manage/rounds`}
-              style={{ textDecoration: 'none' }}
-            >
+            <Link href={`/t/${tournament.slug}/manage/rounds`} style={{ textDecoration: 'none' }}>
               <Button variant="default" size="sm">
                 Arbiter
               </Button>
             </Link>
           </Group>
         </Group>
-      </Stack>
 
-      {/* Tabs — horizontally scrollable on mobile */}
+        <SimpleGrid cols={{ base: 2, sm: 4 }} spacing="sm" mt="lg">
+          <div className="stat-tile">
+            <div className="stat-tile__value">{activePlayers}</div>
+            <div className="stat-tile__label">Players</div>
+          </div>
+          <div className="stat-tile">
+            <div className="stat-tile__value">
+              {tournament.current_round}/{tournament.total_rounds}
+            </div>
+            <div className="stat-tile__label">Round</div>
+          </div>
+          <div className="stat-tile">
+            <div className="stat-tile__value">
+              {gamesPlayed}
+              <Text component="span" size="sm" c="dimmed"> / {gamesTotal}</Text>
+            </div>
+            <div className="stat-tile__label">Games played</div>
+          </div>
+          <div className="stat-tile">
+            <div className="stat-tile__value">{leaders[0] ? leaders[0].score : '-'}</div>
+            <div className="stat-tile__label">Top score</div>
+          </div>
+        </SimpleGrid>
+        <Progress value={roundPct} color="yellow" size="sm" radius="xl" mt="md" />
+      </Card>
+
       <Tabs value={activeTab} onChange={(v) => v && setActiveTab(v)} color="yellow" variant="pills">
-        <Box style={{ overflowX: 'auto', WebkitOverflowScrolling: 'touch' }} mb="lg">
+        <Box className="scroll-x" mb="lg">
           <Tabs.List style={{ flexWrap: 'nowrap', paddingBottom: 4 }}>
+            <Tabs.Tab value="overview" leftSection={<IconHome size={14} />}>
+              Overview
+            </Tabs.Tab>
             <Tabs.Tab value="pairings" leftSection={<IconFlame size={14} />}>
               Pairings
             </Tabs.Tab>
@@ -146,6 +180,75 @@ export function PublicPageClient({
             </Tabs.Tab>
           </Tabs.List>
         </Box>
+
+        <Tabs.Panel value="overview">
+          <SimpleGrid cols={{ base: 1, md: 2 }} spacing="lg">
+            <Card withBorder padding="md" radius="md">
+              <Group justify="space-between" mb="sm">
+                <Title order={4}>{isFinished ? 'Final podium' : 'Leaderboard'}</Title>
+                <Button variant="subtle" size="xs" onClick={() => setActiveTab('standings')}>
+                  Full standings
+                </Button>
+              </Group>
+              {leaders.length === 0 ? (
+                <Text c="dimmed" size="sm">Standings appear once results are in.</Text>
+              ) : (
+                <Stack gap="xs">
+                  {leaders.map((row) => (
+                    <Group
+                      key={row.playerId}
+                      justify="space-between"
+                      wrap="nowrap"
+                      p="xs"
+                      style={{
+                        border: '1px solid var(--mantine-color-default-border)',
+                        borderRadius: 10,
+                      }}
+                    >
+                      <Group gap="sm" wrap="nowrap" style={{ minWidth: 0 }}>
+                        <Text fw={900} size="lg" w={28}>
+                          {row.rank === 1 ? '🥇' : row.rank === 2 ? '🥈' : row.rank === 3 ? '🥉' : `#${row.rank}`}
+                        </Text>
+                        <Box style={{ minWidth: 0 }}>
+                          <Text
+                            component={Link}
+                            href={`/t/${tournament.slug}/players/${row.playerId}`}
+                            fw={700}
+                            size="sm"
+                            style={{ textDecoration: 'none', wordBreak: 'break-word' }}
+                          >
+                            {row.playerName}
+                          </Text>
+                          <Text size="xs" c="dimmed">
+                            {row.wins}W {row.draws}D {row.losses}L
+                          </Text>
+                        </Box>
+                      </Group>
+                      <Badge size="lg" variant="light" color="yellow">
+                        {row.score} pts
+                      </Badge>
+                    </Group>
+                  ))}
+                </Stack>
+              )}
+            </Card>
+
+            <Card withBorder padding="md" radius="md">
+              <Group justify="space-between" mb="sm">
+                <Title order={4}>Round {tournament.current_round || 1} boards</Title>
+                <Button variant="subtle" size="xs" onClick={() => setActiveTab('pairings')}>
+                  All pairings
+                </Button>
+              </Group>
+              <PublicPairings
+                rounds={publicRounds}
+                currentRound={tournament.current_round}
+                limit={4}
+                hideRoundTabs
+              />
+            </Card>
+          </SimpleGrid>
+        </Tabs.Panel>
 
         <Tabs.Panel value="pairings">
           <PublicPairings
@@ -287,6 +390,18 @@ export function PublicPageClient({
           </SimpleGrid>
         </Tabs.Panel>
       </Tabs>
+
+      <Text size="xs" c="dimmed" ta="center" mt="xl">
+        Powered by OpenVChess ·{' '}
+        <a
+          href="https://github.com/Taraldinn"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ color: 'inherit', fontWeight: 700 }}
+        >
+          github.com/Taraldinn
+        </a>
+      </Text>
 
       <ExportShareModal
         opened={shareModalOpened}

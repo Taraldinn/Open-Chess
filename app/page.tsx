@@ -23,7 +23,6 @@ import {
   IconSparkles,
 } from '@tabler/icons-react';
 import Link from 'next/link';
-import { Footer } from '@/components/navigation/Footer';
 
 export default function HomePage() {
   return (
@@ -138,7 +137,6 @@ export default function HomePage() {
         </Card>
       </SimpleGrid>
 
-      <Footer />
     </Container>
   );
 }

@@ -21,6 +21,7 @@ import {
   IconTrophy,
   IconPlus,
   IconLayoutDashboard,
+  IconBrandGithub,
 } from '@tabler/icons-react';
 import Link from 'next/link';
 import { UserMenu } from './UserMenu';
@@ -47,13 +48,13 @@ export function Navbar() {
         }}
       >
         <Container size="lg" h={64}>
-          <Group justify="space-between" h="100%">
+          <Group justify="space-between" h="100%" wrap="nowrap">
             <Link href="/" style={{ textDecoration: 'none' }}>
               <Group gap="xs" align="center">
                 <Box className="playful-float">
                   <IconTrophy size={26} color="#fab005" />
                 </Box>
-                <Text fw={900} size="lg" c="var(--mantine-color-text)" style={{ letterSpacing: '-0.02em' }}>
+                <Text fw={900} size="md" c="var(--mantine-color-text)" style={{ letterSpacing: '-0.02em' }}>
                   Open<Text component="span" className="playful-gradient-text" inherit>VChess</Text>
                 </Text>
               </Group>
@@ -78,6 +79,18 @@ export function Navbar() {
                   New Tournament
                 </Button>
               </Link>
+              <ActionIcon
+                component="a"
+                href="https://github.com/Taraldinn"
+                target="_blank"
+                rel="noopener noreferrer"
+                variant="default"
+                size="lg"
+                radius="xl"
+                aria-label="GitHub: Taraldinn"
+              >
+                <IconBrandGithub size={20} />
+              </ActionIcon>
               <UserMenu />
               <ActionIcon
                 onClick={toggleColorScheme}
@@ -95,7 +108,7 @@ export function Navbar() {
             </Group>
 
             {/* Mobile nav */}
-            <Group gap="xs" hiddenFrom="sm">
+            <Group gap={6} hiddenFrom="sm" wrap="nowrap">
               <ActionIcon
                 onClick={toggleColorScheme}
                 variant="default"
@@ -164,6 +177,17 @@ export function Navbar() {
               Home
             </Button>
           </Link>
+          <Button
+            component="a"
+            href="https://github.com/Taraldinn"
+            target="_blank"
+            rel="noopener noreferrer"
+            variant="default"
+            fullWidth
+            leftSection={<IconBrandGithub size={16} />}
+          >
+            github.com/Taraldinn
+          </Button>
         </Stack>
       </Drawer>
     </>
