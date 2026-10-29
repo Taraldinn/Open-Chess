@@ -21,6 +21,12 @@ export default async function ManagePlayersPage({ params }: Props) {
     notFound();
   }
 
+  const checkedInIds = new Set<string>(tournament.settings?.checkedInPlayerIds || []);
+  const initialPlayers = (tournament.players || []).map((p: any) => ({
+    ...p,
+    checked_in: Boolean(p.checked_in || checkedInIds.has(p.id)),
+  }));
+
   return (
     <div className="mx-auto w-full max-w-6xl px-4 py-6">
       <TournamentManageHeader
@@ -34,7 +40,7 @@ export default async function ManagePlayersPage({ params }: Props) {
 
       <PlayerManagementClient
         tournament={tournament}
-        initialPlayers={tournament.players || []}
+        initialPlayers={initialPlayers}
       />
     </div>
   );

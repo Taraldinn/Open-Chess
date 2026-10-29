@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { notify } from '@/lib/notify';
 import { PlayerList, PlayerItem } from '@/components/players/PlayerList';
+import { RegistrationRequestsCard } from '@/components/players/RegistrationRequestsCard';
 import { startTournamentAction } from '@/lib/actions/rounds';
 
 interface Props {
@@ -44,14 +45,23 @@ export function PlayerManagementClient({ tournament, initialPlayers }: Props) {
   };
 
   return (
-    <PlayerList
-      tournamentId={tournament.id}
-      tournamentSlug={tournament.slug}
-      tournamentStatus={tournament.status}
-      currentRound={tournament.current_round}
-      initialPlayers={initialPlayers}
-      onStartTournament={handleStartTournament}
-      isStarting={isStarting}
-    />
+    <div className="flex flex-col gap-6">
+      <RegistrationRequestsCard
+        tournamentId={tournament.id}
+        tournamentSlug={tournament.slug}
+        settings={tournament.settings}
+        onPlayerAccepted={() => router.refresh()}
+      />
+
+      <PlayerList
+        tournamentId={tournament.id}
+        tournamentSlug={tournament.slug}
+        tournamentStatus={tournament.status}
+        currentRound={tournament.current_round}
+        initialPlayers={initialPlayers}
+        onStartTournament={handleStartTournament}
+        isStarting={isStarting}
+      />
+    </div>
   );
 }

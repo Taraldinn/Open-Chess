@@ -40,14 +40,24 @@ export function TournamentManageHeader({
           <ArrowLeftIcon />
           Back
         </Link>
-        <Link
-          href={`/t/${slug}`}
-          target="_blank"
-          className={buttonVariants({ variant: 'outline', size: 'sm' })}
-        >
-          Public link
-          <ExternalLinkIcon />
-        </Link>
+        <div className="flex items-center gap-2">
+          <Link
+            href={`/t/${slug}/register`}
+            target="_blank"
+            className={buttonVariants({ variant: 'outline', size: 'sm' })}
+          >
+            Registration form
+            <ExternalLinkIcon />
+          </Link>
+          <Link
+            href={`/t/${slug}`}
+            target="_blank"
+            className={buttonVariants({ variant: 'outline', size: 'sm' })}
+          >
+            Public link
+            <ExternalLinkIcon />
+          </Link>
+        </div>
       </div>
 
       <div className="mb-4">

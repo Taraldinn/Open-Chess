@@ -5,8 +5,11 @@ import {
   ArrowDownIcon,
   ArrowUpIcon,
   ArrowDownWideNarrowIcon,
+  CheckCircle2Icon,
+  CircleIcon,
   Loader2Icon,
   MoreVerticalIcon,
+  PencilIcon,
   PlayIcon,
   PlusIcon,
   SparklesIcon,
@@ -41,8 +44,11 @@ import {
   deletePlayerAction,
   togglePlayerWithdrawalAction,
   reorderPlayersAction,
+  togglePlayerCheckInAction,
+  checkInAllAction,
 } from '@/lib/actions/players';
 import { BulkImportModal } from './BulkImportModal';
+import { EditPlayerModal } from './EditPlayerModal';
 import { useRouter } from 'next/navigation';
 
 export interface PlayerItem {
@@ -52,6 +58,7 @@ export interface PlayerItem {
   club: string | null;
   seed: number | null;
   status: 'active' | 'withdrawn';
+  checked_in?: boolean;
 }
 
 interface PlayerListProps {
@@ -78,7 +85,10 @@ export function PlayerList({
   useEffect(() => {
     setPlayers(initialPlayers);
   }, [initialPlayers]);
+
   const [bulkModalOpened, setBulkModalOpened] = useState(false);
+  const [editPlayer, setEditPlayer] = useState<PlayerItem | null>(null);
+  const [filterCheckIn, setFilterCheckIn] = useState<'all' | 'checked_in' | 'pending'>('all');
   const nameInputRef = useRef<HTMLInputElement>(null);
 
   // New Player Form
@@ -86,6 +96,7 @@ export function PlayerList({
   const [newRating, setNewRating] = useState<number | ''>('');
   const [newClub, setNewClub] = useState('');
   const [loadingAdd, setLoadingAdd] = useState(false);
+  const [actionLoadingId, setActionLoadingId] = useState<string | null>(null);
 
   const handleAddPlayer = async () => {
     if (!newName.trim()) return;
@@ -119,6 +130,48 @@ export function PlayerList({
       });
     } finally {
       setLoadingAdd(false);
+    }
+  };
+
+  const handleToggleCheckIn = async (player: PlayerItem) => {
+    const targetState = !Boolean(player.checked_in);
+    // Optimistic update
+    setPlayers((prev) =>
+      prev.map((p) => (p.id === player.id ? { ...p, checked_in: targetState } : p))
+    );
+
+    try {
+      await togglePlayerCheckInAction(player.id, targetState);
+      notify({
+        title: targetState ? 'Player Checked In' : 'Check-In Cleared',
+        message: `${player.name} is now ${targetState ? 'checked in' : 'pending check-in'}.`,
+        color: targetState ? 'green' : 'gray',
+      });
+    } catch (err: any) {
+      // Revert optimistic update
+      setPlayers((prev) =>
+        prev.map((p) => (p.id === player.id ? { ...p, checked_in: !targetState } : p))
+      );
+      notify({ title: 'Error', message: err.message, color: 'red' });
+    }
+  };
+
+  const handleCheckInAll = async (checkedIn: boolean) => {
+    // Optimistic update
+    setPlayers((prev) =>
+      prev.map((p) => (p.status === 'active' ? { ...p, checked_in: checkedIn } : p))
+    );
+
+    try {
+      await checkInAllAction(tournamentId, checkedIn);
+      notify({
+        title: checkedIn ? 'All Players Checked In' : 'Check-Ins Cleared',
+        message: checkedIn ? 'All active players are marked as checked in.' : 'Check-in statuses reset.',
+        color: checkedIn ? 'green' : 'blue',
+      });
+    } catch (err: any) {
+      notify({ title: 'Error', message: err.message, color: 'red' });
+      router.refresh();
     }
   };
 
@@ -184,10 +237,21 @@ export function PlayerList({
     });
   };
 
-  const activeCount = players.filter((p) => p.status === 'active').length;
+  const activePlayers = players.filter((p) => p.status === 'active');
+  const activeCount = activePlayers.length;
+  const checkedInCount = activePlayers.filter((p) => Boolean(p.checked_in)).length;
+  const pendingCheckInCount = activeCount - checkedInCount;
+
+  // Filter players for table display
+  const displayedPlayers = players.filter((p) => {
+    if (filterCheckIn === 'checked_in') return Boolean(p.checked_in) && p.status === 'active';
+    if (filterCheckIn === 'pending') return !p.checked_in && p.status === 'active';
+    return true;
+  });
 
   return (
     <Card className="gap-5 p-4 sm:p-6">
+      {/* Top Header & Main Controls */}
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <div className="flex flex-wrap items-center gap-2">
@@ -195,9 +259,15 @@ export function PlayerList({
             <Badge variant="secondary">
               {players.length} registered ({activeCount} active)
             </Badge>
+            <Badge
+              variant="outline"
+              className={checkedInCount > 0 ? 'border-emerald-500/40 text-emerald-600 dark:text-emerald-400' : ''}
+            >
+              {checkedInCount} / {activeCount} checked in
+            </Badge>
           </div>
           <p className="text-sm text-muted-foreground">
-            Add, reorder seeds, or import players. At least 2 active players required.
+            Edit player names &amp; clubs, manage check-ins, reorder seeds, or import players.
           </p>
         </div>
 
@@ -217,6 +287,62 @@ export function PlayerList({
         </div>
       </div>
 
+      {/* Check-In Bar & Batch Actions */}
+      <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border bg-muted/20 px-3 py-2 text-xs">
+        <div className="flex items-center gap-2">
+          <span className="font-semibold text-muted-foreground uppercase tracking-wide">Filter list:</span>
+          <div className="flex gap-1">
+            <Button
+              size="sm"
+              variant={filterCheckIn === 'all' ? 'default' : 'ghost'}
+              className="h-7 text-xs"
+              onClick={() => setFilterCheckIn('all')}
+            >
+              All ({players.length})
+            </Button>
+            <Button
+              size="sm"
+              variant={filterCheckIn === 'checked_in' ? 'default' : 'ghost'}
+              className="h-7 text-xs"
+              onClick={() => setFilterCheckIn('checked_in')}
+            >
+              Checked In ({checkedInCount})
+            </Button>
+            <Button
+              size="sm"
+              variant={filterCheckIn === 'pending' ? 'default' : 'ghost'}
+              className="h-7 text-xs"
+              onClick={() => setFilterCheckIn('pending')}
+            >
+              Pending ({pendingCheckInCount})
+            </Button>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2">
+          <Button
+            size="sm"
+            variant="outline"
+            className="h-7 gap-1 text-xs"
+            onClick={() => handleCheckInAll(true)}
+            disabled={activeCount === 0 || checkedInCount === activeCount}
+          >
+            <CheckCircle2Icon className="size-3.5 text-emerald-500" />
+            Check In All
+          </Button>
+          <Button
+            size="sm"
+            variant="ghost"
+            className="h-7 text-xs text-muted-foreground"
+            onClick={() => handleCheckInAll(false)}
+            disabled={checkedInCount === 0}
+          >
+            Clear Check-Ins
+          </Button>
+        </div>
+      </div>
+
+      {/* Quick Add Player Form */}
       <div className="rounded-lg border bg-muted/40 p-3">
         <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
           <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wide">
@@ -258,6 +384,7 @@ export function PlayerList({
         </div>
       </div>
 
+      {/* Players Table */}
       {players.length === 0 ? (
         <div className="flex flex-col items-center gap-2 rounded-lg border border-dashed px-6 py-10 text-center">
           <UsersIcon className="size-10 text-muted-foreground" />
@@ -271,6 +398,10 @@ export function PlayerList({
             Open bulk / CSV import
           </Button>
         </div>
+      ) : displayedPlayers.length === 0 ? (
+        <div className="rounded-lg border border-dashed py-8 text-center text-sm text-muted-foreground">
+          No players match the current check-in filter ({filterCheckIn.replace('_', ' ')}).
+        </div>
       ) : (
         <Table>
           <TableHeader>
@@ -279,18 +410,57 @@ export function PlayerList({
               <TableHead>Name</TableHead>
               <TableHead>Rating</TableHead>
               <TableHead>Club</TableHead>
+              <TableHead>Check-In</TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="w-24">Reorder</TableHead>
-              <TableHead className="w-12" />
+              <TableHead className="w-20 text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {players.map((p, index) => (
+            {displayedPlayers.map((p, index) => (
               <TableRow key={p.id}>
                 <TableCell className="font-bold">#{p.seed || index + 1}</TableCell>
-                <TableCell className="font-semibold">{p.name}</TableCell>
+                <TableCell className="font-semibold">
+                  <div className="flex items-center gap-2">
+                    <span>{p.name}</span>
+                    <button
+                      type="button"
+                      onClick={() => setEditPlayer(p)}
+                      title="Edit player name &amp; club"
+                      className="text-muted-foreground hover:text-foreground opacity-60 hover:opacity-100 transition-opacity"
+                    >
+                      <PencilIcon className="size-3.5" />
+                    </button>
+                  </div>
+                </TableCell>
                 <TableCell>{p.rating || '-'}</TableCell>
                 <TableCell>{p.club || '-'}</TableCell>
+                <TableCell>
+                  <button
+                    type="button"
+                    onClick={() => handleToggleCheckIn(p)}
+                    className="inline-flex cursor-pointer items-center rounded-md transition-colors"
+                    title={p.checked_in ? 'Click to mark not checked in' : 'Click to check in'}
+                  >
+                    {p.checked_in ? (
+                      <Badge
+                        variant="outline"
+                        className="gap-1 border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 hover:bg-emerald-500/20"
+                      >
+                        <CheckCircle2Icon className="size-3" />
+                        Checked In
+                      </Badge>
+                    ) : (
+                      <Badge
+                        variant="outline"
+                        className="gap-1 text-muted-foreground hover:bg-muted"
+                      >
+                        <CircleIcon className="size-3" />
+                        Check In
+                      </Badge>
+                    )}
+                  </button>
+                </TableCell>
                 <TableCell>
                   {p.status === 'active' ? (
                     <Badge variant="secondary">Active</Badge>
@@ -313,32 +483,55 @@ export function PlayerList({
                       variant="ghost"
                       size="icon-sm"
                       aria-label="Move down"
-                      disabled={index === players.length - 1}
+                      disabled={index === displayedPlayers.length - 1}
                       onClick={() => movePlayer(index, 'down')}
                     >
                       <ArrowDownIcon />
                     </Button>
                   </div>
                 </TableCell>
-                <TableCell>
-                  <DropdownMenu>
-                    <DropdownMenuTrigger
-                      render={<Button variant="ghost" size="icon-sm" aria-label="Player actions" />}
+                <TableCell className="text-right">
+                  <div className="flex items-center justify-end gap-1">
+                    <Button
+                      variant="ghost"
+                      size="icon-sm"
+                      aria-label="Edit player"
+                      onClick={() => setEditPlayer(p)}
+                      title="Edit player"
                     >
-                      <MoreVerticalIcon />
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end" className="w-44">
-                      <DropdownMenuItem onClick={() => handleToggleWithdrawal(p)}>
-                        {p.status === 'active' ? <UserMinusIcon /> : <UserCheckIcon />}
-                        {p.status === 'active' ? 'Withdraw player' : 'Reactivate'}
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                      <DropdownMenuItem variant="destructive" onClick={() => handleDeletePlayer(p)}>
-                        <Trash2Icon />
-                        Delete player
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                      <PencilIcon className="size-3.5" />
+                    </Button>
+                    <DropdownMenu>
+                      <DropdownMenuTrigger
+                        render={<Button variant="ghost" size="icon-sm" aria-label="Player actions" />}
+                      >
+                        <MoreVerticalIcon />
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="w-48">
+                        <DropdownMenuItem onClick={() => setEditPlayer(p)}>
+                          <PencilIcon className="size-3.5 mr-2" />
+                          Edit name &amp; club
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleToggleCheckIn(p)}>
+                          <CheckCircle2Icon className="size-3.5 mr-2" />
+                          {p.checked_in ? 'Clear check-in' : 'Check in player'}
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => handleToggleWithdrawal(p)}>
+                          {p.status === 'active' ? (
+                            <UserMinusIcon className="size-3.5 mr-2" />
+                          ) : (
+                            <UserCheckIcon className="size-3.5 mr-2" />
+                          )}
+                          {p.status === 'active' ? 'Withdraw player' : 'Reactivate'}
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                        <DropdownMenuItem variant="destructive" onClick={() => handleDeletePlayer(p)}>
+                          <Trash2Icon className="size-3.5 mr-2" />
+                          Delete player
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
+                  </div>
                 </TableCell>
               </TableRow>
             ))}
@@ -346,6 +539,19 @@ export function PlayerList({
         </Table>
       )}
 
+      {/* Edit Player Modal */}
+      <EditPlayerModal
+        opened={Boolean(editPlayer)}
+        onClose={() => setEditPlayer(null)}
+        player={editPlayer}
+        onSuccess={(updated) => {
+          setPlayers((prev) =>
+            prev.map((p) => (p.id === updated.id ? { ...p, ...updated } : p))
+          );
+        }}
+      />
+
+      {/* Bulk Import Modal */}
       <BulkImportModal
         opened={bulkModalOpened}
         onClose={() => setBulkModalOpened(false)}

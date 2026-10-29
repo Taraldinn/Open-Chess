@@ -33,6 +33,7 @@ export default async function ManageRoundsPage({ params }: Props) {
       id: r.id,
       number: r.number,
       status: r.status,
+      pairing_method: r.pairing_method,
       games: (r.games || [])
         .sort((g1: any, g2: any) => g1.board - g2.board)
         .map((g: any) => ({

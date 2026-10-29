@@ -46,6 +46,13 @@ export interface TournamentSettings {
   firstRound: 'random' | 'seeded';
   tieBreaks: Array<'buchholz' | 'buchholz_cut1' | 'median_buchholz' | 'sonneborn_berger' | 'wins' | 'direct_encounter'>;
   allowLateEntry: boolean;
+  registrationToken?: string;
+  registrationOpen?: boolean;
+  requireCheckIn?: boolean;
+  allowSelfCheckIn?: boolean;
+  roundPairingMethods?: Record<string, string>;
+  checkedInPlayerIds?: string[];
+  pendingRegistrations?: any[];
 }
 
 export interface Database {
@@ -175,6 +182,7 @@ export interface Database {
           club: string | null;
           seed: number | null;
           status: PlayerStatus;
+          checked_in: boolean;
           withdrawn_after_round: number | null;
           created_at: string;
         };
@@ -188,6 +196,7 @@ export interface Database {
           club?: string | null;
           seed?: number | null;
           status?: PlayerStatus;
+          checked_in?: boolean;
           withdrawn_after_round?: number | null;
           created_at?: string;
         };
@@ -201,6 +210,7 @@ export interface Database {
           club?: string | null;
           seed?: number | null;
           status?: PlayerStatus;
+          checked_in?: boolean;
           withdrawn_after_round?: number | null;
           created_at?: string;
         };
@@ -212,6 +222,7 @@ export interface Database {
           number: number;
           status: RoundStatus;
           bracket: string | null;
+          pairing_method: string | null;
           created_at: string;
         };
         Insert: {
@@ -220,6 +231,7 @@ export interface Database {
           number: number;
           status?: RoundStatus;
           bracket?: string | null;
+          pairing_method?: string | null;
           created_at?: string;
         };
         Update: {
@@ -228,6 +240,7 @@ export interface Database {
           number?: number;
           status?: RoundStatus;
           bracket?: string | null;
+          pairing_method?: string | null;
           created_at?: string;
         };
       };
@@ -264,6 +277,44 @@ export interface Database {
           result?: GameResult;
           pgn?: string | null;
           played_at?: string | null;
+        };
+      };
+      tournament_registrations: {
+        Row: {
+          id: string;
+          tournament_id: string;
+          name: string;
+          rating: number | null;
+          club: string | null;
+          email: string | null;
+          phone: string | null;
+          notes: string | null;
+          status: 'pending' | 'approved' | 'rejected';
+          created_at: string;
+        };
+        Insert: {
+          id?: string;
+          tournament_id: string;
+          name: string;
+          rating?: number | null;
+          club?: string | null;
+          email?: string | null;
+          phone?: string | null;
+          notes?: string | null;
+          status?: 'pending' | 'approved' | 'rejected';
+          created_at?: string;
+        };
+        Update: {
+          id?: string;
+          tournament_id?: string;
+          name?: string;
+          rating?: number | null;
+          club?: string | null;
+          email?: string | null;
+          phone?: string | null;
+          notes?: string | null;
+          status?: 'pending' | 'approved' | 'rejected';
+          created_at?: string;
         };
       };
     };

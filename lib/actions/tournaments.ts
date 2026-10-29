@@ -29,6 +29,17 @@ export async function createTournamentAction(input: CreateTournamentInput) {
   const ownerId = user.id;
   const slug = generateSlug(validated.name);
 
+  const defaultRegToken = `reg_${Math.random().toString(36).substring(2, 10)}${Math.random().toString(36).substring(2, 6)}`;
+  const tournamentSettings = {
+    ...validated.settings,
+    registrationToken: validated.settings.registrationToken || defaultRegToken,
+    registrationOpen: validated.settings.registrationOpen ?? true,
+    requireCheckIn: validated.settings.requireCheckIn ?? false,
+    allowSelfCheckIn: validated.settings.allowSelfCheckIn ?? true,
+    checkedInPlayerIds: validated.settings.checkedInPlayerIds || [],
+    roundPairingMethods: validated.settings.roundPairingMethods || {},
+  };
+
   const { data, error } = await supabase
     .from('tournaments')
     .insert({
@@ -44,7 +55,7 @@ export async function createTournamentAction(input: CreateTournamentInput) {
       time_control: validated.timeControl || null,
       venue: validated.venue || null,
       start_date: validated.startDate || new Date().toISOString(),
-      settings: validated.settings,
+      settings: tournamentSettings,
     } as any)
     .select('slug')
     .single();
@@ -100,5 +111,10 @@ export async function getTournamentBySlugAction(slug: string) {
     return null;
   }
 
-  return data as any;
+  const t = data as any;
+  if (t && t.settings && !t.settings.registrationToken) {
+    t.settings.registrationToken = `reg_${t.id.replace(/-/g, '').substring(0, 10)}`;
+  }
+
+  return t;
 }

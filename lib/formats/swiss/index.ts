@@ -42,11 +42,20 @@ export class SwissEngine implements FormatEngine {
     const warnings: string[] = [];
 
     // Filter active players (excluding players withdrawn before this round)
-    const activePlayers = players.filter(
+    let activePlayers = players.filter(
       (p) =>
         p.status === 'active' &&
         (p.withdrawnAfterRound === null || p.withdrawnAfterRound === undefined || p.withdrawnAfterRound >= roundNumber)
     );
+
+    // Apply check-in filter if requested
+    if (ctx.onlyCheckedIn || settings.requireCheckIn) {
+      const checkedInOnly = activePlayers.filter((p) => p.checkedIn === true);
+      // If there are at least 2 checked-in players, use them
+      if (checkedInOnly.length >= 2) {
+        activePlayers = checkedInOnly;
+      }
+    }
 
     if (activePlayers.length < 2) {
       return {
@@ -77,7 +86,13 @@ export class SwissEngine implements FormatEngine {
 
     // Step 2: Round 1 logic
     if (roundNumber === 1) {
-      return this.generateRound1(pool, byePlayer, settings);
+      const roundSettings = { ...settings };
+      if (ctx.pairingMethod === 'swiss_seeded' || ctx.pairingMethod === 'seeded') {
+        roundSettings.firstRound = 'seeded';
+      } else if (ctx.pairingMethod === 'swiss_random' || ctx.pairingMethod === 'random') {
+        roundSettings.firstRound = 'random';
+      }
+      return this.generateRound1(pool, byePlayer, roundSettings);
     }
 
     // Step 3: Round 2+ logic

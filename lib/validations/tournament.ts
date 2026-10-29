@@ -36,6 +36,12 @@ export const createTournamentSchema = z.object({
       )
       .default(['buchholz', 'sonneborn_berger', 'wins']),
     allowLateEntry: z.boolean().default(true),
+    registrationToken: z.string().optional(),
+    registrationOpen: z.boolean().default(true).optional(),
+    requireCheckIn: z.boolean().default(false).optional(),
+    allowSelfCheckIn: z.boolean().default(true).optional(),
+    checkedInPlayerIds: z.array(z.string()).default([]).optional(),
+    roundPairingMethods: z.record(z.string()).default({}).optional(),
   }),
 });
 

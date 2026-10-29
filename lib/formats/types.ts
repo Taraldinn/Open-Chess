@@ -9,6 +9,7 @@ export interface PlayerInfo {
   seed?: number | null;
   club?: string | null;
   status: PlayerStatus;
+  checkedIn?: boolean;
   withdrawnAfterRound?: number | null;
 }
 
@@ -34,6 +35,8 @@ export interface PairingContext {
   players: PlayerInfo[];
   pastGames: PastGame[];
   settings: TournamentSettings;
+  pairingMethod?: string;
+  onlyCheckedIn?: boolean;
 }
 
 export interface PairingResult {
